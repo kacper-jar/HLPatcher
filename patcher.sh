@@ -5,7 +5,7 @@ VERSION="1.0.0"
 function show_welcome() {
   local version="$1"
   osascript <<EOF
-      display dialog "Welcome to HLPatcher! ($version)\n\nThanks to FWGS for developing Xash3D FWGS engine and HLSDK Portable. Without them, HLPatcher wouldn't exist.\n\nClick OK to continue." buttons {"OK"} default button 1
+      display dialog "Welcome to HLPatcher! ($version)\n\nThanks to Flying with Gauss team for developing Xash3D FWGS engine and HLSDK Portable. Without them, HLPatcher wouldn't exist.\n\nClick OK to continue." buttons {"OK"} default button 1
 EOF
 }
 
