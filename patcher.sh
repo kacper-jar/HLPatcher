@@ -59,15 +59,18 @@ fi
 show_sdl2_instructions "$SCRIPT_DIR"
 
 echo "Patching Half-Life Engine..."
-cd "$SCRIPT_DIR/xash3d-fwgs" || { echo "xash3d-fwgs not found!"; exit 1; }
+git clone --recursive https://github.com/FWGS/xash3d-fwgs "$SCRIPT_DIR/xash3d-fwgs" || exit 1
+cd "$SCRIPT_DIR/xash3d-fwgs" || exit 1
 ./waf configure -8 --enable-bundled-deps --sdl2="$SCRIPT_DIR/xash3d-fwgs/3rdparty/SDL2.framework" build install --destdir="$SCRIPT_DIR/xash3d-fwgs/.output" || exit 1
 cp -a "$SCRIPT_DIR/xash3d-fwgs/.output"/. "$HL_FOLDER" || exit 1
-cp -a "$SCRIPT_DIR/xash3d-fwgs/3rdparty/SDL2.framework/" "$HL_FOLDER/SDL2.framework/" || exit 1;
+cp -a "$SCRIPT_DIR/xash3d-fwgs/3rdparty/SDL2.framework/" "$HL_FOLDER/SDL2.framework/" || exit 1
 rm "$HL_FOLDER/hl_osx" || exit 1
 mv "$HL_FOLDER/xash3d" "$HL_FOLDER/hl_osx" || exit 1
 
 echo "Patching Half-Life..."
-cd "$SCRIPT_DIR/hlsdk-portable-hlfixed" || { echo "hlsdk-portable-hlfixed not found!"; exit 1; }
+git clone --recursive https://github.com/FWGS/hlsdk-portable "$SCRIPT_DIR/hlsdk-portable-hlfixed" || exit 1
+cd "$SCRIPT_DIR/hlsdk-portable-hlfixed" || exit 1
+git checkout hlfixed || exit 1
 ./waf configure -T release -8 build install --destdir="$SCRIPT_DIR/hlsdk-portable-hlfixed/.output" || exit 1
 cp -a "$SCRIPT_DIR/hlsdk-portable-hlfixed/.output"/. "$HL_FOLDER" || exit 1
 
