@@ -1,8 +1,11 @@
 #!/bin/bash
 
+VERSION="1.0.0"
+
 function show_welcome() {
-    osascript <<EOF
-        display dialog "Welcome to HLPatcher!\n\nThanks to FWGS for developing Xash3D FWGS engine and HLSDK Portable. Without them, HLPatcher wouldn't exist.\n\nClick OK to continue." buttons {"OK"} default button 1
+  local version="$1"
+  osascript <<EOF
+      display dialog "Welcome to HLPatcher! ($version)\n\nThanks to FWGS for developing Xash3D FWGS engine and HLSDK Portable. Without them, HLPatcher wouldn't exist.\n\nClick OK to continue." buttons {"OK"} default button 1
 EOF
 }
 
@@ -39,7 +42,7 @@ EOF
 }
 
 
-show_welcome
+show_welcome "$VERSION"
 
 HL_FOLDER=$(choose_hl_folder)
 if [[ "$HL_FOLDER" == "CANCELLED" ]]; then
