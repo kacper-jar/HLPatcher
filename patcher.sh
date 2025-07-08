@@ -28,14 +28,6 @@ function confirm_patching() {
 EOF
 }
 
-function show_sdl2_instructions() {
-  # TODO: maybe replace this with auto download
-    local folder="$1"
-    osascript <<EOF
-        display dialog "Before continuing, you need to install SDL2.\n\n1. Download SDL2 from:\nhttps://github.com/libsdl-org/SDL/releases/download/release-2.32.2/SDL2-2.32.2.dmg\n\n2. Open the DMG and drag SDL2.framework into the following folder:\n$folder/xash3d-fwgs/3rdparty\n\nOnce SDL2 is installed click OK" buttons {"OK"} default button "OK"
-EOF
-}
-
 function show_success() {
     local folder="$1"
     osascript <<EOF
@@ -59,10 +51,12 @@ if [ ! -d "$WORKING_DIR" ]; then
     mkdir -p "$WORKING_DIR"
 fi
 
-show_sdl2_instructions "$WORKING_DIR"
-
 echo "Patching Half-Life Engine..."
 git clone --recursive https://github.com/FWGS/xash3d-fwgs "$WORKING_DIR/xash3d-fwgs" || exit 1
+curl -L -o "$WORKING_DIR/SDL2-2.32.2.dmg" "https://github.com/libsdl-org/SDL/releases/download/release-2.32.2/SDL2-2.32.2.dmg"
+SDL_MOUNT_POINT=$(hdiutil attach "$WORKING_DIR/SDL2-2.32.2.dmg" -nobrowse | grep -o '/Volumes/[^ ]*') || exit 1
+cp -a "$SDL_MOUNT_POINT/SDL2.framework/" "$WORKING_DIR/xash3d-fwgs/3rdparty/SDL2.framework/"
+hdiutil detach "$SDL_MOUNT_POINT"
 cd "$WORKING_DIR/xash3d-fwgs" || exit 1
 ./waf configure -8 --enable-bundled-deps --sdl2="$WORKING_DIR/xash3d-fwgs/3rdparty/SDL2.framework" build install --destdir="$WORKING_DIR/xash3d-fwgs/.output" || exit 1
 cp -a "$WORKING_DIR/xash3d-fwgs/.output"/. "$HL_FOLDER" || exit 1
