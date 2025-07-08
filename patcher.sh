@@ -2,6 +2,8 @@
 
 VERSION="1.0.0"
 
+WORKING_DIR="/tmp/HLPatcher"
+
 function show_welcome() {
   local version="$1"
   osascript <<EOF
@@ -41,7 +43,6 @@ function show_success() {
 EOF
 }
 
-
 show_welcome "$VERSION"
 
 HL_FOLDER=$(choose_hl_folder)
@@ -49,30 +50,32 @@ if [[ "$HL_FOLDER" == "CANCELLED" ]]; then
     exit 0
 fi
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-
 confirm_patching
 if [[ $? -ne 0 ]]; then
     exit 0
 fi
 
-show_sdl2_instructions "$SCRIPT_DIR"
+if [ ! -d "$WORKING_DIR" ]; then
+    mkdir -p "$WORKING_DIR"
+fi
+
+show_sdl2_instructions "$WORKING_DIR"
 
 echo "Patching Half-Life Engine..."
-git clone --recursive https://github.com/FWGS/xash3d-fwgs "$SCRIPT_DIR/xash3d-fwgs" || exit 1
-cd "$SCRIPT_DIR/xash3d-fwgs" || exit 1
-./waf configure -8 --enable-bundled-deps --sdl2="$SCRIPT_DIR/xash3d-fwgs/3rdparty/SDL2.framework" build install --destdir="$SCRIPT_DIR/xash3d-fwgs/.output" || exit 1
-cp -a "$SCRIPT_DIR/xash3d-fwgs/.output"/. "$HL_FOLDER" || exit 1
-cp -a "$SCRIPT_DIR/xash3d-fwgs/3rdparty/SDL2.framework/" "$HL_FOLDER/SDL2.framework/" || exit 1
+git clone --recursive https://github.com/FWGS/xash3d-fwgs "$WORKING_DIR/xash3d-fwgs" || exit 1
+cd "$WORKING_DIR/xash3d-fwgs" || exit 1
+./waf configure -8 --enable-bundled-deps --sdl2="$WORKING_DIR/xash3d-fwgs/3rdparty/SDL2.framework" build install --destdir="$WORKING_DIR/xash3d-fwgs/.output" || exit 1
+cp -a "$WORKING_DIR/xash3d-fwgs/.output"/. "$HL_FOLDER" || exit 1
+cp -a "$WORKING_DIR/xash3d-fwgs/3rdparty/SDL2.framework/" "$HL_FOLDER/SDL2.framework/" || exit 1
 rm "$HL_FOLDER/hl_osx" || exit 1
 mv "$HL_FOLDER/xash3d" "$HL_FOLDER/hl_osx" || exit 1
 
 echo "Patching Half-Life..."
-git clone --recursive https://github.com/FWGS/hlsdk-portable "$SCRIPT_DIR/hlsdk-portable-hlfixed" || exit 1
-cd "$SCRIPT_DIR/hlsdk-portable-hlfixed" || exit 1
+git clone --recursive https://github.com/FWGS/hlsdk-portable "$WORKING_DIR/hlsdk-portable-hlfixed" || exit 1
+cd "$WORKING_DIR/hlsdk-portable-hlfixed" || exit 1
 git checkout hlfixed || exit 1
-./waf configure -T release -8 build install --destdir="$SCRIPT_DIR/hlsdk-portable-hlfixed/.output" || exit 1
-cp -a "$SCRIPT_DIR/hlsdk-portable-hlfixed/.output"/. "$HL_FOLDER" || exit 1
+./waf configure -T release -8 build install --destdir="$WORKING_DIR/hlsdk-portable-hlfixed/.output" || exit 1
+cp -a "$WORKING_DIR/hlsdk-portable-hlfixed/.output"/. "$HL_FOLDER" || exit 1
 
 echo "Patching complete!"
 show_success "$HL_FOLDER"
