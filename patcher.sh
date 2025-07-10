@@ -48,9 +48,8 @@ function cleanup() {
 }
 
 function show_success() {
-    local folder="$1"
     osascript <<EOF
-        display dialog "Patching complete! All files have been copied to:\n\n$folder" buttons {"OK"} default button 1 with icon note
+        display dialog "Patching complete!\n\nWarning!\nmacOS may block 'SDL2.framework' when launching the game for the first time. SDL2 is a crucial part of the game - it creates the game window and renders its content. Half-Life will not run without it.\n\nIf it gets blocked, open System Settings, go to 'Privacy & Security', and look for a message saying that SDL2.framework was blocked. Click the 'Open Anyway' button and confirm the action.\n\nEnjoy!" buttons {"OK"} default button 1
 EOF
 }
 
@@ -122,4 +121,4 @@ if [ "$BSHIFT_INSTALLED" = true ]; then
 fi
 
 echo "Patching complete!"
-show_success "$HL_FOLDER"
+show_success
