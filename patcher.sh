@@ -28,8 +28,15 @@ EOF
 }
 
 function confirm_patching() {
+    local patch_list="Half-Life"
+    if [ "$OPFOR_INSTALLED" = true ]; then
+        patch_list+="\nHalf-Life: Opposing Force"
+    fi
+    if [ "$BSHIFT_INSTALLED" = true ]; then
+        patch_list+="\nHalf-Life: Blue Shift"
+    fi
     osascript <<EOF
-        display dialog "Are you sure you want to patch your Half-Life installation?" buttons {"Cancel", "Patch"} default button "Patch" with icon caution
+        display dialog "The following games will be patched:\n$patch_list\n\nAre you sure you want to continue?" buttons {"Cancel", "Patch"} default button "Patch" with icon caution
 EOF
 }
 
@@ -66,8 +73,8 @@ if [ -d "$HL_FOLDER/bshift" ]; then
   BSHIFT_INSTALLED=true
 fi
 
-confirm_patching
-if [[ $? -ne 0 ]]; then
+CONFIRM_PATCHING=$(confirm_patching)
+if [[ "$CONFIRM_PATCHING" != *"button returned:Patch"* ]]; then
     exit 0
 fi
 
