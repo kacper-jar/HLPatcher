@@ -62,9 +62,10 @@ if [[ $? -ne 0 ]]; then
     exit 0
 fi
 
-if [ ! -d "$WORKING_DIR" ]; then
-    mkdir -p "$WORKING_DIR"
+if [ -d "$WORKING_DIR" ]; then
+    rm -rf "$WORKING_DIR" || exit 1
 fi
+mkdir -p "$WORKING_DIR" || exit 1
 
 echo "Patching Half-Life Engine..."
 git clone --recursive https://github.com/FWGS/xash3d-fwgs "$WORKING_DIR/xash3d-fwgs" || exit 1
@@ -103,6 +104,9 @@ if [ "$BSHIFT_INSTALLED" = true ]; then
   ./waf configure -T release -8 build install --destdir="$WORKING_DIR/hlsdk-portable-bshift/.output" || exit 1
   cp -a "$WORKING_DIR/hlsdk-portable-bshift/.output"/. "$HL_FOLDER" || exit 1
 fi
+
+echo "Cleaning..."
+rm -rf $WORKING_DIR || exit 1
 
 echo "Patching complete!"
 show_success "$HL_FOLDER"
