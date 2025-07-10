@@ -4,6 +4,11 @@ VERSION="1.0.0"
 
 WORKING_DIR="/tmp/HLPatcher"
 
+HL_FOLDER=""
+
+OPFOR_INSTALLED=false
+BSHIFT_INSTALLED=false
+
 function show_welcome() {
   local version="$1"
   osascript <<EOF
@@ -42,6 +47,16 @@ if [[ "$HL_FOLDER" == "CANCELLED" ]]; then
     exit 0
 fi
 
+if [ -d "$HL_FOLDER/gearbox" ]; then
+  echo "Opposing Force is installed."
+  OPFOR_INSTALLED=true
+fi
+
+if [ -d "$HL_FOLDER/bshift" ]; then
+  echo "Blue Shift is installed."
+  BSHIFT_INSTALLED=true
+fi
+
 confirm_patching
 if [[ $? -ne 0 ]]; then
     exit 0
@@ -70,6 +85,24 @@ cd "$WORKING_DIR/hlsdk-portable-hlfixed" || exit 1
 git checkout hlfixed || exit 1
 ./waf configure -T release -8 build install --destdir="$WORKING_DIR/hlsdk-portable-hlfixed/.output" || exit 1
 cp -a "$WORKING_DIR/hlsdk-portable-hlfixed/.output"/. "$HL_FOLDER" || exit 1
+
+if [ "$OPFOR_INSTALLED" = true ]; then
+  echo "Patching Half-Life: Opposing Force..."
+  git clone --recursive https://github.com/FWGS/hlsdk-portable "$WORKING_DIR/hlsdk-portable-opforfixed" || exit 1
+  cd "$WORKING_DIR/hlsdk-portable-opforfixed" || exit 1
+  git checkout opforfixed || exit 1
+  ./waf configure -T release -8 build install --destdir="$WORKING_DIR/hlsdk-portable-opforfixed/.output" || exit 1
+  cp -a "$WORKING_DIR/hlsdk-portable-opforfixed/.output"/. "$HL_FOLDER" || exit 1
+fi
+
+if [ "$BSHIFT_INSTALLED" = true ]; then
+  echo "Patching Half-Life: Blue Shift..."
+  git clone --recursive https://github.com/FWGS/hlsdk-portable "$WORKING_DIR/hlsdk-portable-bshift" || exit 1
+  cd "$WORKING_DIR/hlsdk-portable-bshift" || exit 1
+  git checkout bshift || exit 1
+  ./waf configure -T release -8 build install --destdir="$WORKING_DIR/hlsdk-portable-bshift/.output" || exit 1
+  cp -a "$WORKING_DIR/hlsdk-portable-bshift/.output"/. "$HL_FOLDER" || exit 1
+fi
 
 echo "Patching complete!"
 show_success "$HL_FOLDER"
