@@ -121,8 +121,5 @@ if [ "$BSHIFT_INSTALLED" = true ]; then
   cp -a "$WORKING_DIR/hlsdk-portable-bshift/.output"/. "$HL_FOLDER" || exit 1
 fi
 
-echo "Cleaning..."
-cleanup || exit 1
-
 echo "Patching complete!"
 show_success "$HL_FOLDER"
