@@ -33,12 +33,21 @@ function confirm_patching() {
 EOF
 }
 
+function cleanup() {
+    echo "Cleaning up..."
+    if [ -d "$WORKING_DIR" ]; then
+      rm -rf "$WORKING_DIR"
+    fi
+}
+
 function show_success() {
     local folder="$1"
     osascript <<EOF
         display dialog "Patching complete! All files have been copied to:\n\n$folder" buttons {"OK"} default button 1 with icon note
 EOF
 }
+
+trap cleanup EXIT INT TERM
 
 show_welcome "$VERSION"
 
@@ -106,7 +115,7 @@ if [ "$BSHIFT_INSTALLED" = true ]; then
 fi
 
 echo "Cleaning..."
-rm -rf $WORKING_DIR || exit 1
+cleanup || exit 1
 
 echo "Patching complete!"
 show_success "$HL_FOLDER"
