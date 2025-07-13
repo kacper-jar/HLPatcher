@@ -9,6 +9,11 @@ HL_FOLDER=""
 OPFOR_INSTALLED=false
 BSHIFT_INSTALLED=false
 
+if [[ "$(uname)" != "Darwin" ]]; then
+    echo "This script can only be run on macOS."
+    exit 1
+fi
+
 function show_welcome() {
   local version="$1"
   osascript <<EOF
