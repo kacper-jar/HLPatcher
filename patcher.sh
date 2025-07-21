@@ -14,6 +14,12 @@ if [[ "$(uname)" != "Darwin" ]]; then
     exit 1
 fi
 
+function show_no_cli_tools_error() {
+  osascript <<EOF
+      display dialog "Xcode Command Line Tools not found.\n\nPlease install them using 'xcode-select --install' command and relaunch HLPatcher." buttons {"OK"} default button 1 with icon caution
+EOF
+}
+
 function show_welcome() {
   local version="$1"
   osascript <<EOF
@@ -57,6 +63,11 @@ function show_success() {
         display dialog "Patching complete!\n\nWarning!\nmacOS may block 'SDL2.framework' when launching the game for the first time. SDL2 is a crucial part of the game - it creates the game window and renders its content. Half-Life will not run without it.\n\nIf it gets blocked, open System Settings, go to 'Privacy & Security', and look for a message saying that SDL2.framework was blocked. Click the 'Open Anyway' button and confirm the action.\n\nEnjoy!" buttons {"OK"} default button 1
 EOF
 }
+
+if ! xcode-select -p &>/dev/null; then
+    show_no_cli_tools_error
+    exit 1
+fi
 
 trap cleanup EXIT INT TERM
 
