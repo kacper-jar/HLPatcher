@@ -100,8 +100,8 @@ mkdir -p "$WORKING_DIR" || exit 1
 
 echo "Patching Half-Life Engine..."
 git clone --recursive https://github.com/FWGS/xash3d-fwgs "$WORKING_DIR/xash3d-fwgs" || exit 1
-curl -L -o "$WORKING_DIR/SDL2-2.32.2.dmg" "https://github.com/libsdl-org/SDL/releases/download/release-2.32.2/SDL2-2.32.2.dmg"
-SDL_MOUNT_POINT=$(hdiutil attach "$WORKING_DIR/SDL2-2.32.2.dmg" -nobrowse | grep -o '/Volumes/[^ ]*') || exit 1
+curl -L -o "$WORKING_DIR/SDL2-2.32.8.dmg" "https://github.com/libsdl-org/SDL/releases/download/release-2.32.8/SDL2-2.32.8.dmg"
+SDL_MOUNT_POINT=$(hdiutil attach "$WORKING_DIR/SDL2-2.32.8.dmg" -nobrowse | grep -o '/Volumes/[^ ]*') || exit 1
 cp -a "$SDL_MOUNT_POINT/SDL2.framework/" "$WORKING_DIR/xash3d-fwgs/3rdparty/SDL2.framework/"
 hdiutil detach "$SDL_MOUNT_POINT"
 cd "$WORKING_DIR/xash3d-fwgs" || exit 1
