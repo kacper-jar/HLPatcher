@@ -7,22 +7,21 @@ HLPatcher makes Half-Life playable on modern ARM Macs that only support 64-bit a
 - Half-Life: Blue Shift
 
 ## Installation
-1. Install [Git](https://github.com/git-guides/install-git#install-git-on-mac) (If you don't already have it)
-2. Download the latest release from [GitHub Releases](https://github.com/kacper-jar/HLPatcher/releases) and unzip it.
-3. Open the terminal and navigate to the unzipped directory.
-4. Install Xcode Command Line Tools by running:
+1. Download the latest release from [GitHub Releases](https://github.com/kacper-jar/HLPatcher/releases) and unzip it.
+2. Open the terminal and navigate to the unzipped directory.
+3. Install Xcode Command Line Tools by running:
 ```shell
 xcode-select --install
 ```
 > [!IMPORTANT]
 > Xcode Command Line Tools are required for the patcher to build Xash3D FWGS binaries properly.
-5. Make the patcher script executable:
+4. Make the patcher script executable:
 ```shell
 chmod +x ./patcher.sh
 ```
 > [!IMPORTANT]
 > Skipping this step will prevent patcher from launching.
-6. Run the patcher:
+5. Run the patcher:
 ```shell
 ./patcher.sh
 ```
