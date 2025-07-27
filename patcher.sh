@@ -6,6 +6,8 @@ WORKING_DIR="/tmp/HLPatcher"
 
 HL_FOLDER=""
 
+BACKUP_HL=false
+
 OPFOR_INSTALLED=false
 BSHIFT_INSTALLED=false
 
@@ -35,6 +37,13 @@ function choose_hl_folder() {
         on error
             return "CANCELLED"
         end try
+EOF
+}
+
+function backup_prompt() {
+    osascript <<EOF
+        set userChoice to button returned of (display dialog "Do you want to create a backup of your current Half-Life installation?\n\nIt will be stored inside your Documents folder." buttons {"No", "Yes"} default button "Yes" with icon caution)
+        return userChoice
 EOF
 }
 
@@ -78,6 +87,10 @@ if [[ "$HL_FOLDER" == "CANCELLED" ]]; then
     exit 0
 fi
 
+if [[ "$(backup_prompt)" == "Yes" ]]; then
+    BACKUP_HL=true
+fi
+
 if [ -d "$HL_FOLDER/gearbox" ]; then
   echo "Opposing Force is installed."
   OPFOR_INSTALLED=true
@@ -91,6 +104,13 @@ fi
 CONFIRM_PATCHING=$(confirm_patching)
 if [[ "$CONFIRM_PATCHING" != *"button returned:Patch"* ]]; then
     exit 0
+fi
+
+if [ "$BACKUP_HL" = true ]; then
+  DATE=$(date +"%Y-%m-%d")
+  DEST="$HOME/Documents/Half-Life backup ($DATE)"
+  cp -a "$HL_FOLDER" "$DEST" || exit 1
+  echo "Backup complete."
 fi
 
 if [ -d "$WORKING_DIR" ]; then
