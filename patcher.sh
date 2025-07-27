@@ -56,7 +56,8 @@ function confirm_patching() {
         patch_list+="\nHalf-Life: Blue Shift"
     fi
     osascript <<EOF
-        display dialog "The following games will be patched:\n$patch_list\n\nIf your Half-Life installation becomes partially patched or corrupted, please uninstall the game via Steam, then delete the 'Half-Life' directory (the one you selected to patch) to remove any leftover files and try again.\n\nAre you sure you want to continue?" buttons {"Cancel", "Patch"} default button "Patch" with icon caution
+        set userChoice to button returned of (display dialog "The following games will be patched:\n$patch_list\n\nIf your Half-Life installation becomes partially patched or corrupted, please uninstall the game via Steam, then delete the 'Half-Life' directory (the one you selected to patch) to remove any leftover files and try again.\n\nAre you sure you want to continue?" buttons {"Cancel", "Patch"} default button "Patch" with icon caution)
+        return userChoice
 EOF
 }
 
@@ -102,7 +103,7 @@ if [ -d "$HL_FOLDER/bshift" ]; then
 fi
 
 CONFIRM_PATCHING=$(confirm_patching)
-if [[ "$CONFIRM_PATCHING" != *"button returned:Patch"* ]]; then
+if [[ "$CONFIRM_PATCHING" != "Patch" ]]; then
     exit 0
 fi
 
