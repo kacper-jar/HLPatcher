@@ -40,6 +40,12 @@ function choose_hl_folder() {
 EOF
 }
 
+function invalid_hl_folder() {
+  osascript <<EOF
+      display dialog "Half-Life executable not found!\n\nMake sure you selected the correct Half-Life installation directory. You have to select the folder inside which 'hl_osx' file is present." buttons {"OK"} default button 1 with icon caution
+EOF
+}
+
 function backup_prompt() {
     osascript <<EOF
         set userChoice to button returned of (display dialog "Do you want to create a backup of your current Half-Life installation?\n\nIt will be stored inside your Documents folder." buttons {"No", "Yes"} default button "Yes" with icon caution)
@@ -86,6 +92,12 @@ show_welcome "$VERSION"
 HL_FOLDER=$(choose_hl_folder)
 if [[ "$HL_FOLDER" == "CANCELLED" ]]; then
     exit 0
+fi
+
+if [[ ! -f "$HL_FOLDER/hl_osx" ]]; then
+    echo "hl_osx file not found in $HL_FOLDER."
+    invalid_hl_folder
+    exit 1
 fi
 
 if [[ "$(backup_prompt)" == "Yes" ]]; then
