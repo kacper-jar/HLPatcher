@@ -9,25 +9,15 @@ HLPatcher makes Half-Life playable on modern ARM Macs that only support 64-bit a
 ## Installation
 1. Download the latest release from [GitHub Releases](https://github.com/kacper-jar/HLPatcher/releases) and unzip it.
 2. Open the terminal and navigate to the unzipped directory.
-3. Install Xcode Command Line Tools by running:
+3. Run the following command to install dependencies and start the patcher:
 ```shell
-xcode-select --install
+xcode-select --install && chmod +x ./patcher.sh && ./patcher.sh
 ```
+
 > [!IMPORTANT]
-> Xcode Command Line Tools are required for the patcher to build Xash3D FWGS binaries properly.
-4. Make the patcher script executable:
-```shell
-chmod +x ./patcher.sh
-```
-> [!IMPORTANT]
-> Skipping this step will prevent patcher from launching.
-5. Run the patcher:
-```shell
-./patcher.sh
-```
+> Xcode Command Line Tools are required for the patcher to build Xash3D FWGS binaries properly. You'll need to confirm the installation when prompted.
 
 ## Removing the Patches
-
 If you need to remove the HLPatcher modifications and restore your original Half-Life installation, you have two options:
 
 ### Option 1: Restore from Backup (Recommended)
