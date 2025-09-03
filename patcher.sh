@@ -174,7 +174,7 @@ fi
 
 if [ -d "$HL_FOLDER/valve" ]; then
   echo "Base game (HL) is installed."
-  OPFOR_INSTALLED=true
+  HL_INSTALLED=true
 fi
 
 if [ -d "$HL_FOLDER/gearbox" ]; then
