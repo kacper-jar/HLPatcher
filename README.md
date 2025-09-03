@@ -5,6 +5,7 @@ HLPatcher makes Half-Life playable on modern ARM Macs that only support 64-bit a
 - Half-Life
 - Half-Life: Opposing Force
 - Half-Life: Blue Shift
+- Deathmatch Classic
 
 ## Installation
 1. Download the latest release from [GitHub Releases](https://github.com/kacper-jar/HLPatcher/releases) and unzip it.

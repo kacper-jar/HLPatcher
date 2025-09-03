@@ -11,11 +11,13 @@ BACKUP_HL=false
 HL_INSTALLED=false
 OPFOR_INSTALLED=false
 BSHIFT_INSTALLED=false
+DMC_INSTALLED=false
 
 GOLDSRC_PATCHED=false
 HL_PATCHED=false
 OPFOR_PATCHED=false
 BSHIFT_PATCHED=false
+DMC_PATCHED=false
 
 if [[ "$(uname)" != "Darwin" ]]; then
     echo "This script can only be run on macOS."
@@ -83,6 +85,11 @@ function confirm_patching() {
         ((components_to_patch++))
     fi
 
+    if [ "$DMC_INSTALLED" = true ] && [ "$DMC_PATCHED" = false ]; then
+        patch_list+="Deathmatch Classic\n"
+        ((components_to_patch++))
+    fi
+
     if [ $components_to_patch -eq 0 ]; then
         osascript <<EOF
             display dialog "All detected Half-Life components are already patched!\n\nNo patching is required." buttons {"OK"} default button 1 with icon note
@@ -133,6 +140,16 @@ function detect_patches() {
             echo "Half-Life: Blue Shift - Needs patching"
         fi
     fi
+
+    if [ "$DMC_INSTALLED" = true ]; then
+        if find "$HL_FOLDER/dmc/dlls" -name "*_arm64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q . || \
+           find "$HL_FOLDER/dmc/cl_dlls" -name "*_x86_64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q .; then
+            DMC_PATCHED=true
+            echo "Deathmatch Classic - Already patched"
+        else
+            echo "Deathmatch Classic - Needs patching"
+        fi
+    fi
 }
 
 function cleanup() {
@@ -153,7 +170,7 @@ if ! xcode-select -p &>/dev/null; then
     exit 1
 fi
 
-trap cleanup EXIT INT TERM
+#trap cleanup EXIT INT TERM
 
 show_welcome "$VERSION"
 
@@ -185,6 +202,11 @@ fi
 if [ -d "$HL_FOLDER/bshift" ]; then
   echo "Blue Shift is installed."
   BSHIFT_INSTALLED=true
+fi
+
+if [ -d "$HL_FOLDER/dmc" ]; then
+  echo "Deathmatch Classic is installed."
+  DMC_INSTALLED=true
 fi
 
 detect_patches
@@ -246,6 +268,17 @@ if [ "$BSHIFT_INSTALLED" = true ] && [ "$BSHIFT_PATCHED" = false ]; then
   git checkout bshift || exit 1
   ./waf configure -T release -8 build install --destdir="$WORKING_DIR/hlsdk-portable-bshift/.output" || exit 1
   cp -a "$WORKING_DIR/hlsdk-portable-bshift/.output"/. "$HL_FOLDER" || exit 1
+fi
+
+if [ "$DMC_INSTALLED" = true ] && [ "$DMC_PATCHED" = false ]; then
+  echo "Patching Deathmatch Classic..."
+  git clone --recursive https://github.com/FWGS/hlsdk-portable "$WORKING_DIR/hlsdk-portable-dmc" || exit 1
+  cd "$WORKING_DIR/hlsdk-portable-dmc" || exit 1
+  # Instead of checking out dmc branch, checkout one of previous commits on dmc branch.
+  # Latest dmc branch commit is broken while adding this.
+  git checkout 895b28d || exit 1
+  ./waf configure -T release -8 build install --destdir="$WORKING_DIR/hlsdk-portable-dmc/.output" || exit 1
+  cp -a "$WORKING_DIR/hlsdk-portable-dmc/.output"/. "$HL_FOLDER" || exit 1
 fi
 
 echo "Patching complete!"
