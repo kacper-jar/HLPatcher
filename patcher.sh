@@ -170,7 +170,7 @@ if ! xcode-select -p &>/dev/null; then
     exit 1
 fi
 
-#trap cleanup EXIT INT TERM
+trap cleanup EXIT INT TERM
 
 show_welcome "$VERSION"
 
