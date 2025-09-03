@@ -8,6 +8,7 @@ HL_FOLDER=""
 
 BACKUP_HL=false
 
+HL_INSTALLED=false
 OPFOR_INSTALLED=false
 BSHIFT_INSTALLED=false
 
@@ -171,6 +172,11 @@ if [[ "$(backup_prompt)" == "Yes" ]]; then
     BACKUP_HL=true
 fi
 
+if [ -d "$HL_FOLDER/valve" ]; then
+  echo "Base game (HL) is installed."
+  OPFOR_INSTALLED=true
+fi
+
 if [ -d "$HL_FOLDER/gearbox" ]; then
   echo "Opposing Force is installed."
   OPFOR_INSTALLED=true
@@ -215,7 +221,7 @@ if [ "$GOLDSRC_PATCHED" = false ]; then
   mv "$HL_FOLDER/xash3d" "$HL_FOLDER/hl_osx" || exit 1
 fi
 
-if [ "$HL_PATCHED" = false ]; then
+if [ "$HL_INSTALLED" = true ] && [ "$HL_PATCHED" = false ]; then
   echo "Patching Half-Life..."
   git clone --recursive https://github.com/FWGS/hlsdk-portable "$WORKING_DIR/hlsdk-portable-hlfixed" || exit 1
   cd "$WORKING_DIR/hlsdk-portable-hlfixed" || exit 1
