@@ -70,7 +70,7 @@ function confirm_patching() {
         ((components_to_patch++))
     fi
 
-    if [ "$HL_PATCHED" = false ]; then
+    if [ "$HL_INSTALLED" = true ] && [ "$HL_PATCHED" = false ]; then
         patch_list+="Half-Life\n"
         ((components_to_patch++))
     fi
@@ -113,12 +113,14 @@ function detect_patches() {
         echo "GoldSrc Engine - Needs patching"
     fi
 
-    if find "$HL_FOLDER/valve/dlls" -name "*_arm64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q . || \
-       find "$HL_FOLDER/valve/cl_dlls" -name "*_arm64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q .; then
-        HL_PATCHED=true
-        echo "Half-Life - Already patched"
-    else
-        echo "Half-Life - Needs patching"
+    if [ "$HL_INSTALLED" = true ]; then
+        if find "$HL_FOLDER/valve/dlls" -name "*_arm64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q . || \
+           find "$HL_FOLDER/valve/cl_dlls" -name "*_arm64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q .; then
+            HL_PATCHED=true
+            echo "Half-Life - Already patched"
+        else
+            echo "Half-Life - Needs patching"
+        fi
     fi
 
     if [ "$OPFOR_INSTALLED" = true ]; then
@@ -190,8 +192,16 @@ if [[ "$(backup_prompt)" == "Yes" ]]; then
 fi
 
 if [ -d "$HL_FOLDER/valve" ]; then
-  echo "Base game (HL) is installed."
-  HL_INSTALLED=true
+  if [[ -f "$HL_FOLDER/valve/dlls/hl.dylib" ]] && [[ -f "$HL_FOLDER/valve/cl_dlls/client.dylib" ]]; then
+    echo "Base game (HL) is installed."
+    HL_INSTALLED=true
+  else
+    echo "valve folder exists but Half-Life game files not found."
+    HL_INSTALLED=false
+  fi
+else
+  echo "valve folder not found."
+  HL_INSTALLED=false
 fi
 
 if [ -d "$HL_FOLDER/gearbox" ]; then
