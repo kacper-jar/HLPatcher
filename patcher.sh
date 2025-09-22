@@ -12,12 +12,16 @@ HL_INSTALLED=false
 OPFOR_INSTALLED=false
 BSHIFT_INSTALLED=false
 DMC_INSTALLED=false
+CSTRIKE_INSTALLED=false
 
 GOLDSRC_PATCHED=false
 HL_PATCHED=false
 OPFOR_PATCHED=false
 BSHIFT_PATCHED=false
 DMC_PATCHED=false
+CSTRIKE_PATCHED=false
+
+CMAKE_NEEDED=false
 
 if [[ "$(uname)" != "Darwin" ]]; then
     echo "This script can only be run on macOS."
@@ -90,6 +94,11 @@ function confirm_patching() {
         ((components_to_patch++))
     fi
 
+    if [ "$CSTRIKE_INSTALLED" = true ] && [ "$CSTRIKE_PATCHED" = false ]; then
+        patch_list+="Counter-Strike\n"
+        ((components_to_patch++))
+    fi
+
     if [ $components_to_patch -eq 0 ]; then
         osascript <<EOF
             display dialog "All detected Half-Life components are already patched!\n\nNo patching is required." buttons {"OK"} default button 1 with icon note
@@ -150,6 +159,17 @@ function detect_patches() {
             echo "Deathmatch Classic - Already patched"
         else
             echo "Deathmatch Classic - Needs patching"
+        fi
+    fi
+
+    if [ "$CSTRIKE_INSTALLED" = true ]; then
+        if find "$HL_FOLDER/cstrike/dlls" -name "*_arm64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q . || \
+           find "$HL_FOLDER/cstrike/cl_dlls" -name "*_x86_64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q .; then
+            CSTRIKE_PATCHED=true
+            echo "Counter-Strike - Already patched"
+        else
+            CMAKE_NEEDED=true
+            echo "Counter-Strike - Needs patching"
         fi
     fi
 }
@@ -219,6 +239,11 @@ if [ -d "$HL_FOLDER/dmc" ]; then
   DMC_INSTALLED=true
 fi
 
+if [ -d "$HL_FOLDER/cstrike" ]; then
+  echo "Counter-Strike is installed."
+  CSTRIKE_INSTALLED=true
+fi
+
 detect_patches
 
 CONFIRM_PATCHING=$(confirm_patching)
@@ -237,6 +262,13 @@ if [ -d "$WORKING_DIR" ]; then
     rm -rf "$WORKING_DIR" || exit 1
 fi
 mkdir -p "$WORKING_DIR" || exit 1
+
+if [ "$CMAKE_NEEDED" = true ]; then
+  echo "Preparing Python and CMake..."
+  python3 -m venv "$WORKING_DIR/venv" || exit 1
+  source "$WORKING_DIR/venv/bin/activate" || exit 1
+  pip install cmake || exit 1
+fi
 
 if [ "$GOLDSRC_PATCHED" = false ]; then
   echo "Patching Half-Life Engine..."
@@ -289,6 +321,16 @@ if [ "$DMC_INSTALLED" = true ] && [ "$DMC_PATCHED" = false ]; then
   git checkout 895b28d || exit 1
   ./waf configure -T release -8 build install --destdir="$WORKING_DIR/hlsdk-portable-dmc/.output" || exit 1
   cp -a "$WORKING_DIR/hlsdk-portable-dmc/.output"/. "$HL_FOLDER" || exit 1
+fi
+
+if [ "$CSTRIKE_INSTALLED" = true ] && [ "$CSTRIKE_PATCHED" = false ]; then
+  echo "Patching Counter-Strike..."
+  git clone --recursive https://github.com/Velaron/cs16-client.git "$WORKING_DIR/cs16-client" || exit 1
+  cd "$WORKING_DIR/cs16-client" || exit 1
+  python3 -m cmake -S . -B build || exit 1
+  python3 -m cmake --build build --config Release || exit 1
+  python3 -m cmake --install build --prefix "$WORKING_DIR/cs16-client/.output" || exit 1
+  cp -a "$WORKING_DIR/cs16-client/.output"/. "$HL_FOLDER" || exit 1
 fi
 
 echo "Patching complete!"
