@@ -1,5 +1,5 @@
 # HLPatcher
-HLPatcher makes Half-Life playable on modern ARM Macs that only support 64-bit applications. It lets users to enjoy the game again without the hassle of manual binary update.
+HLPatcher makes Half-Life and other Valve games playable on modern ARM Macs that only support 64-bit applications. It lets users to enjoy the game again without the hassle of manual binary update.
 
 ## Supported games
 - Half-Life ([Source code](https://github.com/FWGS/hlsdk-portable/tree/hlfixed) by [Flying with Gauss](https://github.com/FWGS))
