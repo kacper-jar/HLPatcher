@@ -2,10 +2,11 @@
 HLPatcher makes Half-Life playable on modern ARM Macs that only support 64-bit applications. It lets users to enjoy the game again without the hassle of manual binary update.
 
 ## Supported games
-- Half-Life
-- Half-Life: Opposing Force
-- Half-Life: Blue Shift
-- Deathmatch Classic
+- Half-Life ([Source code](https://github.com/FWGS/hlsdk-portable/tree/hlfixed) by [Flying with Gauss](https://github.com/FWGS))
+- Half-Life: Opposing Force ([Source code](https://github.com/FWGS/hlsdk-portable/tree/opforfixed) by [Flying with Gauss](https://github.com/FWGS))
+- Half-Life: Blue Shift ([Source code](https://github.com/FWGS/hlsdk-portable/tree/bshift) by [Flying with Gauss](https://github.com/FWGS))
+- Deathmatch Classic ([Source code](https://github.com/FWGS/hlsdk-portable/tree/dmc) by [Flying with Gauss](https://github.com/FWGS))
+- Counter-Strike ([Source code](https://github.com/Velaron/cs16-client) by [Velaron](https://github.com/Velaron))
 
 ## Installation
 1. Download the latest release from [GitHub Releases](https://github.com/kacper-jar/HLPatcher/releases) and unzip it.
