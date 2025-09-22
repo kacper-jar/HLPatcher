@@ -57,7 +57,10 @@ For a complete clean installation:
 This ensures all patched files and modifications are completely removed from your system.
 
 ## Thanks to
- - [Flying with Gauss](https://xash.su/) team for developing [Xash3D FWGS](https://github.com/FWGS/xash3d-fwgs) engine and [HLSDK Portable](https://github.com/FWGS/hlsdk-portable). Without them, HLPatcher wouldn't exist.
+ - [Flying with Gauss](https://xash.su/) team for developing [Xash3D FWGS](https://github.com/FWGS/xash3d-fwgs) engine and [HLSDK Portable](https://github.com/FWGS/hlsdk-portable). 
+ - [Velaron](https://github.com/Velaron) for developing [Counter-Strike 1.6 reverse-engineered client](https://github.com/Velaron/cs16-client).
+
+Without them, HLPatcher wouldn't exist.
 
 ---
 
