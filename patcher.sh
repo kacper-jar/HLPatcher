@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION="1.2.1"
+VERSION="1.3.0"
 
 WORKING_DIR="/tmp/HLPatcher"
 
