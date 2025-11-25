@@ -8,18 +8,12 @@ HL_FOLDER=""
 
 BACKUP_HL=false
 
-HL_INSTALLED=false
-OPFOR_INSTALLED=false
-BSHIFT_INSTALLED=false
-DMC_INSTALLED=false
-CSTRIKE_INSTALLED=false
-
-GOLDSRC_PATCHED=false
-HL_PATCHED=false
-OPFOR_PATCHED=false
-BSHIFT_PATCHED=false
-DMC_PATCHED=false
-CSTRIKE_PATCHED=false
+GOLDSRC_REQUIRES_PATCH=false
+HL_REQUIRES_PATCH=false
+OPFOR_REQUIRES_PATCH=false
+BSHIFT_REQUIRES_PATCH=false
+DMC_REQUIRES_PATCH=false
+CSTRIKE_REQUIRES_PATCH=false
 
 CMAKE_NEEDED=false
 
@@ -69,32 +63,32 @@ function confirm_patching() {
     local patch_list=""
     local components_to_patch=0
 
-    if [ "$GOLDSRC_PATCHED" = false ]; then
+    if [ "$GOLDSRC_REQUIRES_PATCH" = true ]; then
         patch_list+="GoldSrc Engine\n"
         ((components_to_patch++))
     fi
 
-    if [ "$HL_INSTALLED" = true ] && [ "$HL_PATCHED" = false ]; then
+    if [ "$HL_REQUIRES_PATCH" = true ]; then
         patch_list+="Half-Life\n"
         ((components_to_patch++))
     fi
 
-    if [ "$OPFOR_INSTALLED" = true ] && [ "$OPFOR_PATCHED" = false ]; then
+    if [ "$OPFOR_REQUIRES_PATCH" = true ]; then
         patch_list+="Half-Life: Opposing Force\n"
         ((components_to_patch++))
     fi
 
-    if [ "$BSHIFT_INSTALLED" = true ] && [ "$BSHIFT_PATCHED" = false ]; then
+    if [ "$BSHIFT_REQUIRES_PATCH" = true ]; then
         patch_list+="Half-Life: Blue Shift\n"
         ((components_to_patch++))
     fi
 
-    if [ "$DMC_INSTALLED" = true ] && [ "$DMC_PATCHED" = false ]; then
+    if [ "$DMC_REQUIRES_PATCH" = true ]; then
         patch_list+="Deathmatch Classic\n"
         ((components_to_patch++))
     fi
 
-    if [ "$CSTRIKE_INSTALLED" = true ] && [ "$CSTRIKE_PATCHED" = false ]; then
+    if [ "$CSTRIKE_REQUIRES_PATCH" = true ]; then
         patch_list+="Counter-Strike\n"
         ((components_to_patch++))
     fi
@@ -113,64 +107,84 @@ EOF
 }
 
 function detect_patches() {
-    echo "Detecting patch status..."
-
     if [[ -f "$HL_FOLDER/libxash.dylib" && -d "$HL_FOLDER/SDL2.framework" && -f "$HL_FOLDER/libmenu.dylib" ]]; then
-        GOLDSRC_PATCHED=true
         echo "GoldSrc Engine - Already patched"
+        GOLDSRC_REQUIRES_PATCH=false
     else
         echo "GoldSrc Engine - Needs patching"
+        GOLDSRC_REQUIRES_PATCH=true
     fi
 
-    if [ "$HL_INSTALLED" = true ]; then
-        if find "$HL_FOLDER/valve/dlls" -name "*_arm64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q . || \
-           find "$HL_FOLDER/valve/cl_dlls" -name "*_arm64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q .; then
-            HL_PATCHED=true
-            echo "Half-Life - Already patched"
+    if [ -d "$HL_FOLDER/valve" ]; then
+        if [[ -f "$HL_FOLDER/valve/dlls/hl.dylib" ]] && [[ -f "$HL_FOLDER/valve/cl_dlls/client.dylib" ]]; then
+            if find "$HL_FOLDER/valve/dlls" -name "*_arm64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q . || \
+               find "$HL_FOLDER/valve/cl_dlls" -name "*_arm64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q .; then
+                echo "Half-Life - Already patched"
+                HL_REQUIRES_PATCH=false
+            else
+                echo "Half-Life - Needs patching"
+                HL_REQUIRES_PATCH=true
+            fi
         else
-            echo "Half-Life - Needs patching"
+            echo "valve folder exists but Half-Life game files not found."
+            HL_REQUIRES_PATCH=false
         fi
+    else
+        echo "valve folder not found."
+        HL_REQUIRES_PATCH=false
     fi
 
-    if [ "$OPFOR_INSTALLED" = true ]; then
+    if [ -d "$HL_FOLDER/gearbox" ]; then
         if find "$HL_FOLDER/gearbox/dlls" -name "*_arm64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q . || \
            find "$HL_FOLDER/gearbox/cl_dlls" -name "*_arm64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q .; then
-            OPFOR_PATCHED=true
             echo "Half-Life: Opposing Force - Already patched"
+            OPFOR_REQUIRES_PATCH=false
         else
             echo "Half-Life: Opposing Force - Needs patching"
+            OPFOR_REQUIRES_PATCH=true
         fi
+    else
+        OPFOR_REQUIRES_PATCH=false
     fi
 
-    if [ "$BSHIFT_INSTALLED" = true ]; then
+    if [ -d "$HL_FOLDER/bshift" ]; then
         if find "$HL_FOLDER/bshift/dlls" -name "*_arm64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q . || \
            find "$HL_FOLDER/bshift/cl_dlls" -name "*_x86_64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q .; then
-            BSHIFT_PATCHED=true
             echo "Half-Life: Blue Shift - Already patched"
+            BSHIFT_REQUIRES_PATCH=false
         else
             echo "Half-Life: Blue Shift - Needs patching"
+            BSHIFT_REQUIRES_PATCH=true
         fi
+    else
+        BSHIFT_REQUIRES_PATCH=false
     fi
 
-    if [ "$DMC_INSTALLED" = true ]; then
+    if [ -d "$HL_FOLDER/dmc" ]; then
         if find "$HL_FOLDER/dmc/dlls" -name "*_arm64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q . || \
            find "$HL_FOLDER/dmc/cl_dlls" -name "*_x86_64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q .; then
-            DMC_PATCHED=true
             echo "Deathmatch Classic - Already patched"
+            DMC_REQUIRES_PATCH=false
         else
             echo "Deathmatch Classic - Needs patching"
+            DMC_REQUIRES_PATCH=true
         fi
+    else
+        DMC_REQUIRES_PATCH=false
     fi
 
-    if [ "$CSTRIKE_INSTALLED" = true ]; then
+    if [ -d "$HL_FOLDER/cstrike" ]; then
         if find "$HL_FOLDER/cstrike/dlls" -name "*_arm64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q . || \
            find "$HL_FOLDER/cstrike/cl_dlls" -name "*_x86_64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q .; then
-            CSTRIKE_PATCHED=true
             echo "Counter-Strike - Already patched"
+            CSTRIKE_REQUIRES_PATCH=false
         else
-            CMAKE_NEEDED=true
             echo "Counter-Strike - Needs patching"
+            CSTRIKE_REQUIRES_PATCH=true
+            CMAKE_NEEDED=true
         fi
+    else
+        CSTRIKE_REQUIRES_PATCH=false
     fi
 }
 
@@ -211,39 +225,6 @@ if [[ "$(backup_prompt)" == "Yes" ]]; then
     BACKUP_HL=true
 fi
 
-if [ -d "$HL_FOLDER/valve" ]; then
-  if [[ -f "$HL_FOLDER/valve/dlls/hl.dylib" ]] && [[ -f "$HL_FOLDER/valve/cl_dlls/client.dylib" ]]; then
-    echo "Base game (HL) is installed."
-    HL_INSTALLED=true
-  else
-    echo "valve folder exists but Half-Life game files not found."
-    HL_INSTALLED=false
-  fi
-else
-  echo "valve folder not found."
-  HL_INSTALLED=false
-fi
-
-if [ -d "$HL_FOLDER/gearbox" ]; then
-  echo "Opposing Force is installed."
-  OPFOR_INSTALLED=true
-fi
-
-if [ -d "$HL_FOLDER/bshift" ]; then
-  echo "Blue Shift is installed."
-  BSHIFT_INSTALLED=true
-fi
-
-if [ -d "$HL_FOLDER/dmc" ]; then
-  echo "Deathmatch Classic is installed."
-  DMC_INSTALLED=true
-fi
-
-if [ -d "$HL_FOLDER/cstrike" ]; then
-  echo "Counter-Strike is installed."
-  CSTRIKE_INSTALLED=true
-fi
-
 detect_patches
 
 CONFIRM_PATCHING=$(confirm_patching)
@@ -270,7 +251,7 @@ if [ "$CMAKE_NEEDED" = true ]; then
   pip install cmake || exit 1
 fi
 
-if [ "$GOLDSRC_PATCHED" = false ]; then
+if [ "$GOLDSRC_REQUIRES_PATCH" = true ]; then
   echo "Patching Half-Life Engine..."
   git clone --recursive https://github.com/FWGS/xash3d-fwgs "$WORKING_DIR/xash3d-fwgs" || exit 1
   curl -L -o "$WORKING_DIR/SDL2-2.32.8.dmg" "https://github.com/libsdl-org/SDL/releases/download/release-2.32.8/SDL2-2.32.8.dmg"
@@ -285,7 +266,7 @@ if [ "$GOLDSRC_PATCHED" = false ]; then
   mv "$HL_FOLDER/xash3d" "$HL_FOLDER/hl_osx" || exit 1
 fi
 
-if [ "$HL_INSTALLED" = true ] && [ "$HL_PATCHED" = false ]; then
+if [ "$HL_REQUIRES_PATCH" = true ]; then
   echo "Patching Half-Life..."
   git clone --recursive https://github.com/FWGS/hlsdk-portable "$WORKING_DIR/hlsdk-portable-hlfixed" || exit 1
   cd "$WORKING_DIR/hlsdk-portable-hlfixed" || exit 1
@@ -294,7 +275,7 @@ if [ "$HL_INSTALLED" = true ] && [ "$HL_PATCHED" = false ]; then
   cp -a "$WORKING_DIR/hlsdk-portable-hlfixed/.output"/. "$HL_FOLDER" || exit 1
 fi
 
-if [ "$OPFOR_INSTALLED" = true ] && [ "$OPFOR_PATCHED" = false ]; then
+if [ "$OPFOR_REQUIRES_PATCH" = true ]; then
   echo "Patching Half-Life: Opposing Force..."
   git clone --recursive https://github.com/FWGS/hlsdk-portable "$WORKING_DIR/hlsdk-portable-opforfixed" || exit 1
   cd "$WORKING_DIR/hlsdk-portable-opforfixed" || exit 1
@@ -303,7 +284,7 @@ if [ "$OPFOR_INSTALLED" = true ] && [ "$OPFOR_PATCHED" = false ]; then
   cp -a "$WORKING_DIR/hlsdk-portable-opforfixed/.output"/. "$HL_FOLDER" || exit 1
 fi
 
-if [ "$BSHIFT_INSTALLED" = true ] && [ "$BSHIFT_PATCHED" = false ]; then
+if [ "$BSHIFT_REQUIRES_PATCH" = true ]; then
   echo "Patching Half-Life: Blue Shift..."
   git clone --recursive https://github.com/FWGS/hlsdk-portable "$WORKING_DIR/hlsdk-portable-bshift" || exit 1
   cd "$WORKING_DIR/hlsdk-portable-bshift" || exit 1
@@ -312,7 +293,7 @@ if [ "$BSHIFT_INSTALLED" = true ] && [ "$BSHIFT_PATCHED" = false ]; then
   cp -a "$WORKING_DIR/hlsdk-portable-bshift/.output"/. "$HL_FOLDER" || exit 1
 fi
 
-if [ "$DMC_INSTALLED" = true ] && [ "$DMC_PATCHED" = false ]; then
+if [ "$DMC_REQUIRES_PATCH" = true ]; then
   echo "Patching Deathmatch Classic..."
   git clone --recursive https://github.com/FWGS/hlsdk-portable "$WORKING_DIR/hlsdk-portable-dmc" || exit 1
   cd "$WORKING_DIR/hlsdk-portable-dmc" || exit 1
@@ -323,7 +304,7 @@ if [ "$DMC_INSTALLED" = true ] && [ "$DMC_PATCHED" = false ]; then
   cp -a "$WORKING_DIR/hlsdk-portable-dmc/.output"/. "$HL_FOLDER" || exit 1
 fi
 
-if [ "$CSTRIKE_INSTALLED" = true ] && [ "$CSTRIKE_PATCHED" = false ]; then
+if [ "$CSTRIKE_REQUIRES_PATCH" = true ]; then
   echo "Patching Counter-Strike..."
   git clone --recursive https://github.com/Velaron/cs16-client.git "$WORKING_DIR/cs16-client" || exit 1
   cd "$WORKING_DIR/cs16-client" || exit 1
