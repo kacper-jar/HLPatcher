@@ -109,7 +109,6 @@ EOF
 function detect_patches() {
     if [[ -f "$HL_FOLDER/libxash.dylib" && -d "$HL_FOLDER/SDL2.framework" && -f "$HL_FOLDER/libmenu.dylib" ]]; then
         echo "GoldSrc Engine - Already patched"
-        GOLDSRC_REQUIRES_PATCH=false
     else
         echo "GoldSrc Engine - Needs patching"
         GOLDSRC_REQUIRES_PATCH=true
@@ -120,71 +119,56 @@ function detect_patches() {
             if find "$HL_FOLDER/valve/dlls" -name "*_arm64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q . || \
                find "$HL_FOLDER/valve/cl_dlls" -name "*_arm64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q .; then
                 echo "Half-Life - Already patched"
-                HL_REQUIRES_PATCH=false
             else
                 echo "Half-Life - Needs patching"
                 HL_REQUIRES_PATCH=true
             fi
         else
             echo "valve folder exists but Half-Life game files not found."
-            HL_REQUIRES_PATCH=false
         fi
     else
         echo "valve folder not found."
-        HL_REQUIRES_PATCH=false
     fi
 
     if [ -d "$HL_FOLDER/gearbox" ]; then
         if find "$HL_FOLDER/gearbox/dlls" -name "*_arm64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q . || \
            find "$HL_FOLDER/gearbox/cl_dlls" -name "*_arm64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q .; then
             echo "Half-Life: Opposing Force - Already patched"
-            OPFOR_REQUIRES_PATCH=false
         else
             echo "Half-Life: Opposing Force - Needs patching"
             OPFOR_REQUIRES_PATCH=true
         fi
-    else
-        OPFOR_REQUIRES_PATCH=false
     fi
 
     if [ -d "$HL_FOLDER/bshift" ]; then
         if find "$HL_FOLDER/bshift/dlls" -name "*_arm64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q . || \
            find "$HL_FOLDER/bshift/cl_dlls" -name "*_x86_64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q .; then
             echo "Half-Life: Blue Shift - Already patched"
-            BSHIFT_REQUIRES_PATCH=false
         else
             echo "Half-Life: Blue Shift - Needs patching"
             BSHIFT_REQUIRES_PATCH=true
         fi
-    else
-        BSHIFT_REQUIRES_PATCH=false
     fi
 
     if [ -d "$HL_FOLDER/dmc" ]; then
         if find "$HL_FOLDER/dmc/dlls" -name "*_arm64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q . || \
            find "$HL_FOLDER/dmc/cl_dlls" -name "*_x86_64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q .; then
             echo "Deathmatch Classic - Already patched"
-            DMC_REQUIRES_PATCH=false
         else
             echo "Deathmatch Classic - Needs patching"
             DMC_REQUIRES_PATCH=true
         fi
-    else
-        DMC_REQUIRES_PATCH=false
     fi
 
     if [ -d "$HL_FOLDER/cstrike" ]; then
         if find "$HL_FOLDER/cstrike/dlls" -name "*_arm64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q . || \
            find "$HL_FOLDER/cstrike/cl_dlls" -name "*_x86_64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q .; then
             echo "Counter-Strike - Already patched"
-            CSTRIKE_REQUIRES_PATCH=false
         else
             echo "Counter-Strike - Needs patching"
             CSTRIKE_REQUIRES_PATCH=true
             CMAKE_NEEDED=true
         fi
-    else
-        CSTRIKE_REQUIRES_PATCH=false
     fi
 }
 
