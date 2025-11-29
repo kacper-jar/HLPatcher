@@ -15,8 +15,6 @@ BSHIFT_REQUIRES_PATCH=false
 DMC_REQUIRES_PATCH=false
 CSTRIKE_REQUIRES_PATCH=false
 
-CMAKE_NEEDED=false
-
 source "$(dirname "$0")/modules/gui.sh"
 source "$(dirname "$0")/modules/patches.sh"
 
@@ -74,11 +72,11 @@ if [ -d "$WORKING_DIR" ]; then
     rm -rf "$WORKING_DIR" || exit 1
 fi
 
-echo "=> [1/3] Preparing..."
+echo "=> [1/4] Preparing environment..."
 mkdir -p "$WORKING_DIR" || exit 1
+prepare_env
 
-prepare_common
-
+echo "=> [2/4] Preparing components..."
 if [ "$GOLDSRC_REQUIRES_PATCH" = true ]; then prepare_goldsrc; fi
 if [ "$HL_REQUIRES_PATCH" = true ]; then prepare_hlsdk_mod "hlfixed" "hlfixed"; fi
 if [ "$OPFOR_REQUIRES_PATCH" = true ]; then prepare_hlsdk_mod "opforfixed" "opforfixed"; fi
@@ -86,8 +84,7 @@ if [ "$BSHIFT_REQUIRES_PATCH" = true ]; then prepare_hlsdk_mod "bshift" "bshift"
 if [ "$DMC_REQUIRES_PATCH" = true ]; then prepare_hlsdk_mod "dmc" "895b28d"; fi
 if [ "$CSTRIKE_REQUIRES_PATCH" = true ]; then prepare_cstrike; fi
 
-echo "=> [2/3] Building..."
-
+echo "=> [3/4] Building components..."
 if [ "$GOLDSRC_REQUIRES_PATCH" = true ]; then build_goldsrc; fi
 if [ "$HL_REQUIRES_PATCH" = true ]; then build_hlsdk_mod "hlfixed"; fi
 if [ "$OPFOR_REQUIRES_PATCH" = true ]; then build_hlsdk_mod "opforfixed"; fi
@@ -95,8 +92,7 @@ if [ "$BSHIFT_REQUIRES_PATCH" = true ]; then build_hlsdk_mod "bshift"; fi
 if [ "$DMC_REQUIRES_PATCH" = true ]; then build_hlsdk_mod "dmc"; fi
 if [ "$CSTRIKE_REQUIRES_PATCH" = true ]; then build_cstrike; fi
 
-echo "=> [3/3] Installing..."
-
+echo "=> [4/4] Installing components..."
 if [ "$GOLDSRC_REQUIRES_PATCH" = true ]; then install_goldsrc; fi
 if [ "$HL_REQUIRES_PATCH" = true ]; then install_generic "hlsdk-portable-hlfixed"; fi
 if [ "$OPFOR_REQUIRES_PATCH" = true ]; then install_generic "hlsdk-portable-opforfixed"; fi

@@ -61,18 +61,16 @@ function detect_patches() {
         else
             echo "Counter-Strike - Needs patching"
             CSTRIKE_REQUIRES_PATCH=true
-            CMAKE_NEEDED=true
         fi
     fi
 }
 
-function prepare_common() {
-    if [ "$CMAKE_NEEDED" = true ]; then
-        echo "Preparing Python and CMake..."
+function prepare_env() {
+        echo "Preparing Python..."
         python3 -m venv "$WORKING_DIR/venv" || exit 1
         source "$WORKING_DIR/venv/bin/activate" || exit 1
-        pip install cmake || exit 1
-    fi
+        echo "Preparing build systems..."
+        pip install cmake ninja meson || exit 1
 }
 
 function prepare_hlsdk_mod() {
