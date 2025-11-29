@@ -54,6 +54,11 @@ if [[ "$(backup_prompt)" == "Yes" ]]; then
     BACKUP_HL=true
 fi
 
+PATCH_MODE=$(choose_patch_mode)
+if [[ -z "$PATCH_MODE" ]]; then
+    PATCH_MODE="Latest"
+fi
+
 detect_patches
 
 CONFIRM_PATCHING=$(confirm_patching)
@@ -78,10 +83,26 @@ prepare_env
 
 echo "=> [2/4] Preparing components..."
 if [ "$GOLDSRC_REQUIRES_PATCH" = true ]; then prepare_goldsrc; fi
-if [ "$HL_REQUIRES_PATCH" = true ]; then prepare_hlsdk_mod "hlfixed" "hlfixed"; fi
-if [ "$OPFOR_REQUIRES_PATCH" = true ]; then prepare_hlsdk_mod "opforfixed" "opforfixed"; fi
-if [ "$BSHIFT_REQUIRES_PATCH" = true ]; then prepare_hlsdk_mod "bshift" "bshift"; fi
-if [ "$DMC_REQUIRES_PATCH" = true ]; then prepare_hlsdk_mod "dmc" "895b28d"; fi
+
+REF_HLFIXED="hlfixed"
+REF_OPFORFIXED="opforfixed"
+REF_BSHIFT="bshift"
+REF_DMC="dmc"
+
+if [ "$PATCH_MODE" = "Stable" ]; then
+    if [ -n "$STABLE_HLFIXED_COMMIT" ]; then REF_HLFIXED="$STABLE_HLFIXED_COMMIT"; fi
+    if [ -n "$STABLE_OPFORFIXED_COMMIT" ]; then REF_OPFORFIXED="$STABLE_OPFORFIXED_COMMIT"; fi
+    if [ -n "$STABLE_BSHIFT_COMMIT" ]; then REF_BSHIFT="$STABLE_BSHIFT_COMMIT"; fi
+    if [ -n "$STABLE_DMC_COMMIT" ]; then REF_DMC="$STABLE_DMC_COMMIT"; fi
+fi
+
+# Enforce stable for DMC as latest is broken
+if [ -n "$STABLE_DMC_COMMIT" ]; then REF_DMC="$STABLE_DMC_COMMIT"; fi
+
+if [ "$HL_REQUIRES_PATCH" = true ]; then prepare_hlsdk_mod "hlfixed" "$REF_HLFIXED"; fi
+if [ "$OPFOR_REQUIRES_PATCH" = true ]; then prepare_hlsdk_mod "opforfixed" "$REF_OPFORFIXED"; fi
+if [ "$BSHIFT_REQUIRES_PATCH" = true ]; then prepare_hlsdk_mod "bshift" "$REF_BSHIFT"; fi
+if [ "$DMC_REQUIRES_PATCH" = true ]; then prepare_hlsdk_mod "dmc" "$REF_DMC"; fi
 if [ "$CSTRIKE_REQUIRES_PATCH" = true ]; then prepare_cstrike; fi
 
 echo "=> [3/4] Building components..."

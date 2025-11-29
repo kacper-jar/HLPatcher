@@ -37,6 +37,13 @@ function backup_prompt() {
 EOF
 }
 
+function choose_patch_mode() {
+    osascript <<EOF
+        set userChoice to button returned of (display dialog "Choose patching mode:\n\nLatest: Uses the most up-to-date code from source repositories. May contain new features but could be unstable.\n\nStable: Uses specific versions known to work well on macOS. Recommended if Latest fails." buttons {"Stable", "Latest"} default button "Latest" with icon note)
+        return userChoice
+EOF
+}
+
 function confirm_patching() {
     local patch_list=""
     local components_to_patch=0

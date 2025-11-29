@@ -1,5 +1,12 @@
 #!/bin/bash
 
+STABLE_XASH3D_COMMIT="ab5ac3a"
+STABLE_CS16_COMMIT="15278ca"
+STABLE_HLFIXED_COMMIT="3c0044c"
+STABLE_OPFORFIXED_COMMIT="a781ead"
+STABLE_BSHIFT_COMMIT="8cffc25"
+STABLE_DMC_COMMIT="895b28d"
+
 function detect_patches() {
     if [[ -f "$HL_FOLDER/libxash.dylib" && -d "$HL_FOLDER/SDL2.framework" && -f "$HL_FOLDER/libmenu.dylib" ]]; then
         echo "GoldSrc Engine - Already patched"
@@ -87,6 +94,12 @@ function prepare_hlsdk_mod() {
 function prepare_goldsrc() {
     echo "Preparing GoldSrc Engine..."
     git clone --recursive https://github.com/FWGS/xash3d-fwgs "$WORKING_DIR/xash3d-fwgs" || exit 1
+    if [ "$PATCH_MODE" = "Stable" ] && [ -n "$STABLE_XASH3D_COMMIT" ]; then
+        echo "Checking out stable commit: $STABLE_XASH3D_COMMIT"
+        cd "$WORKING_DIR/xash3d-fwgs" || exit 1
+        git checkout "$STABLE_XASH3D_COMMIT" || exit 1
+        cd - > /dev/null
+    fi
     curl -L -o "$WORKING_DIR/SDL2-2.32.8.dmg" "https://github.com/libsdl-org/SDL/releases/download/release-2.32.8/SDL2-2.32.8.dmg"
     SDL_MOUNT_POINT=$(hdiutil attach "$WORKING_DIR/SDL2-2.32.8.dmg" -nobrowse | grep -o '/Volumes/[^ ]*') || exit 1
     cp -a "$SDL_MOUNT_POINT/SDL2.framework/" "$WORKING_DIR/xash3d-fwgs/3rdparty/SDL2.framework/"
@@ -96,6 +109,12 @@ function prepare_goldsrc() {
 function prepare_cstrike() {
     echo "Preparing Counter-Strike..."
     git clone --recursive https://github.com/Velaron/cs16-client.git "$WORKING_DIR/cs16-client" || exit 1
+    if [ "$PATCH_MODE" = "Stable" ] && [ -n "$STABLE_CS16_COMMIT" ]; then
+        echo "Checking out stable commit: $STABLE_CS16_COMMIT"
+        cd "$WORKING_DIR/cs16-client" || exit 1
+        git checkout "$STABLE_CS16_COMMIT" || exit 1
+        cd - > /dev/null
+    fi
 }
 
 function build_hlsdk_mod() {
