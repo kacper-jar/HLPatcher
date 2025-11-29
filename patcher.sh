@@ -66,6 +66,7 @@ if [[ "$CONFIRM_PATCHING" != "Patch" ]]; then
     exit 0
 fi
 
+echo "=> [1/5] Creating backup of Half-Life installation..."
 if [ "$BACKUP_HL" = true ]; then
   DATE=$(date +"%Y-%m-%d")
   DEST="$HOME/Documents/Half-Life backup ($DATE)"
@@ -73,15 +74,15 @@ if [ "$BACKUP_HL" = true ]; then
   echo "Backup complete."
 fi
 
+echo "=> [2/5] Preparing environment..."
 if [ -d "$WORKING_DIR" ]; then
     rm -rf "$WORKING_DIR" || exit 1
 fi
 
-echo "=> [1/4] Preparing environment..."
 mkdir -p "$WORKING_DIR" || exit 1
 prepare_env
 
-echo "=> [2/4] Preparing components..."
+echo "=> [3/5] Preparing components..."
 if [ "$GOLDSRC_REQUIRES_PATCH" = true ]; then prepare_goldsrc; fi
 
 REF_HLFIXED="hlfixed"
@@ -105,7 +106,7 @@ if [ "$BSHIFT_REQUIRES_PATCH" = true ]; then prepare_hlsdk_mod "bshift" "$REF_BS
 if [ "$DMC_REQUIRES_PATCH" = true ]; then prepare_hlsdk_mod "dmc" "$REF_DMC"; fi
 if [ "$CSTRIKE_REQUIRES_PATCH" = true ]; then prepare_cstrike; fi
 
-echo "=> [3/4] Building components..."
+echo "=> [4/5] Building components..."
 if [ "$GOLDSRC_REQUIRES_PATCH" = true ]; then build_goldsrc; fi
 if [ "$HL_REQUIRES_PATCH" = true ]; then build_hlsdk_mod "hlfixed"; fi
 if [ "$OPFOR_REQUIRES_PATCH" = true ]; then build_hlsdk_mod "opforfixed"; fi
@@ -113,7 +114,7 @@ if [ "$BSHIFT_REQUIRES_PATCH" = true ]; then build_hlsdk_mod "bshift"; fi
 if [ "$DMC_REQUIRES_PATCH" = true ]; then build_hlsdk_mod "dmc"; fi
 if [ "$CSTRIKE_REQUIRES_PATCH" = true ]; then build_cstrike; fi
 
-echo "=> [4/4] Installing components..."
+echo "=> [5/5] Installing components..."
 if [ "$GOLDSRC_REQUIRES_PATCH" = true ]; then install_goldsrc; fi
 if [ "$HL_REQUIRES_PATCH" = true ]; then install_generic "hlsdk-portable-hlfixed"; fi
 if [ "$OPFOR_REQUIRES_PATCH" = true ]; then install_generic "hlsdk-portable-opforfixed"; fi
