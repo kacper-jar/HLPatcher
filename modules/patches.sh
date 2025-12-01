@@ -244,6 +244,7 @@ function install_goldsrc() {
 function install_source_all() {
     echo "Installing Source Engine..."
     cp -a "$WORKING_DIR/source-engine/output"/ "$HL_FOLDER" || exit 1
+    cp -a "$WORKING_DIR/source-engine/thirdparty/install/lib/"*.dylib "$HL_FOLDER/bin/" || exit 1
     rm "$HL_FOLDER/hl2_osx" || exit 1
     mv "$HL_FOLDER/hl2_launcher" "$HL_FOLDER/hl2_osx" || exit 1
 }
@@ -251,4 +252,194 @@ function install_source_all() {
 function install_lost_coast() {
     echo "Installing Lost Coast..."
     cp -a "$WORKING_DIR/source-engine/output/hl2/" "$HL_FOLDER/lostcoast/" || exit 1
+}
+
+function fix_source_links() {
+    echo "Fixing Source Engine links..."
+    cd "$HL_FOLDER/bin" || exit 1
+
+    # libvphysics.dylib
+    install_name_tool -id @loader_path/libvphysics.dylib libvphysics.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/vstdlib/libvstdlib.dylib @loader_path/libvstdlib.dylib libvphysics.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/tier0/libtier0.dylib @loader_path/libtier0.dylib libvphysics.dylib
+
+    # libtogl.dylib
+    install_name_tool -id @loader_path/libtogl.dylib libtogl.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/vstdlib/libvstdlib.dylib @loader_path/libvstdlib.dylib libtogl.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/tier0/libtier0.dylib @loader_path/libtier0.dylib libtogl.dylib
+
+    # libdatacache.dylib
+    install_name_tool -id @loader_path/libdatacache.dylib libdatacache.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/tier0/libtier0.dylib @loader_path/libtier0.dylib libdatacache.dylib
+
+    # libvaudio_minimp3.dylib
+    install_name_tool -id @loader_path/libvaudio_minimp3.dylib libvaudio_minimp3.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/vstdlib/libvstdlib.dylib @loader_path/libvstdlib.dylib libvaudio_minimp3.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/tier0/libtier0.dylib @loader_path/libtier0.dylib libvaudio_minimp3.dylib
+
+    # libmaterialsystem.dylib
+    install_name_tool -id @loader_path/libmaterialsystem.dylib libmaterialsystem.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/vstdlib/libvstdlib.dylib @loader_path/libvstdlib.dylib libmaterialsystem.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/tier0/libtier0.dylib @loader_path/libtier0.dylib libmaterialsystem.dylib
+
+    # libvguimatsurface.dylib
+    install_name_tool -id @loader_path/libvguimatsurface.dylib libvguimatsurface.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/vstdlib/libvstdlib.dylib @loader_path/libvstdlib.dylib libvguimatsurface.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/tier0/libtier0.dylib @loader_path/libtier0.dylib libvguimatsurface.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/thirdparty/install/lib/libfreetype.6.dylib @loader_path/libfreetype.6.dylib libvguimatsurface.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/thirdparty/install/lib/libfontconfig.1.dylib @loader_path/libfontconfig.1.dylib libvguimatsurface.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/thirdparty/install/lib/libSDL2-2.0.0.dylib @loader_path/libSDL2-2.0.0.dylib libvguimatsurface.dylib
+
+    # libscenefilecache.dylib
+    install_name_tool -id @loader_path/libscenefilecache.dylib libscenefilecache.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/tier0/libtier0.dylib @loader_path/libtier0.dylib libscenefilecache.dylib
+
+    # libsteam_api.dylib
+    install_name_tool -id @loader_path/libsteam_api.dylib libsteam_api.dylib
+
+    # libServerBrowser.dylib
+    install_name_tool -id @loader_path/libServerBrowser.dylib libServerBrowser.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/vstdlib/libvstdlib.dylib @loader_path/libvstdlib.dylib libServerBrowser.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/tier0/libtier0.dylib @loader_path/libtier0.dylib libServerBrowser.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/stub_steam/libsteam_api.dylib @loader_path/libsteam_api.dylib libServerBrowser.dylib
+
+    # libinputsystem.dylib
+    install_name_tool -id @loader_path/libinputsystem.dylib libinputsystem.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/vstdlib/libvstdlib.dylib @loader_path/libvstdlib.dylib libinputsystem.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/tier0/libtier0.dylib @loader_path/libtier0.dylib libinputsystem.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/stub_steam/libsteam_api.dylib @loader_path/libsteam_api.dylib libinputsystem.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/thirdparty/install/lib/libSDL2-2.0.0.dylib @loader_path/libSDL2-2.0.0.dylib libinputsystem.dylib
+
+    # libvideo_services.dylib
+    install_name_tool -id @loader_path/libvideo_services.dylib libvideo_services.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/vstdlib/libvstdlib.dylib @loader_path/libvstdlib.dylib libvideo_services.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/tier0/libtier0.dylib @loader_path/libtier0.dylib libvideo_services.dylib
+
+    # libvgui2.dylib
+    install_name_tool -id @loader_path/libvgui2.dylib libvgui2.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/vstdlib/libvstdlib.dylib @loader_path/libvstdlib.dylib libvgui2.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/tier0/libtier0.dylib @loader_path/libtier0.dylib libvgui2.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/thirdparty/install/lib/libSDL2-2.0.0.dylib @loader_path/libSDL2-2.0.0.dylib libvgui2.dylib
+
+    # libvtex_dll.dylib
+    install_name_tool -id @loader_path/libvtex_dll.dylib libvtex_dll.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/vstdlib/libvstdlib.dylib @loader_path/libvstdlib.dylib libvtex_dll.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/tier0/libtier0.dylib @loader_path/libtier0.dylib libvtex_dll.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/thirdparty/install/lib/libjpeg.9.dylib @loader_path/libjpeg.9.dylib libvtex_dll.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/thirdparty/install/lib/libpng16.16.dylib @loader_path/libpng16.16.dylib libvtex_dll.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/thirdparty/install/lib/libz.1.dylib @loader_path/libz.1.3.1.dylib libvtex_dll.dylib
+
+    # libtier0.dylib
+    install_name_tool -id @loader_path/libtier0.dylib libtier0.dylib
+
+    # libshaderapidx9.dylib
+    install_name_tool -id @loader_path/libshaderapidx9.dylib libshaderapidx9.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/togl/libtogl.dylib @loader_path/libtogl.dylib libshaderapidx9.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/vstdlib/libvstdlib.dylib @loader_path/libvstdlib.dylib libshaderapidx9.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/tier0/libtier0.dylib @loader_path/libtier0.dylib libshaderapidx9.dylib
+
+    # libGameUI.dylib
+    install_name_tool -id @loader_path/libGameUI.dylib libGameUI.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/vstdlib/libvstdlib.dylib @loader_path/libvstdlib.dylib libGameUI.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/tier0/libtier0.dylib @loader_path/libtier0.dylib libGameUI.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/stub_steam/libsteam_api.dylib @loader_path/libsteam_api.dylib libGameUI.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/thirdparty/install/lib/libSDL2-2.0.0.dylib @loader_path/libSDL2-2.0.0.dylib libGameUI.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/thirdparty/install/lib/libjpeg.9.dylib @loader_path/libjpeg.9.dylib libGameUI.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/thirdparty/install/lib/libpng16.16.dylib @loader_path/libpng16.16.dylib libGameUI.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/thirdparty/install/lib/libz.1.dylib @loader_path/libz.1.3.1.dylib libGameUI.dylib
+
+    # libstudiorender.dylib
+    install_name_tool -id @loader_path/libstudiorender.dylib libstudiorender.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/vstdlib/libvstdlib.dylib @loader_path/libvstdlib.dylib libstudiorender.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/tier0/libtier0.dylib @loader_path/libtier0.dylib libstudiorender.dylib
+
+    # liblauncher.dylib
+    install_name_tool -id @loader_path/liblauncher.dylib liblauncher.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/togl/libtogl.dylib @loader_path/libtogl.dylib liblauncher.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/vstdlib/libvstdlib.dylib @loader_path/libvstdlib.dylib liblauncher.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/tier0/libtier0.dylib @loader_path/libtier0.dylib liblauncher.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/stub_steam/libsteam_api.dylib @loader_path/libsteam_api.dylib liblauncher.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/thirdparty/install/lib/libSDL2-2.0.0.dylib @loader_path/libSDL2-2.0.0.dylib liblauncher.dylib
+
+    # libfilesystem_stdio.dylib
+    install_name_tool -id @loader_path/libfilesystem_stdio.dylib libfilesystem_stdio.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/vstdlib/libvstdlib.dylib @loader_path/libvstdlib.dylib libfilesystem_stdio.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/tier0/libtier0.dylib @loader_path/libtier0.dylib libfilesystem_stdio.dylib
+
+    # libstdshader_dx9.dylib
+    install_name_tool -id @loader_path/libstdshader_dx9.dylib libstdshader_dx9.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/tier0/libtier0.dylib @loader_path/libtier0.dylib libstdshader_dx9.dylib
+
+    # libengine.dylib
+    install_name_tool -id @loader_path/libengine.dylib libengine.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/vstdlib/libvstdlib.dylib @loader_path/libvstdlib.dylib libengine.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/tier0/libtier0.dylib @loader_path/libtier0.dylib libengine.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/stub_steam/libsteam_api.dylib @loader_path/libsteam_api.dylib libengine.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/thirdparty/install/lib/libSDL2-2.0.0.dylib @loader_path/libSDL2-2.0.0.dylib libengine.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/thirdparty/install/lib/libjpeg.9.dylib @loader_path/libjpeg.9.dylib libengine.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/thirdparty/install/lib/libz.1.dylib @loader_path/libz.1.3.1.dylib libengine.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/thirdparty/install/lib/libcurl.4.dylib @loader_path/libcurl.4.dylib libengine.dylib
+
+    # libsoundemittersystem.dylib
+    install_name_tool -id @loader_path/libsoundemittersystem.dylib libsoundemittersystem.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/vstdlib/libvstdlib.dylib @loader_path/libvstdlib.dylib libsoundemittersystem.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/tier0/libtier0.dylib @loader_path/libtier0.dylib libsoundemittersystem.dylib
+
+    # libshaderapidx9.dylib
+    install_name_tool -id @loader_path/libshaderapidx9.dylib libshaderapidx9.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/tier0/libtier0.dylib @loader_path/libtier0.dylib libshaderapidx9.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/vstdlib/libvstdlib.dylib @loader_path/libvstdlib.dylib libshaderapidx9.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/togl/libtogl.dylib @loader_path/libtogl.dylib libshaderapidx9.dylib
+
+    # libpkgconf.7.dylib
+    install_name_tool -id @loader_path/libpkgconf.7.dylib libpkgconf.7.dylib
+
+    # libpng16.16.dylib
+    install_name_tool -id @loader_path/libpng16.16.dylib libpng16.16.dylib
+
+    # libfreetype.6.dylib
+    install_name_tool -id @loader_path/libfreetype.6.dylib libfreetype.6.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/thirdparty/install/lib/libpng16.16.dylib @loader_path/libpng16.16.dylib libfreetype.6.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/thirdparty/install/lib/libz.1.dylib @loader_path/libz.1.3.1.dylib libfreetype.6.dylib
+
+    # libz.1.3.1.dylib
+    install_name_tool -id @loader_path/libz.1.3.1.dylib libz.1.3.1.dylib
+
+    # libjpeg.9.dylib
+    install_name_tool -id @loader_path/libjpeg.9.dylib libjpeg.9.dylib
+
+    # libfontconfig.1.dylib
+    install_name_tool -id @loader_path/libfontconfig.1.dylib libfontconfig.1.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/thirdparty/install/lib/libfreetype.6.dylib @loader_path/libfreetype.6.dylib libfontconfig.1.dylib
+
+    # libcurl.4.dylib
+    install_name_tool -id @loader_path/libcurl.4.dylib libcurl.4.dylib
+
+    # libedit.0.dylib
+    install_name_tool -id @loader_path/libedit.0.dylib libedit.0.dylib
+
+    # libvstdlib.dylib
+    install_name_tool -id @loader_path/libvstdlib.dylib libvstdlib.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/tier0/libtier0.dylib @loader_path/libtier0.dylib libvstdlib.dylib
+
+    # libopus.0.dylib
+    install_name_tool -id @loader_path/libopus.0.dylib libopus.0.dylib
+}
+
+function fix_source_game_links() {
+    local game="$1"
+
+    echo "Fixing source game links for $game..."
+    cd "$HL_FOLDER/$game/bin"
+
+    install_name_tool -id @loader_path/libclient.dylib libclient.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/vstdlib/libvstdlib.dylib @loader_path/../../bin/libvstdlib.dylib libclient.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/tier0/libtier0.dylib @loader_path/../../bin/libtier0.dylib libclient.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/stub_steam/libsteam_api.dylib @loader_path/../../bin/libsteam_api.dylib libclient.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/thirdparty/install/lib/libz.1.dylib @loader_path/../../lib/libz.1.3.1.dylib libclient.dylib
+
+    install_name_tool -id @loader_path/libserver.dylib libserver.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/vstdlib/libvstdlib.dylib @loader_path/../../bin/libvstdlib.dylib libserver.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/tier0/libtier0.dylib @loader_path/../../bin/libtier0.dylib libserver.dylib
+    install_name_tool -change /private/tmp/HLPatcher/source-engine/build/stub_steam/libsteam_api.dylib @loader_path/../../bin/libsteam_api.dylib libserver.dylib
 }

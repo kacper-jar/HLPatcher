@@ -84,7 +84,7 @@ if [[ "$CONFIRM_PATCHING" != "Patch" ]]; then
     exit 0
 fi
 
-echo "=> [1/6] Creating backup of Half-Life installation..."
+echo "=> [1/7] Creating backup of Half-Life installation..."
 if [ "$BACKUP_HL" = true ]; then
   DATE=$(date +"%Y-%m-%d")
   DEST="$HOME/Documents/Half-Life backup ($DATE)"
@@ -92,7 +92,7 @@ if [ "$BACKUP_HL" = true ]; then
   echo "Backup complete."
 fi
 
-echo "=> [2/6] Preparing environment..."
+echo "=> [2/7] Preparing environment..."
 if [ -d "$WORKING_DIR" ]; then
     rm -rf "$WORKING_DIR" || exit 1
 fi
@@ -100,7 +100,7 @@ fi
 mkdir -p "$WORKING_DIR" || exit 1
 prepare_env
 
-echo "=> [3/6] Preparing components..."
+echo "=> [3/7] Preparing components..."
 if [ "$GOLDSRC_REQUIRES_PATCH" = true ]; then prepare_goldsrc; fi
 
 REF_HLFIXED="hlfixed"
@@ -126,10 +126,10 @@ if [ "$CSTRIKE_REQUIRES_PATCH" = true ]; then prepare_cstrike; fi
 
 if [ "$SOURCE_REQUIRES_PATCH" = true ]; then prepare_source; fi
 
-echo "=> [4/6] Patching components..."
+echo "=> [4/7] Patching components..."
 if [ "$SOURCE_REQUIRES_PATCH" = true ]; then patch_source; fi
 
-echo "=> [5/6] Building components..."
+echo "=> [5/7] Building components..."
 if [ "$GOLDSRC_REQUIRES_PATCH" = true ]; then build_goldsrc; fi
 if [ "$HL_REQUIRES_PATCH" = true ]; then build_hlsdk_mod "hlfixed"; fi
 if [ "$OPFOR_REQUIRES_PATCH" = true ]; then build_hlsdk_mod "opforfixed"; fi
@@ -141,7 +141,7 @@ if [ "$HLS_REQUIRES_PATCH" = true ]; then build_source "hl1"; fi
 if [ "$HL2_REQUIRES_PATCH" = true -o "$HL2LC_REQUIRES_PATCH" = true ]; then build_source "hl2"; fi
 if [ "$HL2EP_REQUIRES_PATCH" = true ]; then build_source "episodic"; fi
 
-echo "=> [6/6] Installing components..."
+echo "=> [6/7] Installing components..."
 if [ "$GOLDSRC_REQUIRES_PATCH" = true ]; then install_goldsrc; fi
 if [ "$HL_REQUIRES_PATCH" = true ]; then install_generic "hlsdk-portable-hlfixed"; fi
 if [ "$OPFOR_REQUIRES_PATCH" = true ]; then install_generic "hlsdk-portable-opforfixed"; fi
@@ -151,6 +151,14 @@ if [ "$CSTRIKE_REQUIRES_PATCH" = true ]; then install_generic "cs16-client"; fi
 
 if [ "$SOURCE_REQUIRES_PATCH" = true ]; then install_source_all; fi
 if [ "$HL2LC_REQUIRES_PATCH" = true ]; then install_lost_coast; fi
+
+echo "=> [7/7] Fixing links..."
+if [ "$SOURCE_REQUIRES_PATCH" = true ]; then fix_source_links; fi
+
+if [ "$HLS_REQUIRES_PATCH" = true ]; then fix_source_game_links "hl1"; fi
+if [ "$HL2_REQUIRES_PATCH" = true ]; then fix_source_game_links "hl2"; fi
+if [ "$HL2LC_REQUIRES_PATCH" = true ]; then fix_source_game_links "lostcoast"; fi
+if [ "$HL2EP_REQUIRES_PATCH" = true ]; then fix_source_game_links "episodic"; fi   
 
 echo "Patching complete!"
 show_success
