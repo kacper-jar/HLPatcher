@@ -1,0 +1,460 @@
+--- source-engine-working/build_deps.py	1970-01-01 01:00:00
++++ source-engine-local-deps/build_deps.py	2025-11-30 14:45:49
+@@ -0,0 +1,311 @@
++import os
++import platform
++import shutil
++import subprocess
++import sys
++import tarfile
++import urllib.request
++
++THIRDPARTY_DIR = os.path.abspath('thirdparty')
++DOWNLOAD_DIR = os.path.join(THIRDPARTY_DIR, 'downloads')
++SRC_DIR = os.path.join(THIRDPARTY_DIR, 'src')
++INSTALL_DIR = os.path.join(THIRDPARTY_DIR, 'install')
++PREFIX = INSTALL_DIR
++
++URLS = {
++    'libedit': 'https://thrysoee.dk/editline/libedit-20251016-3.1.tar.gz',
++    'libpng': 'https://downloads.sourceforge.net/project/libpng/libpng16/1.6.51/libpng-1.6.51.tar.xz',
++    'opus': 'https://ftp.osuosl.org/pub/xiph/releases/opus/opus-1.5.2.tar.gz',
++    'pkgconf': 'https://distfiles.ariadne.space/pkgconf/pkgconf-2.5.1.tar.xz',
++    'fontconfig': 'https://gitlab.freedesktop.org/fontconfig/fontconfig/-/archive/2.17.1/fontconfig-2.17.1.tar.gz',
++    'freetype': 'https://downloads.sourceforge.net/project/freetype/freetype2/2.14.1/freetype-2.14.1.tar.xz',
++    'sdl2': 'https://github.com/libsdl-org/SDL/releases/download/release-2.32.10/SDL2-2.32.10.tar.gz',
++    'libjpeg': 'https://www.ijg.org/files/jpegsrc.v9f.tar.gz',
++    'libcurl': 'https://curl.se/download/curl-8.17.0.tar.bz2',
++    'zlib': 'https://zlib.net/zlib-1.3.1.tar.gz'
++}
++
++for d in [DOWNLOAD_DIR, SRC_DIR, INSTALL_DIR]:
++    if not os.path.exists(d):
++        os.makedirs(d)
++
++FORCE_REBUILD = False
++
++
++def download_and_extract(name, url):
++    filename = url.split('/')[-1]
++    filepath = os.path.join(DOWNLOAD_DIR, filename)
++    if not os.path.exists(filepath):
++        print(f'Downloading {name} from {url}...')
++        urllib.request.urlretrieve(url, filepath)
++    print(f'Extracting {name}...')
++    with tarfile.open(filepath) as tar:
++        tar.extractall(path=SRC_DIR)
++    with tarfile.open(filepath) as tar:
++        first_member = tar.getmembers()[0]
++        extracted_dir_name = first_member.name.split('/')[0]
++        return os.path.join(SRC_DIR, extracted_dir_name)
++
++
++def run_command(cmd, cwd, env=None):
++    print(f"Running: {' '.join(cmd)} in {cwd}")
++    subprocess.check_call(cmd, cwd=cwd, env=env)
++
++
++def get_std_configure_args():
++    return [
++        f'--prefix={PREFIX}',
++        '--disable-dependency-tracking',
++        '--disable-silent-rules'
++    ]
++
++
++def is_installed(libname):
++    if FORCE_REBUILD:
++        return False
++    lib_dir = os.path.join(INSTALL_DIR, 'lib')
++    # Check for static or dynamic libraries
++    possible_names = [
++        f'{libname}.a',
++        f'{libname}.dylib',
++        f'lib{libname}.a',
++        f'lib{libname}.dylib'
++    ]
++    for name in possible_names:
++        if os.path.exists(os.path.join(lib_dir, name)):
++            return True
++    return False
++
++
++def build_libedit():
++    if is_installed('edit'):
++        print('libedit already installed. Skipping.')
++        return
++    src_dir = download_and_extract('libedit', URLS['libedit'])
++    args = ['./configure'] + get_std_configure_args()
++    run_command(args, src_dir)
++    run_command(['make', 'install'], src_dir)
++
++
++def build_libpng():
++    if is_installed('png16'):
++        print('libpng already installed. Skipping.')
++        return
++    src_dir = download_and_extract('libpng', URLS['libpng'])
++    args = ['./configure'] + get_std_configure_args()
++    run_command(args, src_dir)
++    run_command(['make'], src_dir)
++    run_command(['make', 'install'], src_dir)
++
++
++def build_opus():
++    if is_installed('opus'):
++        print('opus already installed. Skipping.')
++        return
++    src_dir = download_and_extract('opus', URLS['opus'])
++    args = ['./configure', '--disable-doc'] + get_std_configure_args()
++    if not os.path.exists(os.path.join(src_dir, 'configure')):
++        run_command(['./autogen.sh'], src_dir)
++    run_command(args, src_dir)
++    run_command(['make', 'install'], src_dir)
++
++
++def build_pkgconf():
++    if is_installed('pkgconf'):
++        print('pkgconf already installed. Skipping.')
++        return
++    src_dir = download_and_extract('pkgconf', URLS['pkgconf'])
++    pc_path = [
++        os.path.join(PREFIX, 'lib', 'pkgconfig'),
++        os.path.join(PREFIX, 'share', 'pkgconfig'),
++        '/usr/local/lib/pkgconfig',
++        '/usr/lib/pkgconfig'
++    ]
++    args = [
++        './configure',
++        f"--with-pkg-config-dir={':'.join(pc_path)}",
++        '--with-system-includedir=/usr/include',
++        '--with-system-libdir=/usr/lib'
++    ] + get_std_configure_args()
++    run_command(args, src_dir)
++    run_command(['make'], src_dir)
++    run_command(['make', 'install'], src_dir)
++    
++    pkg_config_link = os.path.join(PREFIX, 'bin', 'pkg-config')
++    pkgconf_bin = os.path.join(PREFIX, 'bin', 'pkgconf')
++    if os.path.exists(pkgconf_bin) and (not os.path.exists(pkg_config_link)):
++        os.symlink('pkgconf', pkg_config_link)
++
++
++def build_fontconfig():
++    if is_installed('fontconfig'):
++        print('fontconfig already installed. Skipping.')
++        return
++    src_dir = download_and_extract('fontconfig', URLS['fontconfig'])
++    font_dirs = [
++        '/System/Library/Fonts',
++        '/Library/Fonts',
++        os.path.expanduser('~/Library/Fonts')
++    ]
++    build_dir = os.path.join(src_dir, 'build')
++    if os.path.exists(build_dir):
++        shutil.rmtree(build_dir)
++    
++    env = os.environ.copy()
++    env['PKG_CONFIG'] = os.path.join(PREFIX, 'bin', 'pkg-config')
++    env['PKG_CONFIG_PATH'] = os.path.join(PREFIX, 'lib', 'pkgconfig')
++    
++    bin_dir = os.path.dirname(sys.executable)
++    meson_bin = os.path.join(bin_dir, 'meson')
++    if not os.path.exists(meson_bin):
++        meson_bin = 'meson'
++        
++    cmd = [
++        meson_bin, 'setup', 'build',
++        f'--prefix={PREFIX}',
++        '--default-library=both',
++        f"--localstatedir={os.path.join(PREFIX, 'var')}",
++        f"--sysconfdir={os.path.join(PREFIX, 'etc')}",
++        '-Ddoc=disabled',
++        '-Dtests=disabled',
++        '-Dtools=enabled',
++        '-Dcache-build=disabled',
++        f"-Dadditional-fonts-dirs={','.join(font_dirs)}"
++    ]
++    run_command(cmd, src_dir, env=env)
++    run_command([meson_bin, 'compile', '-C', 'build', '--verbose'], src_dir, env=env)
++    run_command([meson_bin, 'install', '-C', 'build'], src_dir, env=env)
++
++
++def build_freetype():
++    if is_installed('freetype'):
++        print('freetype already installed. Skipping.')
++        return
++    src_dir = download_and_extract('freetype', URLS['freetype'])
++    args = [
++        './configure',
++        f'--prefix={PREFIX}',
++        '--enable-freetype-config',
++        '--without-harfbuzz'
++    ]
++    env = os.environ.copy()
++    env['PKG_CONFIG'] = os.path.join(PREFIX, 'bin', 'pkg-config')
++    env['PKG_CONFIG_PATH'] = os.path.join(PREFIX, 'lib', 'pkgconfig')
++    run_command(args, src_dir, env=env)
++    run_command(['make'], src_dir, env=env)
++    run_command(['make', 'install'], src_dir, env=env)
++
++
++def build_sdl2():
++    if is_installed('SDL2'):
++        print('SDL2 already installed. Skipping.')
++        return
++    src_dir = download_and_extract('sdl2', URLS['sdl2'])
++    args = [f'--prefix={PREFIX}', '--enable-hidapi']
++    if sys.platform == 'darwin':
++        args.append('--without-x')
++    
++    cmd = ['./configure'] + args
++    run_command(cmd, src_dir)
++    run_command(['make', 'install'], src_dir)
++
++
++def build_libjpeg():
++    if is_installed('jpeg'):
++        print('libjpeg already installed. Skipping.')
++        return
++    src_dir = download_and_extract('libjpeg', URLS['libjpeg'])
++    args = ['./configure'] + get_std_configure_args()
++    run_command(args, src_dir)
++    run_command(['make', 'install'], src_dir)
++
++
++def build_zlib():
++    if is_installed('z'):
++        print('zlib already installed. Skipping.')
++        return
++    src_dir = download_and_extract('zlib', URLS['zlib'])
++    args = ['./configure', f'--prefix={PREFIX}']
++    run_command(args, src_dir)
++    run_command(['make', 'install'], src_dir)
++
++
++def build_libcurl():
++    if is_installed('curl'):
++        print('libcurl already installed. Skipping.')
++        return
++    src_dir = download_and_extract('libcurl', URLS['libcurl'])
++    args = [
++        './configure',
++        '--disable-silent-rules',
++        '--without-ca-bundle',
++        '--without-ca-path',
++        '--with-ca-fallback',
++        '--without-libpsl'
++    ] + get_std_configure_args()
++    
++    if sys.platform == 'darwin':
++        try:
++            openssl_prefix = subprocess.check_output(['brew', '--prefix', 'openssl@3']).decode('utf-8').strip()
++        except:
++            try:
++                openssl_prefix = subprocess.check_output(['brew', '--prefix', 'openssl']).decode('utf-8').strip()
++            except:
++                openssl_prefix = '/usr/local/opt/openssl'
++        
++        libssh2_prefix = None
++        try:
++            libssh2_prefix = subprocess.check_output(['brew', '--prefix', 'libssh2']).decode('utf-8').strip()
++            if not os.path.exists(libssh2_prefix):
++                libssh2_prefix = None
++        except:
++            pass
++            
++        print(f'Using OpenSSL from {openssl_prefix}')
++        if libssh2_prefix:
++            print(f'Using libssh2 from {libssh2_prefix}')
++            
++        args += [
++            f'--with-openssl={openssl_prefix}',
++            '--with-default-ssl-backend=openssl',
++            '--without-secure-transport',
++            '--without-apple-sectrust',
++            '--with-gssapi',
++            '--with-apple-idn',
++            '--without-libidn2',
++            '--without-librtmp',
++            '--without-nghttp2',
++            '--without-nghttp3',
++            '--without-ngtcp2'
++        ]
++        if libssh2_prefix:
++            args.append(f'--with-libssh2={libssh2_prefix}')
++        else:
++            args.append('--without-libssh2')
++    
++    run_command(args, src_dir)
++    run_command(['make', 'install'], src_dir)
++
++
++def main():
++    global FORCE_REBUILD
++    if len(sys.argv) > 1 and sys.argv[1] == '--force':
++        FORCE_REBUILD = True
++        print('Forcing rebuild of all dependencies.')
++    
++    print('Building dependencies...')
++    build_pkgconf()
++    build_zlib()
++    build_libedit()
++    build_libpng()
++    build_libjpeg()
++    build_opus()
++    build_freetype()
++    build_fontconfig()
++    build_sdl2()
++    build_libcurl()
++    print('All dependencies built successfully.')
++
++
++if __name__ == '__main__':
++    main()
+--- source-engine-working/wscript	2025-11-26 18:38:18
++++ source-engine-local-deps/wscript	2025-11-30 14:47:36
+@@ -6,6 +6,7 @@
+ from waflib import Logs, Context, Configure
+ import sys
+ import os
++import subprocess
+ 
+ VERSION = '1.0'
+ APPNAME = 'source-engine'
+@@ -290,6 +291,7 @@
+ 
+ 	grp.add_option('-d', '--dedicated', action = 'store_true', dest = 'DEDICATED', default = False,
+ 		help = 'build dedicated server [default: %default]')
++	opt.add_option('--force-deps', action='store_true', default=False, help='Force rebuild of local dependencies [default: %default]')
+ 
+ 	grp.add_option('--tests', action = 'store_true', dest = 'TESTS', default = False,
+ 		help = 'build unit tests [default: %default]')
+@@ -385,24 +387,82 @@
+ 
+ 	if conf.env.DEST_OS != 'android':
+ 		if conf.env.DEST_OS != 'win32':
+-			if conf.options.SDL:
+-				conf.check_cfg(package='sdl2', uselib_store='SDL2', args=['--cflags', '--libs'])
+-			if conf.options.DEDICATED:
+-				conf.check_cfg(package='libedit', uselib_store='EDIT', args=['--cflags', '--libs'])
++			thirdparty_install = os.path.abspath('thirdparty/install')
++			
++			def check_local(name, store_name, lib_name, include_sub=None, lib_dir='lib', header_chk=None):
++				path = thirdparty_install
++				if os.path.exists(path):
++					conf.start_msg('Checking for local %s' % name)
++					inc = os.path.join(path, 'include')
++					if include_sub:
++						inc = os.path.join(inc, include_sub)
++					
++					if not os.path.exists(inc):
++						if include_sub and os.path.exists(os.path.join(path, 'include')):
++							if os.path.exists(os.path.join(path, 'include', name + '.h')) or \
++							   os.path.exists(os.path.join(path, 'include', name)):
++								inc = os.path.join(path, 'include')
++							else:
++								conf.end_msg('no (include not found)')
++								return False
++						else:
++							conf.end_msg('no (include not found)')
++							return False
++					
++					if header_chk:
++						if not os.path.exists(os.path.join(inc, header_chk)):
++							conf.end_msg('no (header %s not found)' % header_chk)
++							return False
++
++					conf.env.append_unique('INCLUDES_' + store_name, [inc])
++					
++					libpath = os.path.join(path, lib_dir)
++					if not os.path.exists(libpath):
++						conf.end_msg('no (lib dir not found)')
++						return False
++						
++					conf.env.append_unique('LIBPATH_' + store_name, [libpath])
++					conf.env.append_unique('LIB_' + store_name, [lib_name])
++					
++					conf.end_msg('yes')
++					return True
++				return False
++
++			if conf.options.SDL:
++				if not check_local('SDL2', 'SDL2', 'SDL2', 'SDL2', header_chk='SDL.h'):
++					conf.check_cfg(package='sdl2', uselib_store='SDL2', args=['--cflags', '--libs'])
++			if conf.options.DEDICATED:
++				if not check_local('libedit', 'EDIT', 'edit', 'editline', header_chk='readline.h'):
++					conf.check_cfg(package='libedit', uselib_store='EDIT', args=['--cflags', '--libs'])
+ 			else:
+-				conf.check_pkg('freetype2', 'FT2', FT2_CHECK)
+-				conf.check_pkg('fontconfig', 'FC', FC_CHECK)
++				if not check_local('freetype', 'FT2', 'freetype', 'freetype2', header_chk='ft2build.h'):
++					conf.check_pkg('freetype2', 'FT2', FT2_CHECK)
++				
++				if not check_local('fontconfig', 'FC', 'fontconfig', 'fontconfig', header_chk='fontconfig.h'):
++					conf.check_pkg('fontconfig', 'FC', FC_CHECK)
++				
+ 				if conf.env.DEST_OS == "darwin":
+ 					conf.env.FRAMEWORK_OPENAL = "OpenAL"
+ 				else:
+-					conf.check_cfg(package='openal', uselib_store='OPENAL', args=['--cflags', '--libs'])
+-				conf.check_cfg(package='libjpeg', uselib_store='JPEG', args=['--cflags', '--libs'])
+-				conf.check_cfg(package='libpng', uselib_store='PNG', args=['--cflags', '--libs'])
+-				conf.check_cfg(package='libcurl', uselib_store='CURL', args=['--cflags', '--libs'])
+-			conf.check_cfg(package='zlib', uselib_store='ZLIB', args=['--cflags', '--libs'])
++					if not check_local('openal-soft', 'OPENAL', 'openal', 'AL', header_chk='al.h'):
++						conf.check_cfg(package='openal', uselib_store='OPENAL', args=['--cflags', '--libs'])
++				
++				# libjpeg and libpng might be just in include, not include/libjpeg
++				if not check_local('libjpeg', 'JPEG', 'jpeg', header_chk='jpeglib.h'):
++					conf.check_cfg(package='libjpeg', uselib_store='JPEG', args=['--cflags', '--libs'])
++				
++				if not check_local('libpng', 'PNG', 'png16', 'libpng16', header_chk='png.h'): # libpng16 usually
++					conf.check_cfg(package='libpng', uselib_store='PNG', args=['--cflags', '--libs'])
++				
++				if not check_local('curl', 'CURL', 'curl', 'curl', header_chk='curl.h'):
++					conf.check_cfg(package='libcurl', uselib_store='CURL', args=['--cflags', '--libs'])
++			
++			if not check_local('zlib', 'ZLIB', 'z', header_chk='zlib.h'):
++				conf.check_cfg(package='zlib', uselib_store='ZLIB', args=['--cflags', '--libs'])
+ 
+ 			if conf.options.OPUS:
+-				conf.check_cfg(package='opus', uselib_store='OPUS', args=['--cflags', '--libs'])
++				if not check_local('opus', 'OPUS', 'opus', 'opus', header_chk='opus.h'):
++					conf.check_cfg(package='opus', uselib_store='OPUS', args=['--cflags', '--libs'])
+ 	else:
+ 		conf.check(lib='SDL2', uselib_store='SDL2')
+ 		conf.check(lib='freetype2', uselib_store='FT2')
+@@ -434,6 +494,32 @@
+ 		# conf.multicheck(*a, run_all_tests = True, mandatory = True)
+ 
+ def configure(conf):
++	conf.start_msg('Building dependencies')
++	thirdparty_install = os.path.abspath('thirdparty/install')
++	lib_dir = os.path.join(thirdparty_install, 'lib')
++	expected_libs = ['libSDL2.a', 'libfreetype.a', 'libfontconfig.a', 'libpng16.a', 'libopus.a', 'libedit.a', 'libz.a', 'libjpeg.a', 'libcurl.a']
++
++	deps_missing = False
++	if not os.path.exists(lib_dir):
++		deps_missing = True
++	else:
++		for lib in expected_libs:
++			if not os.path.exists(os.path.join(lib_dir, lib)):
++				deps_missing = True
++				break
++	
++	if conf.options.force_deps or deps_missing:
++		print("Building local dependencies...")
++		cmd = [sys.executable, 'build_deps.py']
++		if conf.options.force_deps:
++			cmd.append('--force')
++			
++		if subprocess.call(cmd) != 0:
++			conf.fatal('Failed to build dependencies')
++	else:
++		print("Local dependencies appear to be present. Skipping build.")
++	conf.end_msg('yes')
++
+ 	conf.load('fwgslib reconfigure compiler_optimizations')
+ 
+ 	# Force XP compability, all build targets should add

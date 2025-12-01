@@ -13,6 +13,19 @@ function show_welcome() {
 EOF
 }
 
+function choose_engine() {
+    osascript <<EOF
+        set userChoice to button returned of (display dialog "Select the game engine you want to patch:\n\nGoldSrc - Games like Half-Life 1 (including expansions) and Counter-Strike 1.6.\n\nSource - Games like Half-Life 2 (including episodes) and Half-Life: Source." buttons {"GoldSrc", "Source"})
+        return userChoice
+EOF
+}
+
+function show_source_legacy_warning() {
+    osascript <<EOF
+        display dialog "Before you continue!\n\nBefore proceeding, you MUST switch your Half-Life 2 installation to the 'steam_legacy' branch.\n\nTo do this:\n1. Open Steam\n2. Right-click Half-Life 2 -> Properties\n3. Go to Betas\n4. Select 'steam_legacy - Pre-20th Anniversary Build'\n\nFailure to do so will result in a broken game.\n\nClick OK once the branch is changed and Steam finishes downgrading the files." buttons {"OK"} default button 1 with icon caution
+EOF
+}
+
 function choose_hl_folder() {
     osascript <<EOF
         try
@@ -25,8 +38,9 @@ EOF
 }
 
 function invalid_hl_folder() {
+  local exec_name="$1"
   osascript <<EOF
-      display dialog "Half-Life executable not found!\n\nMake sure you selected the correct Half-Life installation directory. You have to select the folder inside which 'hl_osx' file is present." buttons {"OK"} default button 1 with icon caution
+      display dialog "Game executable not found!\n\nMake sure you selected the correct installation directory. You have to select the folder inside which '$exec_name' file is present." buttons {"OK"} default button 1 with icon caution
 EOF
 }
 
@@ -75,6 +89,31 @@ function confirm_patching() {
 
     if [ "$CSTRIKE_REQUIRES_PATCH" = true ]; then
         patch_list+="Counter-Strike\n"
+        ((components_to_patch++))
+    fi
+
+    if [ "$SOURCE_REQUIRES_PATCH" = true ]; then
+        patch_list+="Source Engine\n"
+        ((components_to_patch++))
+    fi
+
+    if [ "$HL2_REQUIRES_PATCH" = true ]; then
+        patch_list+="Half-Life 2\n"
+        ((components_to_patch++))
+    fi
+
+    if [ "$HL2LC_REQUIRES_PATCH" = true ]; then
+        patch_list+="Half-Life 2: Lost Coast\n"
+        ((components_to_patch++))
+    fi
+
+    if [ "$HL2EP_REQUIRES_PATCH" = true ]; then
+        patch_list+="Half-Life 2: Episode 1 & 2\n"
+        ((components_to_patch++))
+    fi
+
+    if [ "$HLS_REQUIRES_PATCH" = true ]; then
+        patch_list+="Half-Life: Source\n"
         ((components_to_patch++))
     fi
 

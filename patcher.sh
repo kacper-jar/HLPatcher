@@ -8,12 +8,20 @@ HL_FOLDER=""
 
 BACKUP_HL=false
 
+# GoldSrc related
 GOLDSRC_REQUIRES_PATCH=false
 HL_REQUIRES_PATCH=false
 OPFOR_REQUIRES_PATCH=false
 BSHIFT_REQUIRES_PATCH=false
 DMC_REQUIRES_PATCH=false
 CSTRIKE_REQUIRES_PATCH=false
+
+# Source related
+SOURCE_REQUIRES_PATCH=false
+HLS_REQUIRES_PATCH=false
+HL2_REQUIRES_PATCH=false
+HL2LC_REQUIRES_PATCH=false
+HL2EP_REQUIRES_PATCH=false
 
 source "$(dirname "$0")/modules/gui.sh"
 source "$(dirname "$0")/modules/patches.sh"
@@ -39,14 +47,24 @@ trap cleanup EXIT INT TERM
 
 show_welcome "$VERSION"
 
+ENGINE_TYPE=$(choose_engine)
+if [[ "$ENGINE_TYPE" == "Source" ]]; then
+    show_source_legacy_warning
+fi
+
 HL_FOLDER=$(choose_hl_folder)
 if [[ "$HL_FOLDER" == "CANCELLED" ]]; then
     exit 0
 fi
 
-if [[ ! -f "$HL_FOLDER/hl_osx" ]]; then
-    echo "hl_osx file not found in $HL_FOLDER."
-    invalid_hl_folder
+EXPECTED_EXEC="hl_osx"
+if [[ "$ENGINE_TYPE" == "Source" ]]; then
+    EXPECTED_EXEC="hl2_osx"
+fi
+
+if [[ ! -f "$HL_FOLDER/$EXPECTED_EXEC" ]]; then
+    echo "$EXPECTED_EXEC file not found in $HL_FOLDER."
+    invalid_hl_folder "$EXPECTED_EXEC"
     exit 1
 fi
 
@@ -66,7 +84,7 @@ if [[ "$CONFIRM_PATCHING" != "Patch" ]]; then
     exit 0
 fi
 
-echo "=> [1/5] Creating backup of Half-Life installation..."
+echo "=> [1/6] Creating backup of Half-Life installation..."
 if [ "$BACKUP_HL" = true ]; then
   DATE=$(date +"%Y-%m-%d")
   DEST="$HOME/Documents/Half-Life backup ($DATE)"
@@ -74,7 +92,7 @@ if [ "$BACKUP_HL" = true ]; then
   echo "Backup complete."
 fi
 
-echo "=> [2/5] Preparing environment..."
+echo "=> [2/6] Preparing environment..."
 if [ -d "$WORKING_DIR" ]; then
     rm -rf "$WORKING_DIR" || exit 1
 fi
@@ -82,7 +100,7 @@ fi
 mkdir -p "$WORKING_DIR" || exit 1
 prepare_env
 
-echo "=> [3/5] Preparing components..."
+echo "=> [3/6] Preparing components..."
 if [ "$GOLDSRC_REQUIRES_PATCH" = true ]; then prepare_goldsrc; fi
 
 REF_HLFIXED="hlfixed"
@@ -106,7 +124,12 @@ if [ "$BSHIFT_REQUIRES_PATCH" = true ]; then prepare_hlsdk_mod "bshift" "$REF_BS
 if [ "$DMC_REQUIRES_PATCH" = true ]; then prepare_hlsdk_mod "dmc" "$REF_DMC"; fi
 if [ "$CSTRIKE_REQUIRES_PATCH" = true ]; then prepare_cstrike; fi
 
-echo "=> [4/5] Building components..."
+if [ "$SOURCE_REQUIRES_PATCH" = true ]; then prepare_source; fi
+
+echo "=> [4/6] Patching components..."
+if [ "$SOURCE_REQUIRES_PATCH" = true ]; then patch_source; fi
+
+echo "=> [5/6] Building components..."
 if [ "$GOLDSRC_REQUIRES_PATCH" = true ]; then build_goldsrc; fi
 if [ "$HL_REQUIRES_PATCH" = true ]; then build_hlsdk_mod "hlfixed"; fi
 if [ "$OPFOR_REQUIRES_PATCH" = true ]; then build_hlsdk_mod "opforfixed"; fi
@@ -114,13 +137,20 @@ if [ "$BSHIFT_REQUIRES_PATCH" = true ]; then build_hlsdk_mod "bshift"; fi
 if [ "$DMC_REQUIRES_PATCH" = true ]; then build_hlsdk_mod "dmc"; fi
 if [ "$CSTRIKE_REQUIRES_PATCH" = true ]; then build_cstrike; fi
 
-echo "=> [5/5] Installing components..."
+if [ "$HLS_REQUIRES_PATCH" = true ]; then build_source "hl1"; fi
+if [ "$HL2_REQUIRES_PATCH" = true -o "$HL2LC_REQUIRES_PATCH" = true ]; then build_source "hl2"; fi
+if [ "$HL2EP_REQUIRES_PATCH" = true ]; then build_source "episodic"; fi
+
+echo "=> [6/6] Installing components..."
 if [ "$GOLDSRC_REQUIRES_PATCH" = true ]; then install_goldsrc; fi
 if [ "$HL_REQUIRES_PATCH" = true ]; then install_generic "hlsdk-portable-hlfixed"; fi
 if [ "$OPFOR_REQUIRES_PATCH" = true ]; then install_generic "hlsdk-portable-opforfixed"; fi
 if [ "$BSHIFT_REQUIRES_PATCH" = true ]; then install_generic "hlsdk-portable-bshift"; fi
 if [ "$DMC_REQUIRES_PATCH" = true ]; then install_generic "hlsdk-portable-dmc"; fi
 if [ "$CSTRIKE_REQUIRES_PATCH" = true ]; then install_generic "cs16-client"; fi
+
+if [ "$SOURCE_REQUIRES_PATCH" = true ]; then install_source_all; fi
+if [ "$HL2LC_REQUIRES_PATCH" = true ]; then install_lost_coast; fi
 
 echo "Patching complete!"
 show_success
