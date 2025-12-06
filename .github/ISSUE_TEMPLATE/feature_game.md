@@ -11,6 +11,11 @@ assignees: ''
 - [ ] Half-Life
 - [ ] Half-Life: Opposing Force
 - [ ] Half-Life: Blue Shift
+- [ ] Half-Life: Source
+- [ ] Half-Life 2
+- [ ] Half-Life 2: Lost Coast
+- [ ] Half-Life 2: Episode One
+- [ ] Half-Life 2: Episode Two
 - [ ] Deathmatch Classic
 - [ ] Counter-Strike
 - [ ] Multiple games (specify below)
