@@ -20,30 +20,41 @@ assignees: ''
 ## When did the issue occur?
 *At what stage of the patching process did you encounter the problem? (Select one)*
 - During initial setup
-- When selecting Half-Life folder
+- When selecting game engine
+- When selecting game folder
 - During backup creation
+- While preparing/downloading components
 - While patching GoldSrc Engine
 - While patching Half-Life
 - While patching Opposing Force
 - While patching Blue Shift
 - While patching Deathmatch Classic
 - While patching Counter-Strike
+- While patching Source Engine
+- While patching Half-Life: Source
+- While patching Half-Life 2
+- While patching Half-Life 2: Lost Coast
+- While patching Half-Life 2: Episode One / Half-Life 2: Episode Two
 - After patching completed
 - Other (specify below)
 
 
 ## Games Being Patched
 *Check all that apply*
+
+### GoldSrc
 - [ ] Half-Life
 - [ ] Half-Life: Opposing Force
 - [ ] Half-Life: Blue Shift
+- [ ] Deathmatch Classic
+- [ ] Counter-Strike
+
+### Source
 - [ ] Half-Life: Source
 - [ ] Half-Life 2
 - [ ] Half-Life 2: Lost Coast
 - [ ] Half-Life 2: Episode One
 - [ ] Half-Life 2: Episode Two
-- [ ] Deathmatch Classic
-- [ ] Counter-Strike
 
 ## Bug Description
 *Provide a clear and detailed description of what went wrong*

@@ -8,16 +8,22 @@ assignees: ''
 
 ## Target Game
 *Which game would this mod/patch be for?*
+
+### GoldSrc
 - [ ] Half-Life
 - [ ] Half-Life: Opposing Force
 - [ ] Half-Life: Blue Shift
+- [ ] Deathmatch Classic
+- [ ] Counter-Strike
+
+### Source
 - [ ] Half-Life: Source
 - [ ] Half-Life 2
 - [ ] Half-Life 2: Lost Coast
 - [ ] Half-Life 2: Episode One
 - [ ] Half-Life 2: Episode Two
-- [ ] Deathmatch Classic
-- [ ] Counter-Strike
+
+### Other
 - [ ] Multiple games (specify below)
 - [ ] All games (engine-level)
 
