@@ -9,7 +9,7 @@ EOF
 function show_welcome() {
   local version="$1"
   osascript <<EOF
-      display dialog "Welcome to HLPatcher! ($version)\n\nThanks to:\n- Flying with Gauss team for developing Xash3D FWGS engine and HLSDK Portable.\n- Velaron for developing Counter-Strike 1.6 reverse-engineered client.\nWithout them, HLPatcher wouldn't exist.\n\nClick OK to continue." buttons {"OK"} default button 1
+      display dialog "Welcome to HLPatcher! ($version)\n\nThanks to:\n- Flying with Gauss team for developing Xash3D FWGS engine and HLSDK Portable.\n- Velaron for developing Counter-Strike 1.6 reverse-engineered client.\n- Nillerusr for developing modifications of the Source Engine leak.\nWithout them, HLPatcher wouldn't exist.\n\nClick OK to continue." buttons {"OK"} default button 1
 EOF
 }
 
