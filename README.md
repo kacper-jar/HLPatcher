@@ -2,11 +2,19 @@
 HLPatcher makes Half-Life and other Valve games playable on modern ARM Macs that only support 64-bit applications. It lets users to enjoy the game again without the hassle of manual binary update.
 
 ## Supported games
+### GoldSrc
 - Half-Life ([Source code](https://github.com/FWGS/hlsdk-portable/tree/hlfixed) by [Flying with Gauss](https://github.com/FWGS))
 - Half-Life: Opposing Force ([Source code](https://github.com/FWGS/hlsdk-portable/tree/opforfixed) by [Flying with Gauss](https://github.com/FWGS))
 - Half-Life: Blue Shift ([Source code](https://github.com/FWGS/hlsdk-portable/tree/bshift) by [Flying with Gauss](https://github.com/FWGS))
 - Deathmatch Classic ([Source code](https://github.com/FWGS/hlsdk-portable/tree/dmc) by [Flying with Gauss](https://github.com/FWGS))
 - Counter-Strike ([Source code](https://github.com/Velaron/cs16-client) by [Velaron](https://github.com/Velaron))
+
+### Source
+- Half-Life: Source ([Source code](https://github.com/nillerusr/source-engine) by [Nillerusr](https://github.com/nillerusr))
+- Half-Life 2 ([Source code](https://github.com/nillerusr/source-engine) by [Nillerusr](https://github.com/nillerusr))
+- Half-Life 2: Lost Coast ([Source code](https://github.com/nillerusr/source-engine) by [Nillerusr](https://github.com/nillerusr))
+- Half-Life 2: Episode One ([Source code](https://github.com/nillerusr/source-engine) by [Nillerusr](https://github.com/nillerusr))
+- Half-Life 2: Episode Two ([Source code](https://github.com/nillerusr/source-engine) by [Nillerusr](https://github.com/nillerusr))
 
 ## Installation
 1. Download the latest release from [GitHub Releases](https://github.com/kacper-jar/HLPatcher/releases) and unzip it.
@@ -59,6 +67,7 @@ This ensures all patched files and modifications are completely removed from you
 ## Thanks to
  - [Flying with Gauss](https://xash.su/) team for developing [Xash3D FWGS](https://github.com/FWGS/xash3d-fwgs) engine and [HLSDK Portable](https://github.com/FWGS/hlsdk-portable). 
  - [Velaron](https://github.com/Velaron) for developing [Counter-Strike 1.6 reverse-engineered client](https://github.com/Velaron/cs16-client).
+ - [Nillerusr](https://github.com/nillerusr) for developing modifications of the [Source Engine](https://github.com/nillerusr/source-engine) leak.
 
 Without them, HLPatcher wouldn't exist.
 
