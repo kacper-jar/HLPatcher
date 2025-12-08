@@ -125,7 +125,7 @@ EOF
     fi
 
     osascript <<EOF
-        set userChoice to button returned of (display dialog "The following components will be patched:\n$patch_list\nIf your Half-Life installation becomes partially patched or corrupted, please uninstall the game via Steam, then delete the 'Half-Life' directory (the one you selected to patch) to remove any leftover files and try again.\n\nAre you sure you want to continue?" buttons {"Cancel", "Patch"} default button "Patch" with icon caution)
+        set userChoice to button returned of (display dialog "The following components will be patched:\n$patch_list\nNote: The process requires up to 2GB of free disk space.\n\nIf your Half-Life installation becomes partially patched or corrupted, please uninstall the game via Steam, then delete the 'Half-Life' directory (the one you selected to patch) to remove any leftover files and try again.\n\nAre you sure you want to continue?" buttons {"Cancel", "Patch"} default button "Patch" with icon caution)
         return userChoice
 EOF
 }
