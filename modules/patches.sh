@@ -150,8 +150,8 @@ function prepare_goldsrc() {
         git checkout "$STABLE_XASH3D_COMMIT" || exit 1
         cd - > /dev/null
     fi
-    curl -L -o "$WORKING_DIR/SDL2-2.32.8.dmg" "https://github.com/libsdl-org/SDL/releases/download/release-2.32.8/SDL2-2.32.8.dmg"
-    SDL_MOUNT_POINT=$(hdiutil attach "$WORKING_DIR/SDL2-2.32.8.dmg" -nobrowse | grep -o '/Volumes/[^ ]*') || exit 1
+    curl -L -o "$WORKING_DIR/SDL2-2.32.10.dmg" "https://github.com/libsdl-org/SDL/releases/download/release-2.32.10/SDL2-2.32.10.dmg"
+    SDL_MOUNT_POINT=$(hdiutil attach "$WORKING_DIR/SDL2-2.32.10.dmg" -nobrowse | grep -o '/Volumes/[^ ]*') || exit 1
     cp -a "$SDL_MOUNT_POINT/SDL2.framework/" "$WORKING_DIR/xash3d-fwgs/3rdparty/SDL2.framework/"
     hdiutil detach "$SDL_MOUNT_POINT"
 }
