@@ -1,0 +1,188 @@
+--- cs16-client/CMakeLists.txt	2026-02-07 21:11:22
++++ cs16-client/CMakeLists.txt	2026-02-07 21:24:21
+@@ -3,6 +3,9 @@
+ 
+ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
+ 
++# Prioritize local dependencies
++set(CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/install" ${CMAKE_PREFIX_PATH})
++
+ include(LibraryNaming)
+ # include(ExternalProject)
+ 
+--- cs16-client/build_deps.py	1970-01-01 01:00:00
++++ cs16-client/build_deps.py	2026-02-07 21:53:56
+@@ -0,0 +1,173 @@
++import os
++import subprocess
++import sys
++import tarfile
++import ssl
++
++ssl._create_default_https_context = ssl._create_unverified_context
++
++THIRDPARTY_DIR = os.path.abspath('3rdparty')
++DOWNLOAD_DIR = os.path.join(THIRDPARTY_DIR, 'downloads')
++SRC_DIR = os.path.join(THIRDPARTY_DIR, 'src')
++INSTALL_DIR = os.path.join(THIRDPARTY_DIR, 'install')
++PREFIX = INSTALL_DIR
++
++URLS = {
++    'pkgconf': 'https://distfiles.ariadne.space/pkgconf/pkgconf-2.5.1.tar.xz',
++    'zlib': 'https://zlib.net/zlib-1.3.1.tar.gz',
++    'libpng': 'https://downloads.sourceforge.net/project/libpng/libpng16/1.6.51/libpng-1.6.51.tar.xz',
++    'freetype': 'https://downloads.sourceforge.net/project/freetype/freetype2/2.14.1/freetype-2.14.1.tar.xz',
++}
++
++for d in [DOWNLOAD_DIR, SRC_DIR, INSTALL_DIR]:
++    if not os.path.exists(d):
++        os.makedirs(d)
++
++def download_and_extract(name, url):
++    filename = url.split('/')[-1]
++    filepath = os.path.join(DOWNLOAD_DIR, filename)
++    
++    if not os.path.exists(filepath):
++        print(f'Downloading {name} from {url}...')
++        try:
++            subprocess.check_call(['curl', '-L', '-o', filepath, url])
++        except subprocess.CalledProcessError as e:
++            print(f"Failed to download {name}: {e}")
++            sys.exit(1)
++            
++    print(f'Extracting {name}...')
++    try:
++        if filename.endswith('.tar.xz'):
++            with tarfile.open(filepath, 'r:xz') as tar:
++                tar.extractall(path=SRC_DIR)
++                first_member = tar.getmembers()[0]
++                extracted_dir_name = first_member.name.split('/')[0]
++        else:
++            with tarfile.open(filepath) as tar:
++                tar.extractall(path=SRC_DIR)
++                first_member = tar.getmembers()[0]
++                extracted_dir_name = first_member.name.split('/')[0]
++    except Exception as e:
++        print(f"Failed to extract {name}: {e}")
++        if os.path.exists(filepath):
++            os.remove(filepath)
++        sys.exit(1)
++        
++    return os.path.join(SRC_DIR, extracted_dir_name)
++
++def run_command(cmd, cwd, env=None):
++    print(f"Running: {' '.join(cmd)} in {cwd}")
++    try:
++        subprocess.check_call(cmd, cwd=cwd, env=env)
++    except subprocess.CalledProcessError as e:
++        print(f"Command failed with exit code {e.returncode}")
++        sys.exit(1)
++
++def get_std_configure_args():
++    return [
++        f'--prefix={PREFIX}',
++        '--disable-shared',
++        '--enable-static',
++        '--with-pic',
++        '--disable-dependency-tracking',
++        '--disable-silent-rules'
++    ]
++
++env = os.environ.copy()
++env['PKG_CONFIG_PATH'] = os.path.join(PREFIX, 'lib', 'pkgconfig')
++env['PATH'] = os.path.join(PREFIX, 'bin') + os.pathsep + env['PATH']
++env['CFLAGS'] = f"-I{os.path.join(PREFIX, 'include')} {env.get('CFLAGS', '')}"
++env['CPPFLAGS'] = f"-I{os.path.join(PREFIX, 'include')} {env.get('CPPFLAGS', '')}"
++env['LDFLAGS'] = f"-L{os.path.join(PREFIX, 'lib')} {env.get('LDFLAGS', '')}"
++
++def build_pkgconf():
++    if os.path.exists(os.path.join(PREFIX, 'bin', 'pkg-config')):
++        print('pkgconf already installed. Skipping.')
++        return
++
++    src_dir = download_and_extract('pkgconf', URLS['pkgconf'])
++    
++    pc_path = [
++        os.path.join(PREFIX, 'lib', 'pkgconfig'),
++        os.path.join(PREFIX, 'share', 'pkgconfig'),
++        '/usr/local/lib/pkgconfig',
++        '/usr/lib/pkgconfig',
++        '/opt/homebrew/lib/pkgconfig'
++    ]
++    
++    args = [
++        './configure',
++        f'--prefix={PREFIX}',
++        f"--with-pkg-config-dir={':'.join(pc_path)}",
++        '--with-system-includedir=/usr/include',
++        '--with-system-libdir=/usr/lib'
++    ]
++    
++    run_command(args, src_dir, env=env)
++    run_command(['make', '-j4'], src_dir, env=env)
++    run_command(['make', 'install'], src_dir, env=env)
++    
++    pkgconf_bin = os.path.join(PREFIX, 'bin', 'pkgconf')
++    pkg_config_link = os.path.join(PREFIX, 'bin', 'pkg-config')
++    if os.path.exists(pkgconf_bin) and not os.path.exists(pkg_config_link):
++        os.symlink('pkgconf', pkg_config_link)
++
++def build_zlib():
++    if os.path.exists(os.path.join(PREFIX, 'include', 'zlib.h')):
++        print('zlib already installed. Skipping.')
++        return
++        
++    src_dir = download_and_extract('zlib', URLS['zlib'])
++    args = ['./configure', f'--prefix={PREFIX}', '--static']
++    
++    run_command(args, src_dir, env=env)
++    run_command(['make', '-j4'], src_dir, env=env)
++    run_command(['make', 'install'], src_dir, env=env)
++
++def build_libpng():
++    if os.path.exists(os.path.join(PREFIX, 'include', 'png.h')):
++        print('libpng already installed. Skipping.')
++        return
++    
++    src_dir = download_and_extract('libpng', URLS['libpng'])
++    
++    if os.path.exists(os.path.join(src_dir, 'Makefile')):
++        run_command(['make', 'distclean'], src_dir, env=env)
++        
++    args = [
++        './configure',
++        f'ZLIB_CFLAGS=-I{os.path.join(PREFIX, "include")}',
++        f'ZLIB_LIBS=-L{os.path.join(PREFIX, "lib")} -lz'
++    ] + get_std_configure_args()
++    
++    run_command(args, src_dir, env=env)
++    run_command(['make', '-j4'], src_dir, env=env)
++    run_command(['make', 'install'], src_dir, env=env)
++
++def build_freetype():
++    if os.path.exists(os.path.join(PREFIX, 'include', 'freetype2', 'ft2build.h')):
++        print('freetype already installed. Skipping.')
++        return
++        
++    src_dir = download_and_extract('freetype', URLS['freetype'])
++    args = [
++        './configure',
++        '--without-harfbuzz',
++        '--without-brotli',
++        '--without-bzip2'
++    ] + get_std_configure_args()
++    
++    run_command(args, src_dir, env=env)
++    run_command(['make', '-j4'], src_dir, env=env)
++    run_command(['make', 'install'], src_dir, env=env)
++
++def main():
++    print('Building dependencies...')
++    build_pkgconf()
++    build_zlib()
++    build_libpng()
++    build_freetype()
++    print('All dependencies built successfully.')
++
++if __name__ == '__main__':
++    main()

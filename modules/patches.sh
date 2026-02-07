@@ -178,19 +178,32 @@ function prepare_cstrike() {
     fi
 }
 
-function patch_source() {
-    echo "Patching Source Engine..."
-    local patch_dir="$(cd "$(dirname "$0")/fixes/src/source-engine" && pwd)"
-    
+function patch_generic() {
+    local component_name="$1"
+
+    if [ -z "$component_name" ]; then
+        echo "Error: Component name not provided for patching."
+        exit 1
+    fi
+
+    echo "Patching $component_name..."
+    local patch_dir="$SCRIPT_DIR/fixes/src/$component_name"
+    local target_dir="$WORKING_DIR/$component_name"
+
     if [ ! -d "$patch_dir" ]; then
         echo "Error: Patch directory $patch_dir not found."
+        exit 1
+    fi
+
+    if [ ! -d "$target_dir" ]; then
+        echo "Error: Target directory $target_dir not found."
         exit 1
     fi
 
     for patch_file in "$patch_dir"/*.patch; do
         if [ -f "$patch_file" ]; then
             echo "Applying patch: $(basename "$patch_file")"
-            cd "$WORKING_DIR/source-engine" || exit 1
+            cd "$target_dir" || exit 1
             patch -p1 < "$patch_file" || exit 1
         fi
     done
@@ -222,6 +235,7 @@ function build_source() {
 function build_cstrike() {
     echo "Building Counter-Strike..."
     cd "$WORKING_DIR/cs16-client" || exit 1
+    python3 build_deps.py || exit 1
     python3 -m cmake -S . -B build || exit 1
     python3 -m cmake --build build --config Release || exit 1
     python3 -m cmake --install build --prefix "$WORKING_DIR/cs16-client/output" || exit 1

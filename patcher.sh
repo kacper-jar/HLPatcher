@@ -2,6 +2,7 @@
 
 VERSION="2.0.0"
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
 WORKING_DIR="/tmp/HLPatcher"
 
 HL_FOLDER=""
@@ -127,7 +128,9 @@ if [ "$CSTRIKE_REQUIRES_PATCH" = true ]; then prepare_cstrike; fi
 if [ "$SOURCE_REQUIRES_PATCH" = true ]; then prepare_source; fi
 
 echo "=> [4/7] Patching components..."
-if [ "$SOURCE_REQUIRES_PATCH" = true ]; then patch_source; fi
+if [ "$CSTRIKE_REQUIRES_PATCH" = true ]; then patch_generic "cs16-client"; fi
+
+if [ "$SOURCE_REQUIRES_PATCH" = true ]; then patch_generic "source-engine"; fi
 
 echo "=> [5/7] Building components..."
 if [ "$GOLDSRC_REQUIRES_PATCH" = true ]; then build_goldsrc; fi
