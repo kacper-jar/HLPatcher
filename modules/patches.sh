@@ -46,7 +46,7 @@ function detect_patches() {
 
         if [ -d "$HL_FOLDER/bshift" ]; then
             if find "$HL_FOLDER/bshift/dlls" -name "*_arm64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q . || \
-               find "$HL_FOLDER/bshift/cl_dlls" -name "*_x86_64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q .; then
+               find "$HL_FOLDER/bshift/cl_dlls" -name "*_arm64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q .; then
                 echo "Half-Life: Blue Shift - Already patched"
             else
                 echo "Half-Life: Blue Shift - Needs patching"
@@ -56,7 +56,7 @@ function detect_patches() {
 
         if [ -d "$HL_FOLDER/dmc" ]; then
             if find "$HL_FOLDER/dmc/dlls" -name "*_arm64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q . || \
-               find "$HL_FOLDER/dmc/cl_dlls" -name "*_x86_64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q .; then
+               find "$HL_FOLDER/dmc/cl_dlls" -name "*_arm64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q .; then
                 echo "Deathmatch Classic - Already patched"
             else
                 echo "Deathmatch Classic - Needs patching"
@@ -66,7 +66,7 @@ function detect_patches() {
 
         if [ -d "$HL_FOLDER/cstrike" ]; then
             if find "$HL_FOLDER/cstrike/dlls" -name "*_arm64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q . || \
-               find "$HL_FOLDER/cstrike/cl_dlls" -name "*_x86_64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q .; then
+               find "$HL_FOLDER/cstrike/cl_dlls" -name "*_arm64.dylib" -o -name "*_x86_64.dylib" 2>/dev/null | grep -q .; then
                 echo "Counter-Strike - Already patched"
             else
                 echo "Counter-Strike - Needs patching"
