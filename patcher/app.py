@@ -50,7 +50,7 @@ class App(ctk.CTk):
         self._header.pack(fill="x")
 
         self._content_frame = ctk.CTkFrame(self, fg_color="transparent")
-        self._content_frame.pack(fill="both", expand=True)
+        self._content_frame.pack(fill="both", expand=True, pady=(20, 0))
 
         self.footer = NavigationFooter(
             self,
