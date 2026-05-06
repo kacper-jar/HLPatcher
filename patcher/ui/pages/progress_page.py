@@ -1,7 +1,7 @@
 import customtkinter as ctk
 import threading
 from patcher.ui import BasePage
-from patcher.core import Game, Patcher
+from patcher.core import EngineType, Game, Patcher
 
 
 class ProgressPage(BasePage):
@@ -63,6 +63,11 @@ class ProgressPage(BasePage):
         for game in context.games:
             selected_for_game = [c for c in game.components if c in selected_components]
             if selected_for_game:
+                if game.engine_type == EngineType.GOLDSRC:
+                    engine_comp = next((c for c in game.components if c.name == "GoldSrc Engine"), None)
+                    if engine_comp and engine_comp.needs_patch and engine_comp not in selected_for_game:
+                        selected_for_game.append(engine_comp)
+
                 game_map[game.name] = Game(
                     name=game.name,
                     path=game.path,

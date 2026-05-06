@@ -54,6 +54,9 @@ class SelectionPage(BasePage):
 
         has_unpatchable = True
         for component in game.components:
+            if component.name == "GoldSrc Engine":
+                continue
+
             child_key = f"child_{game.name}_{component.name}"
             child_var = ctk.BooleanVar(value=False)
             self._checkbox_vars[child_key] = child_var
