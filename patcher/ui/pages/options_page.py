@@ -7,13 +7,6 @@ class OptionsPage(BasePage):
     def __init__(self, parent, app, **kwargs):
         super().__init__(parent, app, **kwargs)
 
-        title_label = ctk.CTkLabel(
-            self,
-            text="Patching Options",
-            font=ctk.CTkFont(size=14, weight="bold"),
-        )
-        title_label.pack(pady=(30, 15))
-
         mode_frame = ctk.CTkFrame(self, fg_color="gray20", corner_radius=8)
         mode_frame.pack(fill="x", padx=20, pady=10)
 
@@ -96,7 +89,7 @@ class OptionsPage(BasePage):
         self._app.context.create_backup = self._backup_var.get()
 
     def get_title(self) -> str:
-        return "Options"
+        return "Patching Options"
 
     def get_next_page_key(self) -> str:
         return "check_source_warning"
