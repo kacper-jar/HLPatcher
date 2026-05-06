@@ -1,0 +1,34 @@
+--- source-engine-local-deps/build_deps.py
++++ source-engine-download-retry/build_deps.py
+@@ -4,6 +4,7 @@
+ import subprocess
+ import sys
+ import tarfile
++import time
+ import urllib.request
+ 
+ THIRDPARTY_DIR = os.path.abspath('thirdparty')
+@@ -37,7 +38,22 @@
+     filepath = os.path.join(DOWNLOAD_DIR, filename)
+     if not os.path.exists(filepath):
+         print(f'Downloading {name} from {url}...')
+-        urllib.request.urlretrieve(url, filepath)
++        max_attempts = 10
++        retry_delay = 10
++        for attempt in range(1, max_attempts + 1):
++            try:
++                urllib.request.urlretrieve(url, filepath)
++                break
++            except Exception as e:
++                if os.path.exists(filepath):
++                    os.remove(filepath)
++                if attempt < max_attempts:
++                    print(f'Download attempt {attempt}/{max_attempts} failed: {e}. '
++                          f'Retrying in {retry_delay}s...')
++                    time.sleep(retry_delay)
++                else:
++                    print(f'Download failed after {max_attempts} attempts: {e}')
++                    raise
+     print(f'Extracting {name}...')
+     with tarfile.open(filepath) as tar:
+         tar.extractall(path=SRC_DIR)
