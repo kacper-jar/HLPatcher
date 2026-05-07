@@ -1,5 +1,6 @@
 import customtkinter as ctk
 from patcher.ui import BasePage
+from patcher.core import EngineType
 
 
 class SelectionPage(BasePage):
@@ -17,6 +18,14 @@ class SelectionPage(BasePage):
         self._scroll_frame = ctk.CTkScrollableFrame(self, fg_color="gray20", corner_radius=8)
         self._scroll_frame.pack(fill="both", expand=True, padx=20, pady=10)
 
+        self._time_label = ctk.CTkLabel(
+            self,
+            text="Estimated patching time: ~0 minutes",
+            font=ctk.CTkFont(size=13, weight="bold"),
+            text_color="gray70"
+        )
+        self._time_label.pack(pady=(0, 10))
+
         self._checkboxes: dict[str, ctk.CTkCheckBox] = {}
         self._checkbox_vars: dict[str, ctk.BooleanVar] = {}
         self._parent_children: dict[str, list[str]] = {}
@@ -31,6 +40,8 @@ class SelectionPage(BasePage):
         games = self._app.context.games
         for game in games:
             self._create_game_group(game)
+
+        self._update_estimated_time()
 
     def _create_game_group(self, game):
         parent_key = f"parent_{game.name}"
@@ -98,6 +109,8 @@ class SelectionPage(BasePage):
             if str(checkbox.cget("state")) != "disabled":
                 self._checkbox_vars[child_key].set(parent_checked)
 
+        self._update_estimated_time()
+
     def _on_child_toggle(self, game_name: str):
         parent_key = f"parent_{game_name}"
         child_keys = self._parent_children.get(game_name, [])
@@ -108,6 +121,29 @@ class SelectionPage(BasePage):
             if str(self._checkboxes[ck].cget("state")) != "disabled"
         )
         self._checkbox_vars[parent_key].set(all_checked)
+        self._update_estimated_time()
+
+    def _update_estimated_time(self):
+        total_mins = 0
+        goldsrc_any_selected = False
+
+        for game in self._app.context.games:
+            for component in game.components:
+                child_key = f"child_{game.name}_{component.name}"
+                if child_key in self._checkbox_vars and self._checkbox_vars[child_key].get():
+                    total_mins += component.estimated_patch_time
+                    if game.engine_type == EngineType.GOLDSRC:
+                        goldsrc_any_selected = True
+
+        if goldsrc_any_selected:
+            for game in self._app.context.games:
+                if game.engine_type == EngineType.GOLDSRC:
+                    engine_comp = next((c for c in game.components if c.name == "GoldSrc Engine"), None)
+                    if engine_comp and engine_comp.needs_patch:
+                        total_mins += engine_comp.estimated_patch_time
+                    break
+
+        self._time_label.configure(text=f"Estimated patching time: ~{total_mins} minutes")
 
     def can_go_next(self) -> bool:
         return any(v.get() for k, v in self._checkbox_vars.items() if k.startswith("child_"))

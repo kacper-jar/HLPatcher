@@ -32,6 +32,7 @@ class Component:
     build_system: str = "waf"
     patch_dir_name: str = ""
     waf_game: str = ""
+    estimated_patch_time: int = 0
 
     @property
     def needs_patch(self) -> bool:
