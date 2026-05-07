@@ -10,15 +10,22 @@ class WarningPage(BasePage):
         warning_frame.pack(fill="x", padx=20, pady=10)
 
         warning_text = (
-            "Before proceeding, you MUST switch your Half-Life 2\n"
-            "installation to the 'steam_legacy' branch.\n\n"
+            "Before proceeding, you MUST switch your game\n"
+            "installations to the 'steam_legacy' branch.\n\n"
+            "Set these games in this order (to avoid resets),\n"
+            "skipping any you are not patching:\n"
+            "1. Half-Life: Source\n"
+            "2. Half-Life 2: Episode One\n"
+            "3. Half-Life 2: Episode Two\n"
+            "4. Half-Life 2: Lost Coast\n"
+            "5. Half-Life 2\n\n"
             "To do this:\n"
             "1. Open Steam\n"
-            "2. Right-click Half-Life 2 -> Properties\n"
+            "2. Right-click Game -> Properties\n"
             "3. Go to Betas\n"
             "4. Select 'steam_legacy - Pre-20th Anniversary Build'\n\n"
             "Failure to do so will result in a broken game.\n\n"
-            "Click Next once the branch is changed and Steam\n"
+            "Click Next once the branches are changed and Steam\n"
             "finishes downgrading the files."
         )
 
