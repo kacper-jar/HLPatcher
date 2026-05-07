@@ -33,5 +33,13 @@ echo "=> Installing dependencies..."
 "$VENV_DIR/bin/pip" install -q --upgrade pip
 "$VENV_DIR/bin/pip" install -q -r "$SCRIPT_DIR/requirements.txt" || exit 1
 
+HLPATCHER_DEBUG="0"
+for arg in "$@"; do
+    if [ "$arg" = "debug" ]; then
+        echo "Debug mode enabled."
+        HLPATCHER_DEBUG="1"
+    fi
+done
+
 echo "=> Starting HLPatcher..."
-HLPATCHER_VERSION="$HLPATCHER_VERSION" "$VENV_DIR/bin/python3" -m patcher
+HLPATCHER_DEBUG="$HLPATCHER_DEBUG" HLPATCHER_VERSION="$HLPATCHER_VERSION" "$VENV_DIR/bin/python3" -m patcher

@@ -44,6 +44,7 @@ class ProgressPage(BasePage):
             selected_games = self._build_selected_games()
             self.patcher = Patcher(
                 context,
+                self._app.config,
                 log_callback=None,
                 component_callback=self._on_component_start_threadsafe
             )

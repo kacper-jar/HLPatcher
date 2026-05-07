@@ -15,6 +15,11 @@ class PatchMode(Enum):
     STABLE = "Stable"
 
 
+@dataclass
+class AppConfig:
+    debug: bool = False
+
+
 class PatchStatus(Enum):
     NEEDS_PATCH = "Needs patching"
     ALREADY_PATCHED = "Already patched"

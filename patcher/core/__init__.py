@@ -1,4 +1,5 @@
 from .models import (
+    AppConfig,
     Component,
     EngineType,
     Game,
@@ -11,6 +12,7 @@ from .game_detector import GameDetector
 from .patcher import Patcher
 
 __all__ = [
+    "AppConfig",
     "Component",
     "EngineType",
     "Game",

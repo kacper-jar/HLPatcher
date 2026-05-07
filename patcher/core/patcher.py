@@ -8,15 +8,16 @@ from datetime import datetime
 from pathlib import Path
 from typing import Callable
 
-from patcher.core import EngineType, Game, PatchContext, PatchMode
+from patcher.core import AppConfig, EngineType, Game, PatchContext, PatchMode
 
 logger = logging.getLogger(__name__)
 
 
 class Patcher:
-    def __init__(self, context: PatchContext, log_callback: Callable[[str], None] | None = None,
+    def __init__(self, context: PatchContext, config: AppConfig, log_callback: Callable[[str], None] | None = None,
                  component_callback: Callable[[str], None] | None = None):
         self._context = context
+        self._config = config
         self._log_callback = log_callback
         self._component_callback = component_callback
         self._stopped = False
@@ -554,6 +555,9 @@ class Patcher:
                 ], cwd=bin_dir)
 
     def _cleanup(self):
+        if self._config.debug:
+            self.log("Debug mode: skipping cleanup")
+            return
         self.log("Cleaning up...")
         working_dir = self._context.working_dir
         if working_dir.exists():

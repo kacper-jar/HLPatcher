@@ -7,7 +7,7 @@ from pathlib import Path
 
 import customtkinter as ctk
 
-from patcher.core import EngineType, GameDetector, PatchContext, UpdateInfo
+from patcher.core import AppConfig, EngineType, GameDetector, PatchContext, UpdateInfo
 from patcher.core.updater import Updater
 from patcher.ui import (
     AllPatchedPage,
@@ -30,8 +30,9 @@ logger = logging.getLogger(__name__)
 
 
 class App(ctk.CTk):
-    def __init__(self):
+    def __init__(self, config: AppConfig):
         super().__init__()
+        self.config = config
 
         self.title("HLPatcher")
         self.geometry("420x620")
@@ -135,7 +136,7 @@ class App(ctk.CTk):
             if hasattr(page, "stop_patching"):
                 page.stop_patching()
 
-        if self.context.working_dir.exists():
+        if not self.config.debug and self.context.working_dir.exists():
             shutil.rmtree(self.context.working_dir, ignore_errors=True)
         self.destroy()
 
