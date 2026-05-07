@@ -31,6 +31,7 @@ class Component:
     stable_commit: str = ""
     build_system: str = "waf"
     patch_dir_name: str = ""
+    waf_game: str = ""
 
     @property
     def needs_patch(self) -> bool:

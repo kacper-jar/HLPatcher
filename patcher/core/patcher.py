@@ -51,18 +51,18 @@ class Patcher:
 
         source_games = [g for g in selected_games if g.engine_type == EngineType.SOURCE]
         if source_games:
-            game = source_games[0]
-            selected_comps = [c for c in game.components if c.needs_patch]
-            if selected_comps:
+            waf_games = set()
+            has_any_source_patch = False
+            for game in source_games:
+                selected_comps = [c for c in game.components if c.needs_patch]
+                if selected_comps:
+                    has_any_source_patch = True
+                    for comp in selected_comps:
+                        if comp.waf_game:
+                            waf_games.add(comp.waf_game)
+
+            if has_any_source_patch:
                 steps += 1
-                waf_games = set()
-                for comp in selected_comps:
-                    if comp.subfolder == "hl2" or comp.subfolder == "lostcoast":
-                        waf_games.add("hl2")
-                    elif comp.subfolder == "episodic":
-                        waf_games.add("episodic")
-                    elif comp.subfolder == "hl1":
-                        waf_games.add("hl1")
                 steps += len(waf_games)
 
         return steps
@@ -152,48 +152,47 @@ class Patcher:
         if not source_games:
             return
 
-        game = source_games[0]
-        selected_components = [c for c in game.components if c.needs_patch]
-        if not selected_components:
+        waf_games = set()
+        all_selected_comps = []
+        for game in source_games:
+            selected_comps = [c for c in game.components if c.needs_patch]
+            if selected_comps:
+                all_selected_comps.extend([(game, c) for c in selected_comps])
+                for comp in selected_comps:
+                    if comp.waf_game:
+                        waf_games.add(comp.waf_game)
+
+        if not all_selected_comps:
             return
 
         self._notify_component("Source Engine")
         self._prepare_source_engine()
         self._patch_generic("source-engine")
 
-        waf_games = set()
-        for comp in selected_components:
-            if comp.subfolder == "hl2" or comp.subfolder == "lostcoast":
-                waf_games.add("hl2")
-            elif comp.subfolder == "episodic":
-                waf_games.add("episodic")
-            elif comp.subfolder == "hl1":
-                waf_games.add("hl1")
-
         waf_game_names = {
             "hl2": "Half-Life 2",
             "episodic": "Half-Life 2: Episodes",
             "hl1": "Half-Life: Source",
+            "portal": "Portal",
         }
 
-        for waf_game in waf_games:
+        for waf_game in sorted(list(waf_games)):
             game_title = waf_game_names.get(waf_game, f"Source Engine ({waf_game})")
             self._notify_component(game_title)
             self._build_source(waf_game)
 
-        self._install_source_all(game.path)
+        for game in source_games:
+            game_selected_comps = [c for g, c in all_selected_comps if g == game]
+            if not game_selected_comps:
+                continue
 
-        has_lost_coast = any(c.subfolder == "lostcoast" for c in selected_components)
-        if has_lost_coast:
-            self._install_lost_coast(game.path)
+            self.log(f"Installing to {game.name}...")
+            self._install_source_all(game.path, [c.subfolder for c in game_selected_comps])
 
-        self._fix_source_links(game.path)
+            self._fix_source_links(game.path)
 
-        for comp in selected_components:
-            game_name = comp.subfolder
-            if game_name == "lostcoast":
-                game_name = "lostcoast"
-            self._fix_source_game_links(game.path, game_name)
+            for comp in game_selected_comps:
+                self._fix_source_game_links(game.path, comp.subfolder)
 
     def _get_ref(self, branch: str, stable_commit: str, force_stable: bool = False) -> str:
         if force_stable or self._context.patch_mode == PatchMode.STABLE:
@@ -346,11 +345,23 @@ class Patcher:
         if xash3d.exists():
             xash3d.rename(hl_osx)
 
-    def _install_source_all(self, game_path: Path):
-        self.log("Installing Source Engine...")
+    def _install_source_all(self, game_path: Path, subfolders: list[str]):
+        self.log("Installing Source Engine binaries...")
         source_dir = self._context.working_dir / "source-engine"
         output_dir = source_dir / "output"
-        shutil.copytree(output_dir, game_path, dirs_exist_ok=True)
+
+        bin_src = output_dir / "bin"
+        if bin_src.is_dir():
+            shutil.copytree(bin_src, game_path / "bin", dirs_exist_ok=True)
+
+        for sub in subfolders:
+            if sub == "lostcoast":
+                mod_src = output_dir / "hl2"
+            else:
+                mod_src = output_dir / sub
+
+            if mod_src.is_dir():
+                shutil.copytree(mod_src, game_path / sub, dirs_exist_ok=True)
 
         thirdparty_libs = source_dir / "thirdparty" / "install" / "lib"
         bin_dir = game_path / "bin"
@@ -358,18 +369,13 @@ class Patcher:
         for dylib in thirdparty_libs.glob("*.dylib"):
             shutil.copy2(dylib, bin_dir / dylib.name)
 
+        hl2_launcher = output_dir / "hl2_launcher"
         hl2_osx = game_path / "hl2_osx"
-        hl2_launcher = game_path / "hl2_launcher"
-        if hl2_osx.exists():
-            hl2_osx.unlink()
         if hl2_launcher.exists():
-            hl2_launcher.rename(hl2_osx)
-
-    def _install_lost_coast(self, game_path: Path):
-        self.log("Installing Lost Coast...")
-        source_output = self._context.working_dir / "source-engine" / "output" / "hl2"
-        lostcoast_dest = game_path / "lostcoast"
-        shutil.copytree(source_output, lostcoast_dest, dirs_exist_ok=True)
+            if hl2_osx.exists():
+                hl2_osx.unlink()
+            shutil.copy2(hl2_launcher, hl2_osx)
+            hl2_osx.chmod(0o755)
 
     def _fix_source_links(self, game_path: Path):
         self.log("Fixing Source Engine links...")

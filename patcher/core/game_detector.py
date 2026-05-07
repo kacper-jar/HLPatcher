@@ -60,7 +60,7 @@ GOLDSRC_COMPONENTS = [
     },
 ]
 
-SOURCE_COMPONENTS = [
+HL2_SOURCE_COMPONENTS = [
     {
         "name": "Half-Life 2",
         "subfolder": "hl2",
@@ -103,8 +103,22 @@ SOURCE_COMPONENTS = [
     },
 ]
 
+PORTAL_SOURCE_COMPONENTS = [
+    {
+        "name": "Portal",
+        "subfolder": "portal",
+        "repo_url": "https://github.com/nillerusr/source-engine",
+        "repo_branch": "",
+        "stable_commit": "ed8209c",
+        "build_system": "waf",
+        "patch_dir_name": "source-engine",
+        "waf_game": "portal",
+    },
+]
+
 GOLDSRC_FOLDER_NAME = "Half-Life"
-SOURCE_FOLDER_NAME = "Half-Life 2"
+HL2_FOLDER_NAME = "Half-Life 2"
+PORTAL_FOLDER_NAME = "Portal"
 
 
 class GameDetector:
@@ -116,9 +130,12 @@ class GameDetector:
         goldsrc_game = self._scan_goldsrc()
         if goldsrc_game:
             games.append(goldsrc_game)
-        source_game = self._scan_source()
-        if source_game:
-            games.append(source_game)
+        hl2_game = self._scan_hl2()
+        if hl2_game:
+            games.append(hl2_game)
+        portal_game = self._scan_portal()
+        if portal_game:
+            games.append(portal_game)
         return games
 
     def _scan_goldsrc(self) -> Game | None:
@@ -149,21 +166,21 @@ class GameDetector:
             components=components,
         )
 
-    def _scan_source(self) -> Game | None:
-        source_path = self._steam_library_path / SOURCE_FOLDER_NAME
-        if not source_path.is_dir():
-            logger.info(f"Source folder not found at {source_path}")
+    def _scan_hl2(self) -> Game | None:
+        hl2_path = self._steam_library_path / HL2_FOLDER_NAME
+        if not hl2_path.is_dir():
+            logger.info(f"HL2 folder not found at {hl2_path}")
             return None
 
-        if not (source_path / "hl2_osx").is_file():
-            logger.info(f"hl2_osx not found in {source_path}")
+        if not (hl2_path / "hl2_osx").is_file():
+            logger.info(f"hl2_osx not found in {hl2_path}")
             return None
 
-        logger.info(f"Found Source installation at {source_path}")
+        logger.info(f"Found HL2 installation at {hl2_path}")
         components = []
 
-        for comp_def in SOURCE_COMPONENTS:
-            component = self._check_source_component(source_path, comp_def)
+        for comp_def in HL2_SOURCE_COMPONENTS:
+            component = self._check_source_component(hl2_path, comp_def)
             if component:
                 components.append(component)
 
@@ -171,8 +188,36 @@ class GameDetector:
             return None
 
         return Game(
-            name=f"Source ({SOURCE_FOLDER_NAME})",
-            path=source_path,
+            name=f"Source ({HL2_FOLDER_NAME})",
+            path=hl2_path,
+            engine_type=EngineType.SOURCE,
+            components=components,
+        )
+
+    def _scan_portal(self) -> Game | None:
+        portal_path = self._steam_library_path / PORTAL_FOLDER_NAME
+        if not portal_path.is_dir():
+            logger.info(f"Portal folder not found at {portal_path}")
+            return None
+
+        if not (portal_path / "hl2_osx").is_file():
+            logger.info(f"hl2_osx not found in {portal_path}")
+            return None
+
+        logger.info(f"Found Portal installation at {portal_path}")
+        components = []
+
+        for comp_def in PORTAL_SOURCE_COMPONENTS:
+            component = self._check_source_component(portal_path, comp_def)
+            if component:
+                components.append(component)
+
+        if not components:
+            return None
+
+        return Game(
+            name=f"Source ({PORTAL_FOLDER_NAME})",
+            path=portal_path,
             engine_type=EngineType.SOURCE,
             components=components,
         )
@@ -199,6 +244,7 @@ class GameDetector:
             stable_commit=comp_def.get("stable_commit", ""),
             build_system=comp_def.get("build_system", "waf"),
             patch_dir_name=comp_def.get("patch_dir_name", ""),
+            waf_game=comp_def.get("waf_game", ""),
         )
 
     def _check_source_component(self, game_path: Path, comp_def: dict) -> Component | None:
@@ -220,6 +266,7 @@ class GameDetector:
             stable_commit=comp_def.get("stable_commit", ""),
             build_system=comp_def.get("build_system", "waf"),
             patch_dir_name=comp_def.get("patch_dir_name", ""),
+            waf_game=comp_def.get("waf_game", ""),
         )
 
     def _detect_goldsrc_engine_status(self, game_path: Path) -> PatchStatus:
