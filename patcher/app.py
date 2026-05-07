@@ -2,8 +2,6 @@ from __future__ import annotations
 
 import logging
 import shutil
-import subprocess
-import sys
 import threading
 from pathlib import Path
 
@@ -72,7 +70,6 @@ class App(ctk.CTk):
         self._history: list[str] = []
 
         self._register_pages()
-        self._check_xcode_cli_tools()
         self.show_page("welcome")
 
     def _start_update_check(self):
@@ -98,23 +95,6 @@ class App(ctk.CTk):
             "no_games": NoGamesPage,
             "all_patched": AllPatchedPage,
         }
-
-    def _check_xcode_cli_tools(self):
-        try:
-            subprocess.run(
-                ["xcode-select", "-p"],
-                capture_output=True,
-                check=True,
-            )
-        except (subprocess.CalledProcessError, FileNotFoundError):
-            from tkinter import messagebox
-            messagebox.showerror(
-                "Xcode CLI Tools Missing",
-                "Xcode Command Line Tools not found.\n\n"
-                "Please install them using 'xcode-select --install' "
-                "and relaunch HLPatcher.",
-            )
-            sys.exit(1)
 
     def show_page(self, page_key: str):
         if self._current_page_key and self._current_page_key in self._page_instances:
