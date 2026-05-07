@@ -39,6 +39,11 @@ class App(ctk.CTk):
         self.resizable(False, False)
         self.protocol("WM_DELETE_WINDOW", self._on_quit)
 
+        self.lift()
+        self.attributes("-topmost", True)
+        self.focus_force()
+        self.after(200, lambda: self.attributes("-topmost", False))
+
         ctk.set_appearance_mode("dark")
         ctk.set_default_color_theme("blue")
 
