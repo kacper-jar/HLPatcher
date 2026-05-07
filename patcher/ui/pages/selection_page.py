@@ -58,7 +58,7 @@ class SelectionPage(BasePage):
                 continue
 
             child_key = f"child_{game.name}_{component.name}"
-            child_var = ctk.BooleanVar(value=False)
+            child_var = ctk.BooleanVar(value=component.needs_patch)
             self._checkbox_vars[child_key] = child_var
             child_keys.append(child_key)
 
@@ -86,6 +86,8 @@ class SelectionPage(BasePage):
 
         if has_unpatchable:
             parent_checkbox.configure(state="disabled")
+        else:
+            parent_var.set(True)
 
     def _on_parent_toggle(self, game_name: str):
         parent_key = f"parent_{game_name}"
