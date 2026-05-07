@@ -16,7 +16,7 @@ GOLDSRC_COMPONENTS = [
         "repo_branch": "",
         "stable_commit": "d03ea4c",
         "build_system": "waf",
-        "estimated_time": 2,
+        "estimated_time": 1,
     },
     {
         "name": "Half-Life",
@@ -25,7 +25,7 @@ GOLDSRC_COMPONENTS = [
         "repo_branch": "hlfixed",
         "stable_commit": "78bc253",
         "build_system": "waf",
-        "estimated_time": 2,
+        "estimated_time": 1,
     },
     {
         "name": "Half-Life: Opposing Force",
@@ -34,7 +34,7 @@ GOLDSRC_COMPONENTS = [
         "repo_branch": "opforfixed",
         "stable_commit": "654d15c",
         "build_system": "waf",
-        "estimated_time": 2,
+        "estimated_time": 1,
     },
     {
         "name": "Half-Life: Blue Shift",
@@ -43,7 +43,7 @@ GOLDSRC_COMPONENTS = [
         "repo_branch": "bshift",
         "stable_commit": "df5c272",
         "build_system": "waf",
-        "estimated_time": 2,
+        "estimated_time": 1,
     },
     {
         "name": "Deathmatch Classic",
@@ -52,7 +52,7 @@ GOLDSRC_COMPONENTS = [
         "repo_branch": "dmc",
         "stable_commit": "895b28d",
         "build_system": "waf",
-        "estimated_time": 2,
+        "estimated_time": 1,
     },
     {
         "name": "Counter-Strike",
@@ -62,7 +62,7 @@ GOLDSRC_COMPONENTS = [
         "stable_commit": "123af8e",
         "build_system": "cmake",
         "patch_dir_name": "cs16-client",
-        "estimated_time": 2,
+        "estimated_time": 3,
     },
 ]
 
@@ -76,7 +76,7 @@ HL2_SOURCE_COMPONENTS = [
         "build_system": "waf",
         "patch_dir_name": "source-engine",
         "waf_game": "hl2",
-        "estimated_time": 5,
+        "estimated_time": 3,
     },
     {
         "name": "Half-Life 2: Lost Coast",
@@ -87,7 +87,7 @@ HL2_SOURCE_COMPONENTS = [
         "build_system": "waf",
         "patch_dir_name": "source-engine",
         "waf_game": "hl2",
-        "estimated_time": 5,
+        "estimated_time": 3,
     },
     {
         "name": "Half-Life 2: Episodic (Episodes 1 & 2)",
@@ -98,7 +98,7 @@ HL2_SOURCE_COMPONENTS = [
         "build_system": "waf",
         "patch_dir_name": "source-engine",
         "waf_game": "episodic",
-        "estimated_time": 5,
+        "estimated_time": 3,
     },
     {
         "name": "Half-Life: Source",
@@ -109,7 +109,7 @@ HL2_SOURCE_COMPONENTS = [
         "build_system": "waf",
         "patch_dir_name": "source-engine",
         "waf_game": "hl1",
-        "estimated_time": 5,
+        "estimated_time": 3,
     },
 ]
 
@@ -123,7 +123,7 @@ PORTAL_SOURCE_COMPONENTS = [
         "build_system": "waf",
         "patch_dir_name": "source-engine",
         "waf_game": "portal",
-        "estimated_time": 5,
+        "estimated_time": 3,
     },
 ]
 

@@ -126,6 +126,7 @@ class SelectionPage(BasePage):
     def _update_estimated_time(self):
         total_mins = 0
         goldsrc_any_selected = False
+        source_any_selected = False
 
         for game in self._app.context.games:
             for component in game.components:
@@ -134,6 +135,8 @@ class SelectionPage(BasePage):
                     total_mins += component.estimated_patch_time
                     if game.engine_type == EngineType.GOLDSRC:
                         goldsrc_any_selected = True
+                    if game.engine_type == EngineType.SOURCE:
+                        source_any_selected = True
 
         if goldsrc_any_selected:
             for game in self._app.context.games:
@@ -142,6 +145,9 @@ class SelectionPage(BasePage):
                     if engine_comp and engine_comp.needs_patch:
                         total_mins += engine_comp.estimated_patch_time
                     break
+
+        if source_any_selected:
+            total_mins += 9
 
         self._time_label.configure(text=f"Estimated patching time: ~{total_mins} minutes")
 
