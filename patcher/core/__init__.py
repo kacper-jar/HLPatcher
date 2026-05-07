@@ -5,6 +5,7 @@ from .models import (
     PatchContext,
     PatchMode,
     PatchStatus,
+    UpdateInfo,
 )
 from .game_detector import GameDetector
 from .patcher import Patcher
@@ -18,4 +19,5 @@ __all__ = [
     "PatchStatus",
     "GameDetector",
     "Patcher",
+    "UpdateInfo",
 ]

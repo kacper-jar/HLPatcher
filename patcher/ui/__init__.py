@@ -10,6 +10,7 @@ from .pages import (
     SuccessPage,
     WarningPage,
     WelcomePage,
+    UpdateAvailablePage,
 )
 
 __all__ = [
@@ -26,4 +27,5 @@ __all__ = [
     "SuccessPage",
     "WarningPage",
     "WelcomePage",
+    "UpdateAvailablePage",
 ]

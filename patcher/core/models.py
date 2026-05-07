@@ -68,3 +68,10 @@ class PatchContext:
     create_backup: bool = False
     games: list[Game] = field(default_factory=list)
     selected_components: list[Component] = field(default_factory=list)
+
+
+@dataclass
+class UpdateInfo:
+    latest_version: str
+    update_available: bool
+    release_url: str

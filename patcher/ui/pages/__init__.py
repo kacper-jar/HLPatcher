@@ -8,6 +8,7 @@ from .success_page import SuccessPage
 from .failure_page import FailurePage
 from .no_games_page import NoGamesPage
 from .all_patched_page import AllPatchedPage
+from .update_available_page import UpdateAvailablePage
 
 __all__ = [
     "WelcomePage",
@@ -20,4 +21,5 @@ __all__ = [
     "FailurePage",
     "NoGamesPage",
     "AllPatchedPage",
+    "UpdateAvailablePage",
 ]

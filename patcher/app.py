@@ -4,11 +4,13 @@ import logging
 import shutil
 import subprocess
 import sys
+import threading
 from pathlib import Path
 
 import customtkinter as ctk
 
-from patcher.core import EngineType, GameDetector, PatchContext
+from patcher.core import EngineType, GameDetector, PatchContext, UpdateInfo
+from patcher.core.updater import Updater
 from patcher.ui import (
     AllPatchedPage,
     BasePage,
@@ -21,6 +23,7 @@ from patcher.ui import (
     ProgressPage,
     SelectionPage,
     SuccessPage,
+    UpdateAvailablePage,
     WarningPage,
     WelcomePage,
 )
@@ -45,6 +48,9 @@ class App(ctk.CTk):
             script_dir=Path(__file__).resolve().parent.parent,
         )
         self.patching_error = ""
+        self.update_info: UpdateInfo | None = None
+
+        self._start_update_check()
 
         self._header = PageHeader(self)
         self._header.pack(fill="x")
@@ -69,9 +75,19 @@ class App(ctk.CTk):
         self._check_xcode_cli_tools()
         self.show_page("welcome")
 
+    def _start_update_check(self):
+        def check():
+            import patcher
+
+            updater = Updater()
+            self.update_info = updater.check_for_update(patcher.__version__)
+
+        threading.Thread(target=check, daemon=True).start()
+
     def _register_pages(self):
         self._pages = {
             "welcome": WelcomePage,
+            "update_available": UpdateAvailablePage,
             "library": LibraryPage,
             "selection": SelectionPage,
             "options": OptionsPage,
@@ -170,6 +186,13 @@ class App(ctk.CTk):
         if next_key == "check_source_warning":
             self._check_source_warning()
             return
+
+        if (
+                self._current_page_key == "welcome"
+                and self.update_info
+                and self.update_info.update_available
+        ):
+            next_key = "update_available"
 
         if next_key:
             self._history.append(self._current_page_key)
