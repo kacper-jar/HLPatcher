@@ -24,7 +24,15 @@ class SelectionPage(BasePage):
             font=ctk.CTkFont(size=13, weight="bold"),
             text_color="gray70"
         )
-        self._time_label.pack(pady=(0, 10))
+        self._time_label.pack(pady=(0, 2))
+
+        self._space_label = ctk.CTkLabel(
+            self,
+            text="Estimated free space required: ~0 MB",
+            font=ctk.CTkFont(size=13, weight="bold"),
+            text_color="gray70"
+        )
+        self._space_label.pack(pady=(0, 10))
 
         self._checkboxes: dict[str, ctk.CTkCheckBox] = {}
         self._checkbox_vars: dict[str, ctk.BooleanVar] = {}
@@ -41,7 +49,7 @@ class SelectionPage(BasePage):
         for game in games:
             self._create_game_group(game)
 
-        self._update_estimated_time()
+        self._update_estimations()
 
     def _create_game_group(self, game):
         parent_key = f"parent_{game.name}"
@@ -109,7 +117,7 @@ class SelectionPage(BasePage):
             if str(checkbox.cget("state")) != "disabled":
                 self._checkbox_vars[child_key].set(parent_checked)
 
-        self._update_estimated_time()
+        self._update_estimations()
 
     def _on_child_toggle(self, game_name: str):
         parent_key = f"parent_{game_name}"
@@ -121,10 +129,11 @@ class SelectionPage(BasePage):
             if str(self._checkboxes[ck].cget("state")) != "disabled"
         )
         self._checkbox_vars[parent_key].set(all_checked)
-        self._update_estimated_time()
+        self._update_estimations()
 
-    def _update_estimated_time(self):
+    def _update_estimations(self):
         total_mins = 0
+        total_mb = 0
         goldsrc_any_selected = False
         source_any_selected = False
 
@@ -133,6 +142,7 @@ class SelectionPage(BasePage):
                 child_key = f"child_{game.name}_{component.name}"
                 if child_key in self._checkbox_vars and self._checkbox_vars[child_key].get():
                     total_mins += component.estimated_patch_time
+                    total_mb += component.estimated_free_space_required
                     if game.engine_type == EngineType.GOLDSRC:
                         goldsrc_any_selected = True
                     if game.engine_type == EngineType.SOURCE:
@@ -144,12 +154,18 @@ class SelectionPage(BasePage):
                     engine_comp = next((c for c in game.components if c.name == "GoldSrc Engine"), None)
                     if engine_comp and engine_comp.needs_patch:
                         total_mins += engine_comp.estimated_patch_time
+                        total_mb += engine_comp.estimated_free_space_required
                     break
 
         if source_any_selected:
             total_mins += 9
+            total_mb += 1500
+
+        if goldsrc_any_selected or source_any_selected:
+            total_mb += 150
 
         self._time_label.configure(text=f"Estimated patching time: ~{total_mins} minutes")
+        self._space_label.configure(text=f"Estimated free space required: ~{total_mb} MB")
 
     def can_go_next(self) -> bool:
         return any(v.get() for k, v in self._checkbox_vars.items() if k.startswith("child_"))

@@ -17,6 +17,7 @@ GOLDSRC_COMPONENTS = [
         "stable_commit": "d03ea4c",
         "build_system": "waf",
         "estimated_time": 1,
+        "estimated_space": 350,
     },
     {
         "name": "Half-Life",
@@ -26,6 +27,7 @@ GOLDSRC_COMPONENTS = [
         "stable_commit": "78bc253",
         "build_system": "waf",
         "estimated_time": 1,
+        "estimated_space": 60,
     },
     {
         "name": "Half-Life: Opposing Force",
@@ -35,6 +37,7 @@ GOLDSRC_COMPONENTS = [
         "stable_commit": "654d15c",
         "build_system": "waf",
         "estimated_time": 1,
+        "estimated_space": 60,
     },
     {
         "name": "Half-Life: Blue Shift",
@@ -44,6 +47,7 @@ GOLDSRC_COMPONENTS = [
         "stable_commit": "df5c272",
         "build_system": "waf",
         "estimated_time": 1,
+        "estimated_space": 60,
     },
     {
         "name": "Deathmatch Classic",
@@ -53,6 +57,7 @@ GOLDSRC_COMPONENTS = [
         "stable_commit": "895b28d",
         "build_system": "waf",
         "estimated_time": 1,
+        "estimated_space": 60,
     },
     {
         "name": "Counter-Strike",
@@ -63,6 +68,7 @@ GOLDSRC_COMPONENTS = [
         "build_system": "cmake",
         "patch_dir_name": "cs16-client",
         "estimated_time": 3,
+        "estimated_space": 350,
     },
 ]
 
@@ -77,6 +83,7 @@ HL2_SOURCE_COMPONENTS = [
         "patch_dir_name": "source-engine",
         "waf_game": "hl2",
         "estimated_time": 3,
+        "estimated_space": 25,
     },
     {
         "name": "Half-Life 2: Lost Coast",
@@ -88,6 +95,7 @@ HL2_SOURCE_COMPONENTS = [
         "patch_dir_name": "source-engine",
         "waf_game": "hl2",
         "estimated_time": 3,
+        "estimated_space": 25,
     },
     {
         "name": "Half-Life 2: Episodic (Episodes 1 & 2)",
@@ -99,6 +107,7 @@ HL2_SOURCE_COMPONENTS = [
         "patch_dir_name": "source-engine",
         "waf_game": "episodic",
         "estimated_time": 3,
+        "estimated_space": 25,
     },
     {
         "name": "Half-Life: Source",
@@ -110,6 +119,7 @@ HL2_SOURCE_COMPONENTS = [
         "patch_dir_name": "source-engine",
         "waf_game": "hl1",
         "estimated_time": 3,
+        "estimated_space": 25,
     },
 ]
 
@@ -124,6 +134,7 @@ PORTAL_SOURCE_COMPONENTS = [
         "patch_dir_name": "source-engine",
         "waf_game": "portal",
         "estimated_time": 3,
+        "estimated_space": 25,
     },
 ]
 
@@ -257,6 +268,7 @@ class GameDetector:
             patch_dir_name=comp_def.get("patch_dir_name", ""),
             waf_game=comp_def.get("waf_game", ""),
             estimated_patch_time=comp_def.get("estimated_time", 0),
+            estimated_free_space_required=comp_def.get("estimated_space", 0),
         )
 
     def _check_source_component(self, game_path: Path, comp_def: dict) -> Component | None:
@@ -280,6 +292,7 @@ class GameDetector:
             patch_dir_name=comp_def.get("patch_dir_name", ""),
             waf_game=comp_def.get("waf_game", ""),
             estimated_patch_time=comp_def.get("estimated_time", 0),
+            estimated_free_space_required=comp_def.get("estimated_space", 0),
         )
 
     def _detect_goldsrc_engine_status(self, game_path: Path) -> PatchStatus:
