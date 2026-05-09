@@ -3,7 +3,7 @@ site_description: Play Half-Life and Valve games on modern ARM Macs
 site_author: Kacper Jarosławski
 repo_url: https://github.com/kacper-jar/HLPatcher
 repo_name: kacper-jar/HLPatcher
-copyright: Copyright &copy; 2026 Kacper Jarosławski
+copyright: Copyright &copy; 2025-2026 Kacper Jarosławski
 
 theme:
   name: material
