@@ -1,0 +1,71 @@
+site_name: HLPatcher
+site_description: Play Half-Life and Valve games on modern ARM Macs
+site_author: Kacper Jarosławski
+repo_url: https://github.com/kacper-jar/HLPatcher
+repo_name: kacper-jar/HLPatcher
+copyright: Copyright &copy; 2026 Kacper Jarosławski
+
+theme:
+  name: material
+  icon:
+    logo: material/lambda
+    repo: fontawesome/brands/github
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: deep orange
+      accent: deep orange
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: deep orange
+      accent: deep orange
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+
+plugins: []
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Removing Patches: uninstallation.md
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+
+extra_css:
+  - stylesheets/extra.css
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/kacper-jar/hlpatcher
+    - icon: fontawesome/solid/globe
+      link: https://kzl21.ovh

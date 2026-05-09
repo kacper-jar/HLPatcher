@@ -15,6 +15,7 @@ HLPatcher makes Half-Life and other Valve games playable on modern ARM Macs that
 - Half-Life 2: Lost Coast ([Source code](https://github.com/nillerusr/source-engine) by [Nillerusr](https://github.com/nillerusr))
 - Half-Life 2: Episode One ([Source code](https://github.com/nillerusr/source-engine) by [Nillerusr](https://github.com/nillerusr))
 - Half-Life 2: Episode Two ([Source code](https://github.com/nillerusr/source-engine) by [Nillerusr](https://github.com/nillerusr))
+- Portal ([Source code](https://github.com/nillerusr/source-engine) by [Nillerusr](https://github.com/nillerusr))
 
 ## Installation
 1. Download the latest release from [GitHub Releases](https://github.com/kacper-jar/HLPatcher/releases) and unzip it.
