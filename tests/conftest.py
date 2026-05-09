@@ -60,7 +60,10 @@ def mock_run_command(mocker):
 
     def mock_popen(cmd, *args, **kwargs):
         mock_popen.commands.append((cmd, kwargs.get("cwd")))
-        return MockProcess(cmd)
+        stdout = "mock_stdout"
+        if cmd[0] == "hdiutil" and cmd[1] == "attach":
+            stdout = "some_output\t/Volumes/MockVolume"
+        return MockProcess(cmd, stdout=stdout)
 
     mock_popen.commands = []
     mocker.patch("subprocess.Popen", side_effect=mock_popen)
