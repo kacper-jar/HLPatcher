@@ -13,7 +13,7 @@
       
       
       
-        <link rel="prev" href="../installation/">
+        <link rel="prev" href="../removing-patches/">
       
       
       
@@ -25,7 +25,7 @@
     
     
       
-        <title>Removing Patches - HLPatcher</title>
+        <title>Contributing - HLPatcher</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#removing-the-patches" class="md-skip">
+        <a href="#contributing" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Removing Patches
+              Contributing
             
           </span>
         </div>
@@ -202,13 +202,32 @@
   
   
     <li class="md-tabs__item">
-      <a href="../installation/" class="md-tabs__link">
+      <a href="../getting-started/" class="md-tabs__link">
         
   
   
     
   
-  Installation
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../removing-patches/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Removing Patches
 
       </a>
     </li>
@@ -229,7 +248,7 @@
   
     
   
-  Removing Patches
+  Contributing
 
       </a>
     </li>
@@ -315,14 +334,41 @@
   
   
     <li class="md-nav__item">
-      <a href="../installation/" class="md-nav__link">
+      <a href="../getting-started/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Installation
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../removing-patches/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Removing Patches
   
 
     
@@ -358,7 +404,7 @@
   <span class="md-ellipsis">
     
   
-    Removing Patches
+    Contributing
   
 
     
@@ -376,7 +422,7 @@
   <span class="md-ellipsis">
     
   
-    Removing Patches
+    Contributing
   
 
     
@@ -402,10 +448,60 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#option-1-restore-from-backup-recommended" class="md-nav__link">
+  <a href="#getting-started" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Option 1: Restore from Backup (Recommended)
+        Getting Started
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting Started">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fork-the-repository" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fork the Repository
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clone-your-fork" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Clone Your Fork
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set-up-development-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Set Up Development Environment
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#project-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Project Structure
       
     </span>
   </a>
@@ -413,10 +509,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#option-2-verify-game-files-through-steam" class="md-nav__link">
+  <a href="#running-locally" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Option 2: Verify Game Files through Steam
+        Running Locally
       
     </span>
   </a>
@@ -424,10 +520,60 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#option-3-complete-removal" class="md-nav__link">
+  <a href="#testing-changes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Option 3: Complete Removal
+        Testing Changes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#commit-message-convention" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commit Message Convention
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Commit Message Convention">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tips-for-good-commit-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tips for Good Commit Messages
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#submitting-a-pull-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Submitting a Pull Request
       
     </span>
   </a>
@@ -469,10 +615,60 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#option-1-restore-from-backup-recommended" class="md-nav__link">
+  <a href="#getting-started" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Option 1: Restore from Backup (Recommended)
+        Getting Started
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Getting Started">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fork-the-repository" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fork the Repository
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clone-your-fork" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Clone Your Fork
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set-up-development-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Set Up Development Environment
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#project-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Project Structure
       
     </span>
   </a>
@@ -480,10 +676,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#option-2-verify-game-files-through-steam" class="md-nav__link">
+  <a href="#running-locally" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Option 2: Verify Game Files through Steam
+        Running Locally
       
     </span>
   </a>
@@ -491,10 +687,60 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#option-3-complete-removal" class="md-nav__link">
+  <a href="#testing-changes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Option 3: Complete Removal
+        Testing Changes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#commit-message-convention" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commit Message Convention
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Commit Message Convention">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#common-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Common Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tips-for-good-commit-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tips for Good Commit Messages
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#submitting-a-pull-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Submitting a Pull Request
       
     </span>
   </a>
@@ -521,37 +767,167 @@
   
 
 
-<h1 id="removing-the-patches">Removing the Patches</h1>
-<p>If you need to remove the HLPatcher modifications and restore your original Valve game installation, you have several options.</p>
-<h2 id="option-1-restore-from-backup-recommended">Option 1: Restore from Backup (Recommended)</h2>
-<p>If you chose to create a backup during the patching process, you can easily restore your original installation:</p>
+<h1 id="contributing">Contributing</h1>
+<p>Thank you for your interest in contributing to <strong>HLPatcher</strong>! We appreciate your help in making classic Valve games
+accessible on modern ARM Macs. This guide will help you get started with setting up your development environment,
+making changes and submitting a pull request.</p>
+<h2 id="getting-started">Getting Started</h2>
+<h3 id="fork-the-repository">Fork the Repository</h3>
+<p>First, create a fork of the <a href="https://github.com/kacper-jar/HLPatcher">HLPatcher repository</a> on GitHub. This gives you
+your own copy of the project to work on.</p>
+<h3 id="clone-your-fork">Clone Your Fork</h3>
+<p>Clone your forked repository to your local machine:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/YOUR_USERNAME/HLPatcher.git
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nb">cd</span><span class="w"> </span>HLPatcher
+</span></code></pre></div>
+<h3 id="set-up-development-environment">Set Up Development Environment</h3>
+<p>Create and activate a virtual environment:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>.venv
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nb">source</span><span class="w"> </span>.venv/bin/activate
+</span></code></pre></div>
+<p>Install the runtime and development dependencies:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements-dev.txt
+</span></code></pre></div>
+<h2 id="project-structure">Project Structure</h2>
+<p>Here is a quick overview of the project's structure to help you navigate the codebase:</p>
+<ul>
+<li><code>.github/</code>: GitHub Actions workflows and issue templates.<ul>
+<li><code>workflows/tests.yml</code>: Runs the full test suite on every push and pull request to <code>main</code>.</li>
+<li><code>workflows/release.yml</code>: Triggered on a tag push - runs tests, creates a ZIP archive, and opens a draft GitHub Release.</li>
+<li><code>workflows/docs.yml</code>: Builds and deploys MkDocs documentation.</li>
+</ul>
+</li>
+<li><code>docs/</code>: Documentation source files (MkDocs + Material theme).</li>
+<li><code>fixes/</code>: Game-specific patch scripts and binary fixes applied during the patching process.</li>
+<li><code>patcher/</code>: Main application source code.<ul>
+<li><code>patcher.core</code>: Core logic - game detection, patch orchestration, models, update checker.</li>
+<li><code>patcher.ui</code>: CustomTkinter-based GUI - pages, navigation, and base components.</li>
+</ul>
+</li>
+<li><code>tests/</code>: Unit and integration tests (pytest).<ul>
+<li><code>tests/core/</code>: Tests for game detection, patching logic, and models.</li>
+<li><code>tests/ui/</code>: Tests for UI pages and navigation flow.</li>
+</ul>
+</li>
+<li><code>patcher.sh</code>: Bootstrap shell script - sets up the virtual environment and launches the app.</li>
+<li><code>requirements.txt</code>: Runtime dependencies.</li>
+<li><code>requirements-dev.txt</code>: Development dependencies.</li>
+</ul>
+<h2 id="running-locally">Running Locally</h2>
+<p>Ensure your virtual environment is activated, then run the bootstrap script:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>./patcher.sh
+</span></code></pre></div>
+<p>This will install any missing dependencies and launch the HLPatcher UI.</p>
+<div class="admonition tip">
+<p class="admonition-title">Debug Mode</p>
+<p>You can launch HLPatcher in debug mode by passing the <code>debug</code> argument to <code>patcher.sh</code>:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>./patcher.sh<span class="w"> </span>debug
+</span></code></pre></div>
+This can be helpful when troubleshooting patching-related issues.</p>
+</div>
+<h2 id="testing-changes">Testing Changes</h2>
+<p>We use <code>pytest</code> for testing. Tests run on <strong>macOS</strong> (matching the CI environment). Run the full suite with:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>pytest
+</span></code></pre></div>
+<p>This will also generate a coverage report for the <code>patcher/</code> package. The configuration is defined in <code>pytest.ini</code>.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>All tests must pass before a Pull Request can be merged. The CI pipeline runs the test suite automatically on every PR targeting <code>main</code>.</p>
+</div>
+<p>If you are adding a new feature, please add tests to cover it.</p>
+<h2 id="commit-message-convention">Commit Message Convention</h2>
+<p>We follow the <strong>Conventional Commits</strong> style to keep the commit history readable.</p>
+<p>Each commit message should follow this format:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>&lt;type&gt;: &lt;short description&gt;
+</span></code></pre></div>
+<h3 id="common-types">Common Types</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
+<th style="text-align: left;">Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>feat</strong></td>
+<td style="text-align: left;">A new feature</td>
+<td style="text-align: left;"><code>feat: add Half-Life 2 support</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>fix</strong></td>
+<td style="text-align: left;">A bug fix</td>
+<td style="text-align: left;"><code>fix: prevent crash when steam path is missing</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>docs</strong></td>
+<td style="text-align: left;">Documentation only changes</td>
+<td style="text-align: left;"><code>docs: update installation guide</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>style</strong></td>
+<td style="text-align: left;">Code style changes (formatting, etc.)</td>
+<td style="text-align: left;"><code>style: reformat patcher.py with Black</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>refactor</strong></td>
+<td style="text-align: left;">Refactoring without changing behavior</td>
+<td style="text-align: left;"><code>refactor: extract game detection into helper</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>perf</strong></td>
+<td style="text-align: left;">Performance improvements</td>
+<td style="text-align: left;"><code>perf: reduce GoldSrc build time</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>test</strong></td>
+<td style="text-align: left;">Adding or updating tests</td>
+<td style="text-align: left;"><code>test: add regression tests for source engine</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>build</strong></td>
+<td style="text-align: left;">Changes to build scripts or dependencies</td>
+<td style="text-align: left;"><code>build: upgrade customtkinter to 5.2.2</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>ci</strong></td>
+<td style="text-align: left;">Changes to CI configuration</td>
+<td style="text-align: left;"><code>ci: add coverage upload step to tests workflow</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>chore</strong></td>
+<td style="text-align: left;">Other changes</td>
+<td style="text-align: left;"><code>chore: update license year</code></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>revert</strong></td>
+<td style="text-align: left;">Reverts a previous commit</td>
+<td style="text-align: left;"><code>revert: feat: add Half-Life 2 support</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="tips-for-good-commit-messages">Tips for Good Commit Messages</h3>
+<ul>
+<li>Keep it under 72 characters.</li>
+<li>Use the imperative mood: "add support" not "added support".</li>
+<li>Explain <em>what</em> changed and <em>why</em>, not <em>how</em>.</li>
+</ul>
+<h2 id="submitting-a-pull-request">Submitting a Pull Request</h2>
 <ol>
-<li>Navigate to your <strong>Documents</strong> folder.</li>
-<li>Look for a folder named <code>Half-Life backup (YYYY-MM-DD)</code> with the date when you ran the patcher.</li>
-<li>Delete your current patched game folder.</li>
-<li>Copy the backup folder to replace the game installation.</li>
-<li>Rename the restored folder back to its original name (e.g., <code>Half-Life</code>).</li>
-</ol>
-<h2 id="option-2-verify-game-files-through-steam">Option 2: Verify Game Files through Steam</h2>
-<p>If you didn't create a backup or prefer using Steam's built-in verification:</p>
-<ol>
-<li>Open <strong>Steam</strong> and go to your <strong>Library</strong>.</li>
-<li>Right-click on the game you want to restore.</li>
-<li>Select <strong>Properties</strong> &gt; <strong>Installed Files</strong> (or <strong>Local Files</strong>).</li>
-<li>Click <strong>Verify integrity of game files</strong>.</li>
-<li>Steam will automatically download and restore any modified or missing files.</li>
+<li>Create a new branch for your change: <code>git checkout -b feat/my-feature</code>.</li>
+<li>Make your changes and test them locally.</li>
+<li>Commit following the <a href="#commit-message-convention">Commit Message Convention</a>.</li>
+<li>Push your branch: <code>git push origin feat/my-feature</code>.</li>
+<li>Open a Pull Request against the <code>main</code> branch.</li>
+<li>Provide a clear description of what you changed and why.</li>
 </ol>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Using Steam's file verification will restore all games in your installation to their original state. You may need to verify each game separately if you only want to restore specific expansions.</p>
+<p>All test cases must pass in order for the Pull Request to be merged.</p>
 </div>
-<h2 id="option-3-complete-removal">Option 3: Complete Removal</h2>
-<p>For a complete clean installation:</p>
-<ol>
-<li>Uninstall the game through <strong>Steam</strong>.</li>
-<li>Manually delete the installation folder to remove any leftover files.</li>
-<li>Reinstall the game through <strong>Steam</strong>.</li>
-</ol>
+<p>We will review your PR and provide feedback. Thank you for contributing!</p>
 
 
 
