@@ -13,7 +13,7 @@ HLPatcher makes Half-Life and other Valve games playable on modern ARM Macs that
 
 It lets users to enjoy the game again without the hassle of manual binary update.
 
-[Get Started](installation.md){ .md-button .md-button--primary }
+[Get Started](getting-started.md){ .md-button .md-button--primary }
 
 ## Supported Games
 

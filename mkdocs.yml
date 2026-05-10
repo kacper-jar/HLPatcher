@@ -35,8 +35,9 @@ plugins: []
 
 nav:
   - Home: index.md
-  - Installation: installation.md
-  - Removing Patches: uninstallation.md
+  - Getting Started: getting-started.md
+  - Removing Patches: removing-patches.md
+  - Contributing: contributing.md
 
 markdown_extensions:
   - admonition
