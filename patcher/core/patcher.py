@@ -177,10 +177,11 @@ class Patcher:
             "portal": "Portal",
         }
 
-        for waf_game in sorted(list(waf_games)):
-            game_title = waf_game_names.get(waf_game, f"Source Engine ({waf_game})")
-            self._notify_component(game_title)
-            self._build_source(waf_game)
+        for waf_game in waf_game_names:
+            if waf_game in waf_games:
+                game_title = waf_game_names[waf_game]
+                self._notify_component(game_title)
+                self._build_source(waf_game)
 
         for game in source_games:
             game_selected_comps = [c for g, c in all_selected_comps if g == game]
