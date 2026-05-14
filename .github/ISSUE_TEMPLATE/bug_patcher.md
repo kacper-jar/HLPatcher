@@ -7,7 +7,7 @@ assignees: ''
 ---
 
 ## HLPatcher Version
-*Which version of HLPatcher are you using? (e.g., 1.3.0)*
+*Which version of HLPatcher are you using? (e.g., 3.0.0)*
 
 
 ## System Information
@@ -19,22 +19,24 @@ assignees: ''
 
 ## When did the issue occur?
 *At what stage of the patching process did you encounter the problem? (Select one)*
-- During initial setup
-- When selecting game engine
-- When selecting game folder
-- During backup creation
-- While preparing/downloading components
+- During initial setup / bootstrap
+- When selecting the Steam library folder
+- When selecting games/components to patch
+- When configuring patch options
+- During environment preparation (venv setup)
+- While cloning source repositories
 - While patching GoldSrc Engine
-- While patching Half-Life
-- While patching Opposing Force
-- While patching Blue Shift
+- While patching Half-Life (GoldSrc)
+- While patching Half-Life: Opposing Force
+- While patching Half-Life: Blue Shift
 - While patching Deathmatch Classic
 - While patching Counter-Strike
 - While patching Source Engine
 - While patching Half-Life: Source
 - While patching Half-Life 2
 - While patching Half-Life 2: Lost Coast
-- While patching Half-Life 2: Episode One / Half-Life 2: Episode Two
+- While patching Half-Life 2: Episodic (Episodes 1 & 2)
+- While patching Portal
 - After patching completed
 - Other (specify below)
 
@@ -55,6 +57,7 @@ assignees: ''
 - [ ] Half-Life 2: Lost Coast
 - [ ] Half-Life 2: Episode One
 - [ ] Half-Life 2: Episode Two
+- [ ] Portal
 
 ## Bug Description
 *Provide a clear and detailed description of what went wrong*
@@ -82,6 +85,6 @@ Paste error messages or logs here
 
 
 ## Checklist
-- [ ] I have installed Xcode Command Line Tools
-- [ ] I have selected the correct Half-Life installation folder
+- [ ] I have installed Xcode Command Line Tools (`xcode-select --install`)
+- [ ] I have selected the correct Steam library folder (containing the game folders)
 - [ ] I have checked that this issue hasn't been reported before

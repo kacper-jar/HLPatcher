@@ -22,10 +22,12 @@ assignees: ''
 - [ ] Half-Life 2: Lost Coast
 - [ ] Half-Life 2: Episode One
 - [ ] Half-Life 2: Episode Two
+- [ ] Portal
 
 ### Other
 - [ ] Multiple games (specify below)
-- [ ] All games (engine-level)
+- [ ] All GoldSrc games (engine-level)
+- [ ] All Source games (engine-level)
 
 ## Type of Suggestion
 *What kind of mod or patch are you suggesting?*
@@ -55,7 +57,9 @@ assignees: ''
 **License:** *Open source (MIT, GPL, etc.), Creative Commons, etc.*
 
 ## Compatibility
-**Compatible with Xash3D FWGS?** *Yes / Partial / No / Unknown*
+**Compatible with Xash3D FWGS?** *Yes / Partial / No / Unknown / N/A (Source game)*
+
+**Compatible with nillerusr's modified version of Source Engine?** *Yes / Partial / No / Unknown / N/A (GoldSrc game)*
 
 ## Implementation Notes
 *Any technical details or considerations for integrating this?*

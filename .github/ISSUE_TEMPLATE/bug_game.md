@@ -7,7 +7,7 @@ assignees: ''
 ---
 
 ## HLPatcher Version Used
-*Which version of HLPatcher did you use to patch the game? (e.g., 1.3.0)*
+*Which version of HLPatcher did you use to patch the game? (e.g., 3.0.0)*
 
 
 ## Affected Game
@@ -26,6 +26,7 @@ assignees: ''
 - [ ] Half-Life 2: Lost Coast
 - [ ] Half-Life 2: Episode One
 - [ ] Half-Life 2: Episode Two
+- [ ] Portal
 
 ## System Information
 **macOS Version:** *e.g., macOS 14 (Sonoma)*
@@ -82,10 +83,10 @@ Paste crash logs or error messages here
 
 ## Troubleshooting Steps Attempted
 *Have you tried any of these troubleshooting steps?*
-- [ ] Verified SDL2.framework permissions in System Settings
+- [ ] Verified SDL2.framework permissions in System Settings (GoldSrc only)
 - [ ] Restarted the game
 - [ ] Restarted my Mac
-- [ ] Verified game files through Steam (Note: This will require to repatch the game)
+- [ ] Verified game files through Steam (Note: This will require re-patching the game)
 - [ ] Re-ran the patcher
 - [ ] Removed all mods/custom content
 - [ ] Checked Console.app for crash logs

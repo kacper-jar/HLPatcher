@@ -9,11 +9,12 @@ assignees: ''
 ## Feature Category
 *What type of enhancement is this?*
 - [ ] User interface/UX improvement
-- [ ] Installation process enhancement
-- [ ] New game/mod support
+- [ ] Game/component detection
+- [ ] New game or mod support
 - [ ] Backup/restore functionality
 - [ ] Error handling/diagnostics
 - [ ] Performance optimization
+- [ ] Patch mode improvements (Latest / Stable)
 - [ ] Configuration options
 - [ ] Documentation improvement
 - [ ] Compatibility enhancement
@@ -76,5 +77,4 @@ assignees: ''
 
 ## Checklist
 - [ ] I have checked that this feature hasn't been requested before
-- [ ] This feature aligns with HLPatcher's goals (making Half-Life playable on ARM Macs)
-- [ ] I have checked that this suggestion hasn't been made before
+- [ ] This feature aligns with HLPatcher's goals (making Half-Life games playable on Apple Silicon Macs)
