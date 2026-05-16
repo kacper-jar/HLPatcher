@@ -1,7 +1,7 @@
 from pathlib import Path
 
 from patcher.core.models import AppConfig, Component, EngineType, Game, PatchMode, PatchStatus
-from patcher.core.patcher import Patcher
+from patcher.core import GoldSrcPatcher, Patcher, SourcePatcher
 
 
 def test_get_total_steps(mock_patch_context):
@@ -36,8 +36,9 @@ def test_create_backup(mock_patch_context, mocker):
 
 def test_prepare_goldsrc_engine(mock_patch_context, mock_run_command, mocker):
     patcher = Patcher(mock_patch_context, AppConfig())
+    goldsrc_patcher = GoldSrcPatcher(patcher)
     mocker.patch("shutil.copytree")
-    patcher._prepare_goldsrc_engine()
+    goldsrc_patcher._prepare_engine()
 
     assert len(mock_run_command.commands) == 4
     assert mock_run_command.commands[0][0][0] == "git"
@@ -48,7 +49,8 @@ def test_prepare_goldsrc_engine(mock_patch_context, mock_run_command, mocker):
 
 def test_prepare_hlsdk_mod(mock_patch_context, mock_run_command):
     patcher = Patcher(mock_patch_context, AppConfig())
-    patcher._prepare_hlsdk_mod("hlfixed", "78bc253")
+    goldsrc_patcher = GoldSrcPatcher(patcher)
+    goldsrc_patcher._prepare_hlsdk_mod("hlfixed", "78bc253")
 
     assert len(mock_run_command.commands) == 2
     assert mock_run_command.commands[0][0][0] == "git"
@@ -59,7 +61,8 @@ def test_prepare_hlsdk_mod(mock_patch_context, mock_run_command):
 
 def test_prepare_cstrike(mock_patch_context, mock_run_command):
     patcher = Patcher(mock_patch_context, AppConfig())
-    patcher._prepare_cstrike()
+    goldsrc_patcher = GoldSrcPatcher(patcher)
+    goldsrc_patcher._prepare_cstrike()
 
     assert len(mock_run_command.commands) == 1
     assert mock_run_command.commands[0][0][0] == "git"
@@ -68,7 +71,8 @@ def test_prepare_cstrike(mock_patch_context, mock_run_command):
 
 def test_build_goldsrc_engine(mock_patch_context, mock_run_command):
     patcher = Patcher(mock_patch_context, AppConfig())
-    patcher._build_goldsrc_engine()
+    goldsrc_patcher = GoldSrcPatcher(patcher)
+    goldsrc_patcher._build_engine()
 
     assert len(mock_run_command.commands) == 1
     cmd = mock_run_command.commands[0][0]
@@ -78,7 +82,8 @@ def test_build_goldsrc_engine(mock_patch_context, mock_run_command):
 
 def test_build_hlsdk_mod(mock_patch_context, mock_run_command):
     patcher = Patcher(mock_patch_context, AppConfig())
-    patcher._build_hlsdk_mod("hlfixed")
+    goldsrc_patcher = GoldSrcPatcher(patcher)
+    goldsrc_patcher._build_hlsdk_mod("hlfixed")
 
     assert len(mock_run_command.commands) == 1
     cmd = mock_run_command.commands[0][0]
@@ -88,7 +93,8 @@ def test_build_hlsdk_mod(mock_patch_context, mock_run_command):
 
 def test_build_cstrike(mock_patch_context, mock_run_command):
     patcher = Patcher(mock_patch_context, AppConfig())
-    patcher._build_cstrike()
+    goldsrc_patcher = GoldSrcPatcher(patcher)
+    goldsrc_patcher._build_cstrike()
 
     assert len(mock_run_command.commands) == 4
     assert mock_run_command.commands[0][0][1] == "build_deps.py"
@@ -98,7 +104,8 @@ def test_build_cstrike(mock_patch_context, mock_run_command):
 
 def test_prepare_source_engine(mock_patch_context, mock_run_command):
     patcher = Patcher(mock_patch_context, AppConfig())
-    patcher._prepare_source_engine()
+    source_patcher = SourcePatcher(patcher)
+    source_patcher._prepare_engine()
 
     assert len(mock_run_command.commands) == 1
     cmd1, _ = mock_run_command.commands[0]
@@ -110,7 +117,8 @@ def test_prepare_source_engine(mock_patch_context, mock_run_command):
 def test_prepare_source_engine_stable(mock_patch_context, mock_run_command):
     mock_patch_context.patch_mode = PatchMode.STABLE
     patcher = Patcher(mock_patch_context, AppConfig())
-    patcher._prepare_source_engine()
+    source_patcher = SourcePatcher(patcher)
+    source_patcher._prepare_engine()
 
     assert len(mock_run_command.commands) == 2
     cmd2, cwd2 = mock_run_command.commands[1]
@@ -121,7 +129,8 @@ def test_prepare_source_engine_stable(mock_patch_context, mock_run_command):
 
 def test_build_source(mock_patch_context, mock_run_command):
     patcher = Patcher(mock_patch_context, AppConfig())
-    patcher._build_source("hl2")
+    source_patcher = SourcePatcher(patcher)
+    source_patcher._build_source("hl2")
 
     assert len(mock_run_command.commands) == 1
     cmd, cwd = mock_run_command.commands[0]
@@ -133,13 +142,14 @@ def test_build_source(mock_patch_context, mock_run_command):
 
 def test_fix_source_links(mock_patch_context, mock_run_command):
     patcher = Patcher(mock_patch_context, AppConfig())
+    source_patcher = SourcePatcher(patcher)
 
     bin_dir = mock_patch_context.working_dir / "bin"
     bin_dir.mkdir(parents=True, exist_ok=True)
     (bin_dir / "libtier0.dylib").touch()
 
     game_path = mock_patch_context.working_dir
-    patcher._fix_source_links(game_path)
+    source_patcher._fix_source_links(game_path)
 
     assert len(mock_run_command.commands) >= 1
     cmd, cwd = mock_run_command.commands[0]

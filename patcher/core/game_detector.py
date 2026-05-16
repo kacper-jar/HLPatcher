@@ -2,141 +2,14 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
+from typing import Callable
+
 from patcher.core import (
-    Component, EngineType, Game, PatchStatus
+    Component, EngineType, Game, PatchStatus,
+    GOLDSRC_COMPONENTS, HL2_SOURCE_COMPONENTS, PORTAL_SOURCE_COMPONENTS
 )
 
 logger = logging.getLogger(__name__)
-
-GOLDSRC_COMPONENTS = [
-    {
-        "name": "GoldSrc Engine",
-        "subfolder": "",
-        "repo_url": "https://github.com/FWGS/xash3d-fwgs",
-        "repo_branch": "",
-        "stable_commit": "d03ea4c",
-        "build_system": "waf",
-        "estimated_time": 1,
-        "estimated_space": 350,
-    },
-    {
-        "name": "Half-Life",
-        "subfolder": "valve",
-        "repo_url": "https://github.com/FWGS/hlsdk-portable",
-        "repo_branch": "hlfixed",
-        "stable_commit": "78bc253",
-        "build_system": "waf",
-        "estimated_time": 1,
-        "estimated_space": 60,
-    },
-    {
-        "name": "Half-Life: Opposing Force",
-        "subfolder": "gearbox",
-        "repo_url": "https://github.com/FWGS/hlsdk-portable",
-        "repo_branch": "opforfixed",
-        "stable_commit": "654d15c",
-        "build_system": "waf",
-        "estimated_time": 1,
-        "estimated_space": 60,
-    },
-    {
-        "name": "Half-Life: Blue Shift",
-        "subfolder": "bshift",
-        "repo_url": "https://github.com/FWGS/hlsdk-portable",
-        "repo_branch": "bshift",
-        "stable_commit": "df5c272",
-        "build_system": "waf",
-        "estimated_time": 1,
-        "estimated_space": 60,
-    },
-    {
-        "name": "Deathmatch Classic",
-        "subfolder": "dmc",
-        "repo_url": "https://github.com/FWGS/hlsdk-portable",
-        "repo_branch": "dmc",
-        "stable_commit": "895b28d",
-        "build_system": "waf",
-        "estimated_time": 1,
-        "estimated_space": 60,
-    },
-    {
-        "name": "Counter-Strike",
-        "subfolder": "cstrike",
-        "repo_url": "https://github.com/Velaron/cs16-client.git",
-        "repo_branch": "",
-        "stable_commit": "123af8e",
-        "build_system": "cmake",
-        "patch_dir_name": "cs16-client",
-        "estimated_time": 3,
-        "estimated_space": 350,
-    },
-]
-
-HL2_SOURCE_COMPONENTS = [
-    {
-        "name": "Half-Life 2",
-        "subfolder": "hl2",
-        "repo_url": "https://github.com/nillerusr/source-engine",
-        "repo_branch": "",
-        "stable_commit": "ed8209c",
-        "build_system": "waf",
-        "patch_dir_name": "source-engine",
-        "waf_game": "hl2",
-        "estimated_time": 3,
-        "estimated_space": 25,
-    },
-    {
-        "name": "Half-Life 2: Lost Coast",
-        "subfolder": "lostcoast",
-        "repo_url": "https://github.com/nillerusr/source-engine",
-        "repo_branch": "",
-        "stable_commit": "ed8209c",
-        "build_system": "waf",
-        "patch_dir_name": "source-engine",
-        "waf_game": "hl2",
-        "estimated_time": 3,
-        "estimated_space": 25,
-    },
-    {
-        "name": "Half-Life 2: Episodic (Episodes 1 & 2)",
-        "subfolder": "episodic",
-        "repo_url": "https://github.com/nillerusr/source-engine",
-        "repo_branch": "",
-        "stable_commit": "ed8209c",
-        "build_system": "waf",
-        "patch_dir_name": "source-engine",
-        "waf_game": "episodic",
-        "estimated_time": 3,
-        "estimated_space": 25,
-    },
-    {
-        "name": "Half-Life: Source",
-        "subfolder": "hl1",
-        "repo_url": "https://github.com/nillerusr/source-engine",
-        "repo_branch": "",
-        "stable_commit": "ed8209c",
-        "build_system": "waf",
-        "patch_dir_name": "source-engine",
-        "waf_game": "hl1",
-        "estimated_time": 3,
-        "estimated_space": 25,
-    },
-]
-
-PORTAL_SOURCE_COMPONENTS = [
-    {
-        "name": "Portal",
-        "subfolder": "portal",
-        "repo_url": "https://github.com/nillerusr/source-engine",
-        "repo_branch": "",
-        "stable_commit": "ed8209c",
-        "build_system": "waf",
-        "patch_dir_name": "source-engine",
-        "waf_game": "portal",
-        "estimated_time": 3,
-        "estimated_space": 25,
-    },
-]
 
 GOLDSRC_FOLDER_NAME = "Half-Life"
 HL2_FOLDER_NAME = "Half-Life 2"
@@ -149,98 +22,72 @@ class GameDetector:
 
     def scan(self) -> list[Game]:
         games = []
-        goldsrc_game = self._scan_goldsrc()
+
+        goldsrc_game = self._scan_game(
+            GOLDSRC_FOLDER_NAME,
+            "hl_osx",
+            EngineType.GOLDSRC,
+            GOLDSRC_COMPONENTS,
+            self._check_goldsrc_component
+        )
         if goldsrc_game:
             games.append(goldsrc_game)
-        hl2_game = self._scan_hl2()
+
+        hl2_game = self._scan_game(
+            HL2_FOLDER_NAME,
+            "hl2_osx",
+            EngineType.SOURCE,
+            HL2_SOURCE_COMPONENTS,
+            self._check_source_component
+        )
         if hl2_game:
             games.append(hl2_game)
-        portal_game = self._scan_portal()
+
+        portal_game = self._scan_game(
+            PORTAL_FOLDER_NAME,
+            "hl2_osx",
+            EngineType.SOURCE,
+            PORTAL_SOURCE_COMPONENTS,
+            self._check_source_component
+        )
         if portal_game:
             games.append(portal_game)
+
         return games
 
-    def _scan_goldsrc(self) -> Game | None:
-        goldsrc_path = self._steam_library_path / GOLDSRC_FOLDER_NAME
-        if not goldsrc_path.is_dir():
-            logger.info(f"GoldSrc folder not found at {goldsrc_path}")
+    def _scan_game(
+            self,
+            folder_name: str,
+            executable_name: str,
+            engine_type: EngineType,
+            component_defs: list[dict],
+            check_component_fn: Callable[[Path, dict], Component | None]
+    ) -> Game | None:
+        game_path = self._steam_library_path / folder_name
+        if not game_path.is_dir():
+            logger.info(f"{folder_name} folder not found at {game_path}")
             return None
 
-        if not (goldsrc_path / "hl_osx").is_file():
-            logger.info(f"hl_osx not found in {goldsrc_path}")
+        if not (game_path / executable_name).is_file():
+            logger.info(f"{executable_name} not found in {game_path}")
             return None
 
-        logger.info(f"Found GoldSrc installation at {goldsrc_path}")
+        logger.info(f"Found {engine_type.value} installation at {game_path}")
         components = []
 
-        for comp_def in GOLDSRC_COMPONENTS:
-            component = self._check_goldsrc_component(goldsrc_path, comp_def)
+        for comp_def in component_defs:
+            component = check_component_fn(game_path, comp_def)
             if component:
                 components.append(component)
 
         if not components:
             return None
 
+        engine_name = "GoldSrc" if engine_type == EngineType.GOLDSRC else "Source"
         return Game(
-            name=f"GoldSrc ({GOLDSRC_FOLDER_NAME})",
-            path=goldsrc_path,
-            engine_type=EngineType.GOLDSRC,
-            components=components,
-        )
-
-    def _scan_hl2(self) -> Game | None:
-        hl2_path = self._steam_library_path / HL2_FOLDER_NAME
-        if not hl2_path.is_dir():
-            logger.info(f"HL2 folder not found at {hl2_path}")
-            return None
-
-        if not (hl2_path / "hl2_osx").is_file():
-            logger.info(f"hl2_osx not found in {hl2_path}")
-            return None
-
-        logger.info(f"Found HL2 installation at {hl2_path}")
-        components = []
-
-        for comp_def in HL2_SOURCE_COMPONENTS:
-            component = self._check_source_component(hl2_path, comp_def)
-            if component:
-                components.append(component)
-
-        if not components:
-            return None
-
-        return Game(
-            name=f"Source ({HL2_FOLDER_NAME})",
-            path=hl2_path,
-            engine_type=EngineType.SOURCE,
-            components=components,
-        )
-
-    def _scan_portal(self) -> Game | None:
-        portal_path = self._steam_library_path / PORTAL_FOLDER_NAME
-        if not portal_path.is_dir():
-            logger.info(f"Portal folder not found at {portal_path}")
-            return None
-
-        if not (portal_path / "hl2_osx").is_file():
-            logger.info(f"hl2_osx not found in {portal_path}")
-            return None
-
-        logger.info(f"Found Portal installation at {portal_path}")
-        components = []
-
-        for comp_def in PORTAL_SOURCE_COMPONENTS:
-            component = self._check_source_component(portal_path, comp_def)
-            if component:
-                components.append(component)
-
-        if not components:
-            return None
-
-        return Game(
-            name=f"Source ({PORTAL_FOLDER_NAME})",
-            path=portal_path,
-            engine_type=EngineType.SOURCE,
+            name=f"{engine_name} ({folder_name})",
+            path=game_path,
+            engine_type=engine_type,
             components=components,
         )
 

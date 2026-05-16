@@ -7,23 +7,11 @@ from pathlib import Path
 
 import customtkinter as ctk
 
-from patcher.core import AppConfig, EngineType, GameDetector, PatchContext, UpdateInfo
-from patcher.core.updater import Updater
+from patcher.core import AppConfig, EngineType, GameDetector, PatchContext, UpdateInfo, Updater
 from patcher.ui import (
-    AllPatchedPage,
     BasePage,
-    FailurePage,
-    LibraryPage,
     NavigationFooter,
-    NoGamesPage,
-    OptionsPage,
-    PageHeader,
-    ProgressPage,
-    SelectionPage,
-    SuccessPage,
-    UpdateAvailablePage,
-    WarningPage,
-    WelcomePage,
+    PageHeader
 )
 
 logger = logging.getLogger(__name__)
@@ -88,19 +76,15 @@ class App(ctk.CTk):
         threading.Thread(target=check, daemon=True).start()
 
     def _register_pages(self):
-        self._pages = {
-            "welcome": WelcomePage,
-            "update_available": UpdateAvailablePage,
-            "library": LibraryPage,
-            "selection": SelectionPage,
-            "options": OptionsPage,
-            "warning": WarningPage,
-            "progress": ProgressPage,
-            "success": SuccessPage,
-            "failure": FailurePage,
-            "no_games": NoGamesPage,
-            "all_patched": AllPatchedPage,
-        }
+        import re
+        def camel_to_snake(name: str) -> str:
+            name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+            return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
+
+        self._pages = {}
+        for cls in BasePage.__subclasses__():
+            key = camel_to_snake(cls.__name__.replace('Page', ''))
+            self._pages[key] = cls
 
     def show_page(self, page_key: str):
         if self._current_page_key and self._current_page_key in self._page_instances:
