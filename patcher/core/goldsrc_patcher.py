@@ -51,9 +51,9 @@ class GoldSrcPatcher:
         if needs_hl:
             hlsdk_mods.append(("hlfixed", self._get_ref("hlfixed", "78bc253"), "Half-Life"))
         if needs_opfor:
-            hlsdk_mods.append(("opforfixed", self._get_ref("opforfixed", "654d15c"), "Opposing Force"))
+            hlsdk_mods.append(("opforfixed", self._get_ref("opforfixed", "654d15c"), "Half-Life: Opposing Force"))
         if needs_bshift:
-            hlsdk_mods.append(("bshift", self._get_ref("bshift", "df5c272"), "Blue Shift"))
+            hlsdk_mods.append(("bshift", self._get_ref("bshift", "df5c272"), "Half-Life: Blue Shift"))
         if needs_dmc:
             hlsdk_mods.append(("dmc", self._get_ref("dmc", "895b28d", force_stable=True), "Deathmatch Classic"))
 
