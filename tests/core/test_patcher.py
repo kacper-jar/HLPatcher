@@ -40,11 +40,12 @@ def test_prepare_goldsrc_engine(mock_patch_context, mock_run_command, mocker):
     mocker.patch("shutil.copytree")
     goldsrc_patcher._prepare_engine()
 
-    assert len(mock_run_command.commands) == 4
+    assert len(mock_run_command.commands) == 5
     assert mock_run_command.commands[0][0][0] == "git"
     assert mock_run_command.commands[1][0][0] == "curl"
     assert mock_run_command.commands[2][0][0] == "hdiutil"
     assert mock_run_command.commands[3][0][0] == "hdiutil"
+    assert mock_run_command.commands[4][0][0] == "hdiutil"
 
 
 def test_prepare_hlsdk_mod(mock_patch_context, mock_run_command):
