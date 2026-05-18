@@ -84,9 +84,13 @@ class Patcher:
             self.log("Skipping backup creation")
             return
 
+        games_to_backup = [g for g in selected_games if g.needs_patch]
+        if not games_to_backup:
+            return
+
         self.log("Creating backup...")
         date_str = datetime.now().strftime("%Y-%m-%d")
-        for game in selected_games:
+        for game in games_to_backup:
             backup_dest = Path.home() / "Documents" / f"{game.name} backup ({date_str})"
             self.log(f"Backing up {game.path} to {backup_dest}")
             shutil.copytree(game.path, backup_dest, dirs_exist_ok=True)

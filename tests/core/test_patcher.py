@@ -25,12 +25,33 @@ def test_create_backup(mock_patch_context, mocker):
 
     mock_copytree = mocker.patch("shutil.copytree")
 
-    game = Game("GoldSrc", Path("/fake/GoldSrc"), EngineType.GOLDSRC)
+    comp = Component("GoldSrc Engine", "", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH, "")
+    game = Game("GoldSrc", Path("/fake/GoldSrc"), EngineType.GOLDSRC, [comp])
     patcher._create_backup([game])
 
     mock_copytree.assert_called_once()
     args, kwargs = mock_copytree.call_args
     assert args[0] == Path("/fake/GoldSrc")
+    assert "Documents" in str(args[1])
+
+
+def test_create_backup_skips_unpatched(mock_patch_context, mocker):
+    mock_patch_context.create_backup = True
+    patcher = Patcher(mock_patch_context, AppConfig())
+
+    mock_copytree = mocker.patch("shutil.copytree")
+
+    comp = Component("GoldSrc Engine", "", EngineType.GOLDSRC, PatchStatus.ALREADY_PATCHED, "")
+    game1 = Game("GoldSrc", Path("/fake/GoldSrc"), EngineType.GOLDSRC, [comp])
+
+    comp_needs_patch = Component("Portal", "portal", EngineType.SOURCE, PatchStatus.NEEDS_PATCH, "", waf_game="portal")
+    game2 = Game("Portal", Path("/fake/Portal"), EngineType.SOURCE, [comp_needs_patch])
+
+    patcher._create_backup([game1, game2])
+
+    mock_copytree.assert_called_once()
+    args, kwargs = mock_copytree.call_args
+    assert args[0] == Path("/fake/Portal")
     assert "Documents" in str(args[1])
 
 
