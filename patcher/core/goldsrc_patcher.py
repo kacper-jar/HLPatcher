@@ -82,6 +82,10 @@ class GoldSrcPatcher:
 
         if self.context.patch_mode == PatchMode.STABLE:
             self._run_command(["git", "checkout", "d03ea4c"], cwd=xash_dir)
+            self._run_command(
+                ["git", "submodule", "update", "--init", "--recursive"],
+                cwd=xash_dir
+            )
 
         sdl_dmg = working_dir / "SDL2-2.32.10.dmg"
         self._run_command([
@@ -119,6 +123,7 @@ class GoldSrcPatcher:
             str(target_dir),
         ])
         self._run_command(["git", "checkout", ref], cwd=target_dir)
+        self._run_command(["git", "submodule", "update", "--init", "--recursive"], cwd=target_dir)
 
     def _prepare_cstrike(self):
         self.log("Preparing Counter-Strike...")
@@ -130,6 +135,10 @@ class GoldSrcPatcher:
         ])
         if self.context.patch_mode == PatchMode.STABLE:
             self._run_command(["git", "checkout", "123af8e"], cwd=target_dir)
+            self._run_command(
+                ["git", "submodule", "update", "--init", "--recursive"],
+                cwd=target_dir
+            )
 
     def _build_engine(self):
         self.log("Building GoldSrc Engine...")

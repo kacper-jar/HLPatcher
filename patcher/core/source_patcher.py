@@ -79,6 +79,7 @@ class SourcePatcher:
         ])
         if self.context.patch_mode == PatchMode.STABLE:
             self._run_command(["git", "checkout", "ed8209c"], cwd=target_dir)
+            self._run_command(["git", "submodule", "update", "--init", "--recursive"], cwd=target_dir)
 
     def _build_source(self, game: str):
         self.log(f"Building Source Engine ({game})...")
