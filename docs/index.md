@@ -11,7 +11,7 @@ hide:
 
 HLPatcher makes Half-Life and other Valve games playable on modern ARM Macs that only support 64-bit applications.
 
-It lets users to enjoy the game again without the hassle of manual binary update.
+It lets users enjoy the game again without the hassle of manual binary update.
 
 [Get Started](getting-started.md){ .md-button .md-button--primary }
 
@@ -88,6 +88,8 @@ It lets users to enjoy the game again without the hassle of manual binary update
     For developing modifications of the [Source Engine](https://github.com/nillerusr/source-engine) leak.
 
 </div>
+
+Without them, HLPatcher wouldn't exist.
 
 ---
 
