@@ -3,7 +3,7 @@ from __future__ import annotations
 import shutil
 from pathlib import Path
 
-from patcher.core import EngineType, Game, PatchMode
+from patcher.core import Component, EngineType, Game, PatchMode
 from patcher.core.patcher import Patcher
 
 
@@ -34,28 +34,25 @@ class GoldSrcPatcher:
         game = goldsrc_games[0]
         selected_components = [c for c in game.components if c.needs_patch]
 
-        needs_engine = any(c.subfolder == "" for c in selected_components)
-        needs_hl = any(c.subfolder == "valve" for c in selected_components)
-        needs_opfor = any(c.subfolder == "gearbox" for c in selected_components)
-        needs_bshift = any(c.subfolder == "bshift" for c in selected_components)
-        needs_dmc = any(c.subfolder == "dmc" for c in selected_components)
-        needs_cstrike = any(c.subfolder == "cstrike" for c in selected_components)
-
-        if needs_engine:
+        engine_comp = next((c for c in selected_components if c.subfolder == ""), None)
+        if engine_comp:
             self._notify_component("GoldSrc Engine")
-            self._prepare_engine()
+            self._prepare_engine(engine_comp)
             self._build_engine()
             self._install_engine(game.path)
 
         hlsdk_mods = []
-        if needs_hl:
-            hlsdk_mods.append(("hlfixed", self._get_ref("hlfixed", "78bc253"), "Half-Life"))
-        if needs_opfor:
-            hlsdk_mods.append(("opforfixed", self._get_ref("opforfixed", "654d15c"), "Half-Life: Opposing Force"))
-        if needs_bshift:
-            hlsdk_mods.append(("bshift", self._get_ref("bshift", "df5c272"), "Half-Life: Blue Shift"))
-        if needs_dmc:
-            hlsdk_mods.append(("dmc", self._get_ref("dmc", "895b28d", force_stable=True), "Deathmatch Classic"))
+        for c in selected_components:
+            if c.subfolder == "valve":
+                hlsdk_mods.append(("hlfixed", self._get_ref("hlfixed", c.stable_commit), "Half-Life"))
+            elif c.subfolder == "gearbox":
+                hlsdk_mods.append(
+                    ("opforfixed", self._get_ref("opforfixed", c.stable_commit), "Half-Life: Opposing Force"))
+            elif c.subfolder == "bshift":
+                hlsdk_mods.append(("bshift", self._get_ref("bshift", c.stable_commit), "Half-Life: Blue Shift"))
+            elif c.subfolder == "dmc":
+                hlsdk_mods.append(
+                    ("dmc", self._get_ref("dmc", c.stable_commit, force_stable=True), "Deathmatch Classic"))
 
         for suffix, ref, mod_name in hlsdk_mods:
             self._notify_component(mod_name)
@@ -63,14 +60,15 @@ class GoldSrcPatcher:
             self._build_hlsdk_mod(suffix)
             self._install_generic(f"hlsdk-portable-{suffix}", game.path)
 
-        if needs_cstrike:
+        cs_comp = next((c for c in selected_components if c.subfolder == "cstrike"), None)
+        if cs_comp:
             self._notify_component("Counter-Strike")
-            self._prepare_cstrike()
+            self._prepare_cstrike(cs_comp)
             self.patcher._patch_generic("cs16-client")
             self._build_cstrike()
             self._install_generic("cs16-client", game.path)
 
-    def _prepare_engine(self):
+    def _prepare_engine(self, comp: Component):
         self.log("Preparing GoldSrc Engine...")
         working_dir = self.context.working_dir
         xash_dir = working_dir / "xash3d-fwgs"
@@ -81,7 +79,7 @@ class GoldSrcPatcher:
         ])
 
         if self.context.patch_mode == PatchMode.STABLE:
-            self._run_command(["git", "checkout", "d03ea4c"], cwd=xash_dir)
+            self._run_command(["git", "checkout", comp.stable_commit], cwd=xash_dir)
             self._run_command(
                 ["git", "submodule", "update", "--init", "--recursive"],
                 cwd=xash_dir
@@ -125,7 +123,7 @@ class GoldSrcPatcher:
         self._run_command(["git", "checkout", ref], cwd=target_dir)
         self._run_command(["git", "submodule", "update", "--init", "--recursive"], cwd=target_dir)
 
-    def _prepare_cstrike(self):
+    def _prepare_cstrike(self, comp: Component):
         self.log("Preparing Counter-Strike...")
         target_dir = self.context.working_dir / "cs16-client"
         self._run_command([
@@ -134,7 +132,7 @@ class GoldSrcPatcher:
             str(target_dir),
         ])
         if self.context.patch_mode == PatchMode.STABLE:
-            self._run_command(["git", "checkout", "123af8e"], cwd=target_dir)
+            self._run_command(["git", "checkout", comp.stable_commit], cwd=target_dir)
             self._run_command(
                 ["git", "submodule", "update", "--init", "--recursive"],
                 cwd=target_dir

@@ -3,7 +3,7 @@ from __future__ import annotations
 import shutil
 from pathlib import Path
 
-from patcher.core import EngineType, Game, PatchMode, SOURCE_LINK_FIXES
+from patcher.core import Component, EngineType, Game, PatchMode, SOURCE_LINK_FIXES
 from patcher.core.patcher import Patcher
 
 
@@ -39,8 +39,10 @@ class SourcePatcher:
         if not all_selected_comps:
             return
 
+        source_comp = all_selected_comps[0][1] if all_selected_comps else None
+
         self._notify_component("Source Engine")
-        self._prepare_engine()
+        self._prepare_engine(source_comp)
         self.patcher._patch_generic("source-engine")
 
         waf_game_names = {
@@ -69,7 +71,7 @@ class SourcePatcher:
             for comp in game_selected_comps:
                 self._fix_source_game_links(game.path, comp.subfolder)
 
-    def _prepare_engine(self):
+    def _prepare_engine(self, comp: Component):
         self.log("Preparing Source Engine...")
         target_dir = self.context.working_dir / "source-engine"
         self._run_command([
@@ -78,7 +80,7 @@ class SourcePatcher:
             str(target_dir),
         ])
         if self.context.patch_mode == PatchMode.STABLE:
-            self._run_command(["git", "checkout", "ed8209c"], cwd=target_dir)
+            self._run_command(["git", "checkout", comp.stable_commit], cwd=target_dir)
             self._run_command(["git", "submodule", "update", "--init", "--recursive"], cwd=target_dir)
 
     def _build_source(self, game: str):

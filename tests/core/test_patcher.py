@@ -59,7 +59,8 @@ def test_prepare_goldsrc_engine(mock_patch_context, mock_run_command, mocker):
     patcher = Patcher(mock_patch_context, AppConfig())
     goldsrc_patcher = GoldSrcPatcher(patcher)
     mocker.patch("shutil.copytree")
-    goldsrc_patcher._prepare_engine()
+    comp = Component("GoldSrc Engine", "", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH, "")
+    goldsrc_patcher._prepare_engine(comp)
 
     assert len(mock_run_command.commands) == 5
     assert mock_run_command.commands[0][0][0] == "git"
@@ -69,12 +70,29 @@ def test_prepare_goldsrc_engine(mock_patch_context, mock_run_command, mocker):
     assert mock_run_command.commands[4][0][0] == "hdiutil"
 
 
+def test_prepare_goldsrc_engine_stable(mock_patch_context, mock_run_command, mocker):
+    mock_patch_context.patch_mode = PatchMode.STABLE
+    patcher = Patcher(mock_patch_context, AppConfig())
+    goldsrc_patcher = GoldSrcPatcher(patcher)
+    mocker.patch("shutil.copytree")
+
+    comp = Component("GoldSrc Engine", "", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH, "",
+                     stable_commit="test_goldsrc_ref")
+    goldsrc_patcher._prepare_engine(comp)
+
+    assert len(mock_run_command.commands) == 7
+    assert mock_run_command.commands[0][0][0] == "git"
+    assert mock_run_command.commands[1][0][0] == "git"
+    assert mock_run_command.commands[1][0][1] == "checkout"
+    assert mock_run_command.commands[1][0][2] == "test_goldsrc_ref"
+
+
 def test_prepare_hlsdk_mod(mock_patch_context, mock_run_command):
     patcher = Patcher(mock_patch_context, AppConfig())
     goldsrc_patcher = GoldSrcPatcher(patcher)
     goldsrc_patcher._prepare_hlsdk_mod("hlfixed", "78bc253")
 
-    assert len(mock_run_command.commands) == 2
+    assert len(mock_run_command.commands) == 3
     assert mock_run_command.commands[0][0][0] == "git"
     assert mock_run_command.commands[0][0][1] == "clone"
     assert mock_run_command.commands[1][0][0] == "git"
@@ -84,11 +102,28 @@ def test_prepare_hlsdk_mod(mock_patch_context, mock_run_command):
 def test_prepare_cstrike(mock_patch_context, mock_run_command):
     patcher = Patcher(mock_patch_context, AppConfig())
     goldsrc_patcher = GoldSrcPatcher(patcher)
-    goldsrc_patcher._prepare_cstrike()
+    comp = Component("Counter-Strike", "cstrike", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH, "")
+    goldsrc_patcher._prepare_cstrike(comp)
 
     assert len(mock_run_command.commands) == 1
     assert mock_run_command.commands[0][0][0] == "git"
     assert mock_run_command.commands[0][0][1] == "clone"
+
+
+def test_prepare_cstrike_stable(mock_patch_context, mock_run_command):
+    mock_patch_context.patch_mode = PatchMode.STABLE
+    patcher = Patcher(mock_patch_context, AppConfig())
+    goldsrc_patcher = GoldSrcPatcher(patcher)
+
+    comp = Component("Counter-Strike", "cstrike", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH, "",
+                     stable_commit="test_cs_ref")
+    goldsrc_patcher._prepare_cstrike(comp)
+
+    assert len(mock_run_command.commands) == 3
+    assert mock_run_command.commands[0][0][0] == "git"
+    assert mock_run_command.commands[1][0][0] == "git"
+    assert mock_run_command.commands[1][0][1] == "checkout"
+    assert mock_run_command.commands[1][0][2] == "test_cs_ref"
 
 
 def test_build_goldsrc_engine(mock_patch_context, mock_run_command):
@@ -127,7 +162,8 @@ def test_build_cstrike(mock_patch_context, mock_run_command):
 def test_prepare_source_engine(mock_patch_context, mock_run_command):
     patcher = Patcher(mock_patch_context, AppConfig())
     source_patcher = SourcePatcher(patcher)
-    source_patcher._prepare_engine()
+    comp = Component("Half-Life 2", "hl2", EngineType.SOURCE, PatchStatus.NEEDS_PATCH, "")
+    source_patcher._prepare_engine(comp)
 
     assert len(mock_run_command.commands) == 1
     cmd1, _ = mock_run_command.commands[0]
@@ -140,13 +176,16 @@ def test_prepare_source_engine_stable(mock_patch_context, mock_run_command):
     mock_patch_context.patch_mode = PatchMode.STABLE
     patcher = Patcher(mock_patch_context, AppConfig())
     source_patcher = SourcePatcher(patcher)
-    source_patcher._prepare_engine()
 
-    assert len(mock_run_command.commands) == 2
+    comp = Component("Half-Life 2", "hl2", EngineType.SOURCE, PatchStatus.NEEDS_PATCH, "",
+                     stable_commit="test_source_ref")
+    source_patcher._prepare_engine(comp)
+
+    assert len(mock_run_command.commands) == 3
     cmd2, cwd2 = mock_run_command.commands[1]
     assert cmd2[0] == "git"
     assert cmd2[1] == "checkout"
-    assert cmd2[2] == "ed8209c"
+    assert cmd2[2] == "test_source_ref"
 
 
 def test_build_source(mock_patch_context, mock_run_command):
