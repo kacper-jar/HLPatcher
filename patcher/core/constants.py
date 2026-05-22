@@ -6,7 +6,7 @@ GOLDSRC_COMPONENTS = [
         "subfolder": "",
         "repo_url": "https://github.com/FWGS/xash3d-fwgs",
         "repo_branch": "",
-        "stable_commit": "4c2302e",
+        "stable_commit": "e4600b5",
         "build_system": "waf",
         "estimated_time": 1,
         "estimated_space": 350,
