@@ -57,18 +57,17 @@ class SourceInstaller(BaseInstaller):
             lib_path = bin_dir / lib_name
             if not lib_path.exists():
                 continue
-            self.patcher.executor.run([
-                "install_name_tool", "-id", f"@loader_path/{lib_name}", lib_name
-            ], cwd=bin_dir)
-
+                
+            cmd = ["install_name_tool", "-id", f"@loader_path/{lib_name}"]
             for old_path_template, new_path in changes:
                 old_path = old_path_template.format(
                     build_prefix=build_prefix,
                     thirdparty_prefix=thirdparty_prefix
                 )
-                self.patcher.executor.run([
-                    "install_name_tool", "-change", old_path, new_path, lib_name
-                ], cwd=bin_dir)
+                cmd.extend(["-change", old_path, new_path])
+            cmd.append(lib_name)
+            
+            self.patcher.executor.run(cmd, cwd=bin_dir)
 
     def _fix_source_game_links(self, game_path: Path, game_name: str):
         self.patcher.log(f"Fixing source game links for {game_name}...")
@@ -84,9 +83,8 @@ class SourceInstaller(BaseInstaller):
             lib_path = bin_dir / lib_name
             if not lib_path.exists():
                 continue
-            self.patcher.executor.run([
-                "install_name_tool", "-id", f"@loader_path/{lib_name}", lib_name
-            ], cwd=bin_dir)
+
+            cmd = ["install_name_tool", "-id", f"@loader_path/{lib_name}"]
 
             changes = [
                 (f"{build_prefix}/vstdlib/libvstdlib.dylib", f"@loader_path/{loader_prefix}/libvstdlib.dylib"),
@@ -100,6 +98,7 @@ class SourceInstaller(BaseInstaller):
                 )
 
             for old_path, new_path in changes:
-                self.patcher.executor.run([
-                    "install_name_tool", "-change", old_path, new_path, lib_name
-                ], cwd=bin_dir)
+                cmd.extend(["-change", old_path, new_path])
+            cmd.append(lib_name)
+            
+            self.patcher.executor.run(cmd, cwd=bin_dir)
