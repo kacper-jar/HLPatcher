@@ -28,8 +28,9 @@ class FailurePage(BasePage):
         self._error_label.pack(fill="x", padx=15, pady=(0, 15))
 
         help_text = (
-            "If the issue persists, please report it on GitHub\n"
-            "with the error details above."
+            "Please try patching again using 'Stable Mode' in the options.\n"
+            "If the issue persists in Stable Mode, please report it on GitHub\n"
+            "with the error details above and logs in the terminal."
         )
 
         help_label = ctk.CTkLabel(
