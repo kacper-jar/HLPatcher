@@ -71,13 +71,13 @@ def test_git_fetcher(mock_patch_context, mock_run_command):
 def test_git_fetcher_stable(mock_patch_context, mock_run_command):
     mock_patch_context.patch_mode = PatchMode.STABLE
     patcher = Patcher(mock_patch_context, AppConfig())
-    fetcher = GitFetcher(patcher, "target_dir", "http://repo", "branch", "commit", force_stable=False)
+    fetcher = GitFetcher(patcher, "target_dir", "http://repo", "branch", "1234567", force_stable=False)
     fetcher.fetch()
 
     assert len(mock_run_command.commands) == 3
     assert mock_run_command.commands[1][0][0] == "git"
     assert mock_run_command.commands[1][0][1] == "checkout"
-    assert mock_run_command.commands[1][0][2] == "commit"
+    assert mock_run_command.commands[1][0][2] == "1234567"
 
 
 def test_goldsrc_engine_fetcher(mock_patch_context, mock_run_command, mocker):
@@ -87,13 +87,13 @@ def test_goldsrc_engine_fetcher(mock_patch_context, mock_run_command, mocker):
 
     fetcher.fetch()
 
-    assert len(mock_run_command.commands) == 7
+    assert len(mock_run_command.commands) == 5
 
 
 def test_goldsrc_engine_fetcher_stable(mock_patch_context, mock_run_command, mocker):
     mock_patch_context.patch_mode = PatchMode.STABLE
     patcher = Patcher(mock_patch_context, AppConfig())
-    fetcher = GoldSrcEngineFetcher(patcher, "target_dir", "http://repo", "branch", "commit", force_stable=False)
+    fetcher = GoldSrcEngineFetcher(patcher, "target_dir", "http://repo", "branch", "1234567", force_stable=False)
     mocker.patch("shutil.copytree")
 
     fetcher.fetch()
