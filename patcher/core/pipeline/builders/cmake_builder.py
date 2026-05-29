@@ -14,7 +14,7 @@ class CMakeBuilder(BaseBuilder):
         venv_python = str(self.patcher._context.working_dir / "venv" / "bin" / "python3")
 
         self.patcher.executor.run([venv_python, "build_deps.py"], cwd=mod_dir)
-        self.patcher.executor.run([venv_python, "-m", "cmake", "-S", ".", "-B", "build"], cwd=mod_dir)
+        self.patcher.executor.run([venv_python, "-m", "cmake", "-S", ".", "-B", "build", "-G", "Ninja"], cwd=mod_dir)
         self.patcher.executor.run([venv_python, "-m", "cmake", "--build", "build", "--config", "Release"],
                                   cwd=mod_dir)
 

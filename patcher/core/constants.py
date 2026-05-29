@@ -59,7 +59,7 @@ GOLDSRC_COMPONENTS = [
         "stable_commit": "5ee5639",
         "build_system": "cmake",
         "patch_dir_name": "cs16-client",
-        "estimated_time": 3,
+        "estimated_time": 2,
         "estimated_space": 350,
     },
 ]
