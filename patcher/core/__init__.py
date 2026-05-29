@@ -14,6 +14,7 @@ from .models import (
     PatchStatus,
     UpdateInfo,
 )
+from .command_executor import CommandExecutor
 from .updater import Updater
 from .game_detector import GameDetector
 from .patcher import Patcher
@@ -38,4 +39,5 @@ __all__ = [
     "GoldSrcPatcher",
     "SourcePatcher",
     "Updater",
+    "CommandExecutor",
 ]

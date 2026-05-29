@@ -1,14 +1,12 @@
 from __future__ import annotations
 
 import logging
-import os
 import shutil
-import subprocess
 from datetime import datetime
 from pathlib import Path
 from typing import Callable
 
-from patcher.core import AppConfig, EngineType, Game, PatchContext, PatchMode
+from patcher.core import AppConfig, CommandExecutor, EngineType, Game, PatchContext, PatchMode
 
 logger = logging.getLogger(__name__)
 
@@ -20,13 +18,10 @@ class Patcher:
         self._config = config
         self._log_callback = log_callback
         self._component_callback = component_callback
-        self._stopped = False
-        self._current_process: subprocess.Popen | None = None
+        self.executor = CommandExecutor(self._context.working_dir, self._log_callback)
 
     def stop(self):
-        self._stopped = True
-        if self._current_process:
-            self._current_process.terminate()
+        self.executor.stop()
 
     def log(self, message: str):
         logger.info(message)
@@ -104,9 +99,9 @@ class Patcher:
         working_dir.mkdir(parents=True)
 
         self.log("Setting up Python venv for build tools...")
-        self._run_command(["python3", "-m", "venv", str(working_dir / "venv")])
+        self.executor.run(["python3", "-m", "venv", str(working_dir / "venv")])
         venv_pip = str(working_dir / "venv" / "bin" / "pip")
-        self._run_command([venv_pip, "install", "cmake", "ninja", "meson"])
+        self.executor.run([venv_pip, "install", "cmake", "ninja", "meson"])
 
     def _patch_generic(self, component_name: str):
         self.log(f"Patching {component_name}...")
@@ -120,7 +115,7 @@ class Patcher:
         patch_files = sorted(patch_dir.glob("*.patch"))
         for patch_file in patch_files:
             self.log(f"Applying patch: {patch_file.name}")
-            self._run_command(["patch", "-p1", "-i", str(patch_file)], cwd=target_dir)
+            self.executor.run(["patch", "-p1", "-i", str(patch_file)], cwd=target_dir)
 
     def _cleanup(self):
         if self._config.debug:
@@ -130,31 +125,3 @@ class Patcher:
         working_dir = self._context.working_dir
         if working_dir.exists():
             shutil.rmtree(working_dir)
-
-    def _run_command(self, cmd: list[str], cwd: Path | None = None,
-                     capture: bool = False) -> subprocess.CompletedProcess:
-        if self._stopped:
-            raise RuntimeError("Patching stopped by user")
-
-        self.log(f"Running: {' '.join(cmd)}")
-        env = os.environ.copy()
-        venv_bin = str(self._context.working_dir / "venv" / "bin")
-        env["PATH"] = f"{venv_bin}:{env.get('PATH', '')}"
-
-        self._current_process = subprocess.Popen(
-            cmd,
-            cwd=str(cwd) if cwd else None,
-            env=env,
-            stdout=subprocess.PIPE if capture else None,
-            stderr=subprocess.PIPE if capture else None,
-            text=True,
-        )
-
-        try:
-            stdout, stderr = self._current_process.communicate()
-            retcode = self._current_process.poll()
-            if retcode and retcode != 0:
-                raise subprocess.CalledProcessError(retcode, cmd, output=stdout, stderr=stderr)
-            return subprocess.CompletedProcess(self._current_process.args, retcode, stdout, stderr)
-        finally:
-            self._current_process = None

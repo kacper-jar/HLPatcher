@@ -57,7 +57,7 @@ class SourceInstaller(BaseInstaller):
             lib_path = bin_dir / lib_name
             if not lib_path.exists():
                 continue
-            self.patcher._run_command([
+            self.patcher.executor.run([
                 "install_name_tool", "-id", f"@loader_path/{lib_name}", lib_name
             ], cwd=bin_dir)
 
@@ -66,7 +66,7 @@ class SourceInstaller(BaseInstaller):
                     build_prefix=build_prefix,
                     thirdparty_prefix=thirdparty_prefix
                 )
-                self.patcher._run_command([
+                self.patcher.executor.run([
                     "install_name_tool", "-change", old_path, new_path, lib_name
                 ], cwd=bin_dir)
 
@@ -84,7 +84,7 @@ class SourceInstaller(BaseInstaller):
             lib_path = bin_dir / lib_name
             if not lib_path.exists():
                 continue
-            self.patcher._run_command([
+            self.patcher.executor.run([
                 "install_name_tool", "-id", f"@loader_path/{lib_name}", lib_name
             ], cwd=bin_dir)
 
@@ -100,6 +100,6 @@ class SourceInstaller(BaseInstaller):
                 )
 
             for old_path, new_path in changes:
-                self.patcher._run_command([
+                self.patcher.executor.run([
                     "install_name_tool", "-change", old_path, new_path, lib_name
                 ], cwd=bin_dir)

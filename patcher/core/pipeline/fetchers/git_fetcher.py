@@ -25,7 +25,7 @@ class GitFetcher(BaseFetcher):
         self.patcher.log(f"Preparing {self.target_dir_name}...")
         target_dir = self.patcher._context.working_dir / self.target_dir_name
 
-        self.patcher._run_command([
+        self.patcher.executor.run([
             "git", "clone", "--recursive",
             self.repo_url,
             str(target_dir),
@@ -36,5 +36,5 @@ class GitFetcher(BaseFetcher):
             ref_to_checkout = self.stable_commit
 
         if ref_to_checkout:
-            self.patcher._run_command(["git", "checkout", ref_to_checkout], cwd=target_dir)
-            self.patcher._run_command(["git", "submodule", "update", "--init", "--recursive"], cwd=target_dir)
+            self.patcher.executor.run(["git", "checkout", ref_to_checkout], cwd=target_dir)
+            self.patcher.executor.run(["git", "submodule", "update", "--init", "--recursive"], cwd=target_dir)

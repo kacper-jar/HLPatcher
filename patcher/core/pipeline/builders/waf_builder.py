@@ -15,4 +15,4 @@ class WafBuilder(BaseBuilder):
         output_dir = mod_dir / "output"
 
         cmd = ["./waf", "configure"] + self.configure_args + ["build", "install", f"--destdir={output_dir}"]
-        self.patcher._run_command(cmd, cwd=mod_dir)
+        self.patcher.executor.run(cmd, cwd=mod_dir)
