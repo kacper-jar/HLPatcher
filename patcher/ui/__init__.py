@@ -12,8 +12,10 @@ from .pages import (
     WelcomePage,
     UpdateAvailablePage,
 )
+from .router import Router
 
 __all__ = [
+    "Router",
     "BasePage",
     "NavigationFooter",
     "PageHeader",
