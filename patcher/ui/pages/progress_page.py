@@ -1,4 +1,5 @@
 import customtkinter as ctk
+import time
 import threading
 from patcher.ui import BasePage
 from patcher.core import EngineType, Game, Patcher
@@ -19,6 +20,14 @@ class ProgressPage(BasePage):
         self._progress_bar.pack(pady=10, padx=20)
         self._progress_bar.set(0)
 
+        self._elapsed_time_label = ctk.CTkLabel(
+            self,
+            text="Elapsed time: 00:00",
+            font=ctk.CTkFont(size=13, weight="bold"),
+            text_color="gray70"
+        )
+        self._elapsed_time_label.pack(pady=(5, 10))
+
         self._patching_thread = None
         self._patching_complete = False
         self._patching_error = None
@@ -34,9 +43,18 @@ class ProgressPage(BasePage):
 
         self._total_steps = 0
         self._current_step = 0
+        self._start_time = time.time()
+        self._update_timer()
 
         self._patching_thread = threading.Thread(target=self._run_patching, daemon=True)
         self._patching_thread.start()
+
+    def _update_timer(self):
+        if not self._patching_complete and not self._patching_error:
+            elapsed = int(time.time() - self._start_time)
+            mins, secs = divmod(elapsed, 60)
+            self._elapsed_time_label.configure(text=f"Elapsed time: {mins:02d}:{secs:02d}")
+            self.after(1000, self._update_timer)
 
     def _run_patching(self):
         try:
