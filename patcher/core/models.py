@@ -34,9 +34,13 @@ class Component:
     repo_url: str
     repo_branch: str = ""
     stable_commit: str = ""
-    build_system: str = "waf"
     patch_dir_name: str = ""
     waf_game: str = ""
+    fetcher: str = "git"
+    builder: str = "waf"
+    installer: str = "generic"
+    build_args: list[str] = field(default_factory=list)
+    force_stable: bool = False
     estimated_patch_time: int = 0
     estimated_free_space_required: int = 0
 

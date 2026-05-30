@@ -19,7 +19,7 @@ def test_get_total_steps(mock_patch_context):
     game2 = Game("HL2", Path("/fake2"), EngineType.SOURCE, [comp3, comp4])
 
     steps = patcher.get_total_steps([game1, game2])
-    assert steps == 5
+    assert steps == 4
 
 
 def test_create_backup(mock_patch_context, mocker):

@@ -67,7 +67,7 @@ class ProgressPage(BasePage):
                 if game.engine_type == EngineType.GOLDSRC:
                     engine_comp = next((c for c in game.components if c.name == "GoldSrc Engine"), None)
                     if engine_comp and engine_comp.needs_patch and engine_comp not in selected_for_game:
-                        selected_for_game.append(engine_comp)
+                        selected_for_game.insert(0, engine_comp)
 
                 game_map[game.name] = Game(
                     name=game.name,

@@ -5,9 +5,9 @@ from pathlib import Path
 from typing import Callable
 
 from patcher.core import (
-    Component, EngineType, Game, PatchStatus,
-    GOLDSRC_COMPONENTS, HL2_SOURCE_COMPONENTS, PORTAL_SOURCE_COMPONENTS
+    Component, EngineType, Game, PatchStatus
 )
+from patcher.core.config_loader import load_components_config
 
 logger = logging.getLogger(__name__)
 
@@ -19,35 +19,41 @@ PORTAL_FOLDER_NAME = "Portal"
 class GameDetector:
     def __init__(self, steam_library_path: Path):
         self._steam_library_path = steam_library_path
+        self._components_config = load_components_config()
 
     def scan(self) -> list[Game]:
         games = []
 
+        goldsrc_comps = [c for c in self._components_config if c.get("engine_type") == "GoldSrc"]
         goldsrc_game = self._scan_game(
             GOLDSRC_FOLDER_NAME,
             "hl_osx",
             EngineType.GOLDSRC,
-            GOLDSRC_COMPONENTS,
+            goldsrc_comps,
             self._check_goldsrc_component
         )
         if goldsrc_game:
             games.append(goldsrc_game)
 
+        hl2_comps = [c for c in self._components_config if
+                     c.get("engine_type") == "Source" and c.get("waf_game") != "portal"]
         hl2_game = self._scan_game(
             HL2_FOLDER_NAME,
             "hl2_osx",
             EngineType.SOURCE,
-            HL2_SOURCE_COMPONENTS,
+            hl2_comps,
             self._check_source_component
         )
         if hl2_game:
             games.append(hl2_game)
 
+        portal_comps = [c for c in self._components_config if
+                        c.get("engine_type") == "Source" and c.get("waf_game") == "portal"]
         portal_game = self._scan_game(
             PORTAL_FOLDER_NAME,
             "hl2_osx",
             EngineType.SOURCE,
-            PORTAL_SOURCE_COMPONENTS,
+            portal_comps,
             self._check_source_component
         )
         if portal_game:
@@ -111,9 +117,13 @@ class GameDetector:
             repo_url=comp_def["repo_url"],
             repo_branch=comp_def.get("repo_branch", ""),
             stable_commit=comp_def.get("stable_commit", ""),
-            build_system=comp_def.get("build_system", "waf"),
             patch_dir_name=comp_def.get("patch_dir_name", ""),
             waf_game=comp_def.get("waf_game", ""),
+            fetcher=comp_def.get("fetcher", "git"),
+            builder=comp_def.get("builder", "waf"),
+            installer=comp_def.get("installer", "generic"),
+            build_args=comp_def.get("build_args", []),
+            force_stable=comp_def.get("force_stable", False),
             estimated_patch_time=comp_def.get("estimated_time", 0),
             estimated_free_space_required=comp_def.get("estimated_space", 0),
         )
@@ -135,9 +145,13 @@ class GameDetector:
             repo_url=comp_def["repo_url"],
             repo_branch=comp_def.get("repo_branch", ""),
             stable_commit=comp_def.get("stable_commit", ""),
-            build_system=comp_def.get("build_system", "waf"),
             patch_dir_name=comp_def.get("patch_dir_name", ""),
             waf_game=comp_def.get("waf_game", ""),
+            fetcher=comp_def.get("fetcher", "git"),
+            builder=comp_def.get("builder", "waf"),
+            installer=comp_def.get("installer", "generic"),
+            build_args=comp_def.get("build_args", []),
+            force_stable=comp_def.get("force_stable", False),
             estimated_patch_time=comp_def.get("estimated_time", 0),
             estimated_free_space_required=comp_def.get("estimated_space", 0),
         )

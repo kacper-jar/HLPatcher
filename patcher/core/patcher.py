@@ -33,41 +33,67 @@ class Patcher:
             self._component_callback(name)
 
     def get_total_steps(self, selected_games: list[Game]) -> int:
-        steps = 0
-        goldsrc_games = [g for g in selected_games if g.engine_type == EngineType.GOLDSRC]
-        if goldsrc_games:
-            game = goldsrc_games[0]
-            selected_comps = [c for c in game.components if c.needs_patch]
-            unique_subfolders = {c.subfolder for c in selected_comps}
-            steps += len(unique_subfolders)
-
-        source_games = [g for g in selected_games if g.engine_type == EngineType.SOURCE]
-        if source_games:
-            waf_games = set()
-            has_any_source_patch = False
-            for game in source_games:
-                selected_comps = [c for c in game.components if c.needs_patch]
-                if selected_comps:
-                    has_any_source_patch = True
-                    for comp in selected_comps:
-                        if comp.waf_game:
-                            waf_games.add(comp.waf_game)
-
-            if has_any_source_patch:
-                steps += 1
-                steps += len(waf_games)
-
-        return steps
+        return sum(1 for g in selected_games for c in g.components if c.needs_patch)
 
     def run(self, selected_games: list[Game]):
         try:
             self._create_backup(selected_games)
             self._prepare_environment()
 
-            from patcher.core import GoldSrcPatcher, SourcePatcher
+            components_by_dir = {}
+            for game in selected_games:
+                for comp in game.components:
+                    if comp.needs_patch:
+                        if comp.patch_dir_name not in components_by_dir:
+                            components_by_dir[comp.patch_dir_name] = []
+                        components_by_dir[comp.patch_dir_name].append((game, comp))
 
-            GoldSrcPatcher(self).process(selected_games)
-            SourcePatcher(self).process(selected_games)
+            from patcher.core.pipeline.fetchers import GitFetcher, GoldSrcEngineFetcher
+            from patcher.core.pipeline.builders import WafBuilder, CMakeBuilder
+            from patcher.core.pipeline.installers import GenericInstaller, GoldSrcEngineInstaller, SourceInstaller
+
+            for dir_name, game_comp_list in components_by_dir.items():
+                for i, (game, comp) in enumerate(game_comp_list):
+                    self._notify_component(comp.name)
+
+                    if i == 0:
+                        if comp.fetcher == "goldsrc_engine":
+                            fetcher = GoldSrcEngineFetcher(
+                                self, comp.patch_dir_name, comp.repo_url,
+                                comp.repo_branch, comp.stable_commit, comp.force_stable
+                            )
+                        else:
+                            fetcher = GitFetcher(
+                                self, comp.patch_dir_name, comp.repo_url,
+                                comp.repo_branch, comp.stable_commit, comp.force_stable
+                            )
+                        fetcher.fetch()
+
+                        self._patch_generic(comp.patch_dir_name)
+
+                    args = []
+                    for arg in comp.build_args:
+                        args.append(arg.format(
+                            working_dir=str(self._context.working_dir),
+                            waf_game=comp.waf_game
+                        ))
+
+                    if comp.builder == "cmake":
+                        builder = CMakeBuilder(self, comp.patch_dir_name)
+                    else:
+                        builder = WafBuilder(self, comp.patch_dir_name, args)
+
+                    builder.build()
+
+                    if comp.installer == "goldsrc_engine":
+                        installer = GoldSrcEngineInstaller(self, comp.patch_dir_name)
+                        installer.install(game)
+                    elif comp.installer == "source":
+                        installer = SourceInstaller(self)
+                        installer.install(game, subfolders=[comp.subfolder])
+                    else:
+                        installer = GenericInstaller(self, comp.patch_dir_name)
+                        installer.install(game)
 
             self._cleanup()
         except Exception as e:
@@ -105,7 +131,7 @@ class Patcher:
 
     def _patch_generic(self, component_name: str):
         self.log(f"Patching {component_name}...")
-        patch_dir = self._context.script_dir / "fixes" / "src" / component_name
+        patch_dir = self._context.script_dir / "data" / "fixes" / "src" / component_name
         target_dir = self._context.working_dir / component_name
 
         if not patch_dir.is_dir():
