@@ -9,10 +9,10 @@ import customtkinter as ctk
 
 from patcher.core import AppConfig, EngineType, GameDetector, PatchContext, UpdateInfo, Updater
 from patcher.ui import (
-    BasePage,
     NavigationFooter,
     PageHeader,
-    Router
+    Router,
+    PageRoute
 )
 
 logger = logging.getLogger(__name__)
@@ -61,7 +61,7 @@ class App(ctk.CTk):
 
         self.router = Router(self, self._content_frame, self._header, self.footer)
         self.router.route_interceptor = self._on_route_intercept
-        self.router.show_page("welcome")
+        self.router.show_page(PageRoute.WELCOME)
 
     def _start_update_check(self):
         def check():
@@ -72,26 +72,26 @@ class App(ctk.CTk):
 
         threading.Thread(target=check, daemon=True).start()
 
-    def _on_route_intercept(self, current_key: str, next_key: str) -> str | None:
-        if next_key == "scan_and_route":
+    def _on_route_intercept(self, current_key: PageRoute, next_key: PageRoute) -> PageRoute | None:
+        if next_key == PageRoute.SCAN_AND_ROUTE:
             self._scan_and_route()
-            return "HALT"
+            return PageRoute.HALT
 
-        if next_key == "check_source_warning":
+        if next_key == PageRoute.CHECK_SOURCE_WARNING:
             self._check_source_warning()
-            return "HALT"
+            return PageRoute.HALT
 
         if (
-                current_key == "welcome"
+                current_key == PageRoute.WELCOME
                 and self.update_info
                 and self.update_info.update_available
         ):
-            return "update_available"
+            return PageRoute.UPDATE_AVAILABLE
 
         return None
 
     def _on_quit(self):
-        if getattr(self, "router", None) and self.router.current_page_key == "progress":
+        if getattr(self, "router", None) and self.router.current_page_key == PageRoute.PROGRESS:
             page = self.router.get_current_page()
             if hasattr(page, "stop_patching"):
                 page.stop_patching()
@@ -101,25 +101,25 @@ class App(ctk.CTk):
         self.destroy()
 
     def _scan_and_route(self):
-        self.router.invalidate_page("selection")
-        self.router.invalidate_page("no_games")
-        self.router.invalidate_page("all_patched")
+        self.router.invalidate_page(PageRoute.SELECTION)
+        self.router.invalidate_page(PageRoute.NO_GAMES)
+        self.router.invalidate_page(PageRoute.ALL_PATCHED)
 
         detector = GameDetector(self.context.steam_library_path)
         games = detector.scan()
         self.context.games = games
 
         if not games:
-            self.router.show_page("no_games")
+            self.router.show_page(PageRoute.NO_GAMES)
             return
 
         all_patched = all(g.all_patched for g in games)
         if all_patched:
-            self.router.show_page("all_patched")
+            self.router.show_page(PageRoute.ALL_PATCHED)
             return
 
         self.router.push_history(self.router.current_page_key)
-        self.router.show_page("selection")
+        self.router.show_page(PageRoute.SELECTION)
 
     def _check_source_warning(self):
         has_source = any(
@@ -128,6 +128,6 @@ class App(ctk.CTk):
         )
         self.router.push_history(self.router.current_page_key)
         if has_source:
-            self.router.show_page("warning")
+            self.router.show_page(PageRoute.WARNING)
         else:
-            self.router.show_page("progress")
+            self.router.show_page(PageRoute.PROGRESS)

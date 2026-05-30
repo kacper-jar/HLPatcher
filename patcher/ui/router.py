@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from typing import Callable
 
-from patcher.ui import BasePage
+from patcher.ui import BasePage, PageRoute
 
 
 def _camel_to_snake(name: str) -> str:
@@ -18,12 +18,12 @@ class Router:
         self.header = header
         self.footer = footer
 
-        self._pages: dict[str, type] = {}
-        self._page_instances: dict[str, BasePage] = {}
-        self.current_page_key: str = ""
-        self._history: list[str] = []
+        self._pages: dict[PageRoute, type] = {}
+        self._page_instances: dict[PageRoute, BasePage] = {}
+        self.current_page_key: PageRoute | None = None
+        self._history: list[PageRoute] = []
 
-        self.route_interceptor: Callable[[str, str], str] | None = None
+        self.route_interceptor: Callable[[PageRoute, PageRoute], PageRoute | None] | None = None
 
         self._register_pages()
 
@@ -31,10 +31,14 @@ class Router:
         for cls in BasePage.__subclasses__():
             if cls.__name__ == "BasePage":
                 continue
-            key = _camel_to_snake(cls.__name__.replace('Page', ''))
-            self._pages[key] = cls
+            key_str = _camel_to_snake(cls.__name__.replace('Page', ''))
+            try:
+                key = PageRoute(key_str)
+                self._pages[key] = cls
+            except ValueError:
+                pass
 
-    def show_page(self, page_key: str):
+    def show_page(self, page_key: PageRoute):
         if self.current_page_key and self.current_page_key in self._page_instances:
             current = self._page_instances[self.current_page_key]
             current.on_leave()
@@ -59,7 +63,7 @@ class Router:
 
         self.current_page_key = page_key
 
-    def invalidate_page(self, page_key: str):
+    def invalidate_page(self, page_key: PageRoute):
         if page_key in self._page_instances:
             self._page_instances[page_key].destroy()
             del self._page_instances[page_key]
@@ -91,7 +95,7 @@ class Router:
 
         if self.route_interceptor and next_key:
             override_key = self.route_interceptor(self.current_page_key, next_key)
-            if override_key == "HALT":
+            if override_key == PageRoute.HALT:
                 return
             if override_key:
                 next_key = override_key
@@ -103,8 +107,8 @@ class Router:
     def get_current_page(self) -> BasePage | None:
         return self._page_instances.get(self.current_page_key)
 
-    def get_page_instance(self, page_key: str) -> BasePage | None:
+    def get_page_instance(self, page_key: PageRoute) -> BasePage | None:
         return self._page_instances.get(page_key)
 
-    def push_history(self, page_key: str):
+    def push_history(self, page_key: PageRoute):
         self._history.append(page_key)

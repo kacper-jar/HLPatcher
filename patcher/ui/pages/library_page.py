@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from pathlib import Path
 from tkinter import filedialog
-from patcher.ui import BasePage
+from patcher.ui import BasePage, PageRoute
 
 DEFAULT_STEAM_PATH = Path.home() / "Library" / "Application Support" / "Steam" / "steamapps" / "common"
 
@@ -83,8 +83,8 @@ class LibraryPage(BasePage):
     def on_leave(self):
         self._app.context.steam_library_path = Path(self._path_var.get())
 
-    def get_next_page_key(self) -> str:
-        return "scan_and_route"
+    def get_next_page_key(self) -> PageRoute:
+        return PageRoute.SCAN_AND_ROUTE
 
-    def get_back_page_key(self) -> str:
-        return "welcome"
+    def get_back_page_key(self) -> PageRoute:
+        return PageRoute.WELCOME

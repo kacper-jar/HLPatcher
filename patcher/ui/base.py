@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import customtkinter as ctk
 from abc import abstractmethod
+from patcher.ui import PageRoute
 
 
 class BasePage(ctk.CTkFrame):
@@ -25,10 +26,10 @@ class BasePage(ctk.CTkFrame):
     def can_go_back(self) -> bool:
         return True
 
-    def get_next_page_key(self) -> str | None:
+    def get_next_page_key(self) -> PageRoute | None:
         return None
 
-    def get_back_page_key(self) -> str | None:
+    def get_back_page_key(self) -> PageRoute | None:
         return None
 
     def show_back_button(self) -> bool:

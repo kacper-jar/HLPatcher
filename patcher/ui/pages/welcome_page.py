@@ -1,6 +1,6 @@
 import customtkinter as ctk
 import patcher
-from patcher.ui import BasePage
+from patcher.ui import BasePage, PageRoute
 
 
 class WelcomePage(BasePage):
@@ -85,5 +85,5 @@ class WelcomePage(BasePage):
     def show_back_button(self) -> bool:
         return False
 
-    def get_next_page_key(self) -> str:
-        return "library"
+    def get_next_page_key(self) -> PageRoute:
+        return PageRoute.LIBRARY

@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from patcher.ui import BasePage
+from patcher.ui import BasePage, PageRoute
 from patcher.core import EngineType
 
 
@@ -182,8 +182,8 @@ class SelectionPage(BasePage):
     def get_title(self) -> str:
         return "Select Games to Patch"
 
-    def get_next_page_key(self) -> str:
-        return "options"
+    def get_next_page_key(self) -> PageRoute:
+        return PageRoute.OPTIONS
 
-    def get_back_page_key(self) -> str:
-        return "library"
+    def get_back_page_key(self) -> PageRoute:
+        return PageRoute.LIBRARY

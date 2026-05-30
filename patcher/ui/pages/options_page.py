@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from patcher.ui import BasePage
+from patcher.ui import BasePage, PageRoute
 from patcher.core import PatchMode, EngineType
 
 
@@ -91,11 +91,11 @@ class OptionsPage(BasePage):
     def get_title(self) -> str:
         return "Patching Options"
 
-    def get_next_page_key(self) -> str:
-        return "check_source_warning"
+    def get_next_page_key(self) -> PageRoute:
+        return PageRoute.CHECK_SOURCE_WARNING
 
-    def get_back_page_key(self) -> str:
-        return "selection"
+    def get_back_page_key(self) -> PageRoute:
+        return PageRoute.SELECTION
 
     def get_next_button_text(self) -> str:
         has_source = any(

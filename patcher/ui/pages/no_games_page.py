@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from patcher.ui import BasePage
+from patcher.ui import BasePage, PageRoute
 
 
 class NoGamesPage(BasePage):
@@ -26,5 +26,5 @@ class NoGamesPage(BasePage):
     def show_next_button(self) -> bool:
         return False
 
-    def get_back_page_key(self) -> str:
-        return "library"
+    def get_back_page_key(self) -> PageRoute:
+        return PageRoute.LIBRARY

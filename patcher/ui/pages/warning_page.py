@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from patcher.ui import BasePage
+from patcher.ui import BasePage, PageRoute
 
 
 class WarningPage(BasePage):
@@ -42,11 +42,11 @@ class WarningPage(BasePage):
     def get_title(self) -> str:
         return "Before You Continue!"
 
-    def get_next_page_key(self) -> str:
-        return "progress"
+    def get_next_page_key(self) -> PageRoute:
+        return PageRoute.PROGRESS
 
-    def get_back_page_key(self) -> str:
-        return "options"
+    def get_back_page_key(self) -> PageRoute:
+        return PageRoute.OPTIONS
 
     def get_next_button_text(self) -> str:
         return "Patch"

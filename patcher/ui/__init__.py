@@ -1,3 +1,4 @@
+from .page_route import PageRoute
 from .base import BasePage, NavigationFooter, PageHeader
 from .pages import (
     AllPatchedPage,
@@ -15,6 +16,7 @@ from .pages import (
 from .router import Router
 
 __all__ = [
+    "PageRoute",
     "Router",
     "BasePage",
     "NavigationFooter",

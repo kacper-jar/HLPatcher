@@ -1,9 +1,9 @@
+from patcher.ui import PageRoute
 from unittest.mock import Mock
 
 import pytest
 import customtkinter as ctk
 
-from patcher.core import Component, EngineType, PatchStatus
 from patcher.ui.pages import OptionsPage, WelcomePage
 
 
@@ -21,7 +21,7 @@ def test_welcome_page(mock_app_context):
     page = WelcomePage(master, mock_app_context)
 
     assert "Welcome" in page.get_title()
-    assert page.get_next_page_key() == "library"
+    assert page.get_next_page_key() == PageRoute.LIBRARY
     assert page.show_back_button() is False
 
 
@@ -30,7 +30,7 @@ def test_options_page(mock_app_context):
     page = OptionsPage(master, mock_app_context)
 
     assert page.get_title() == "Patching Options"
-    assert page.get_next_page_key() == "check_source_warning"
+    assert page.get_next_page_key() == PageRoute.CHECK_SOURCE_WARNING
 
     from patcher.core.models import PatchMode
     page._mode_var.set(PatchMode.LATEST.value)

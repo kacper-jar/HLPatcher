@@ -2,7 +2,7 @@ import webbrowser
 
 import customtkinter as ctk
 
-from patcher.ui import BasePage
+from patcher.ui import BasePage, PageRoute
 
 
 class UpdateAvailablePage(BasePage):
@@ -61,8 +61,8 @@ class UpdateAvailablePage(BasePage):
     def get_title(self) -> str:
         return "Update Available"
 
-    def get_next_page_key(self) -> str:
-        return "library"
+    def get_next_page_key(self) -> PageRoute:
+        return PageRoute.LIBRARY
 
     def get_next_button_text(self) -> str:
         return "Proceed"
@@ -70,5 +70,5 @@ class UpdateAvailablePage(BasePage):
     def show_back_button(self) -> bool:
         return True
 
-    def get_back_page_key(self) -> str:
-        return "welcome"
+    def get_back_page_key(self) -> PageRoute:
+        return PageRoute.WELCOME

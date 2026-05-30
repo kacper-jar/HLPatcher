@@ -1,3 +1,4 @@
+from patcher.ui import PageRoute
 import pytest
 
 from patcher.app import App
@@ -15,32 +16,32 @@ def mock_app(mocker):
 
 
 def test_app_initial_state(mock_app):
-    assert mock_app.router.current_page_key == "welcome"
+    assert mock_app.router.current_page_key == PageRoute.WELCOME
     assert len(mock_app.router._history) == 0
 
 
 def test_app_navigation_next_back(mock_app, mocker):
     mocker.patch("patcher.ui.WelcomePage.can_go_next", return_value=True)
-    mocker.patch("patcher.ui.WelcomePage.get_next_page_key", return_value="library")
+    mocker.patch("patcher.ui.WelcomePage.get_next_page_key", return_value=PageRoute.LIBRARY)
 
     mock_app.router.go_next()
-    assert mock_app.router.current_page_key == "library"
-    assert mock_app.router._history == ["welcome"]
+    assert mock_app.router.current_page_key == PageRoute.LIBRARY
+    assert mock_app.router._history == [PageRoute.WELCOME]
 
     mocker.patch("patcher.ui.LibraryPage.can_go_back", return_value=True)
-    mocker.patch("patcher.ui.LibraryPage.get_back_page_key", return_value="welcome")
+    mocker.patch("patcher.ui.LibraryPage.get_back_page_key", return_value=PageRoute.WELCOME)
 
     mock_app.router.go_back()
-    assert mock_app.router.current_page_key == "welcome"
+    assert mock_app.router.current_page_key == PageRoute.WELCOME
     assert mock_app.router._history == []
 
 
 def test_scan_and_route_no_games(mock_app, mocker):
     mocker.patch("patcher.app.GameDetector.scan", return_value=[])
-    mock_app.router.show_page("library")
+    mock_app.router.show_page(PageRoute.LIBRARY)
     mock_app._scan_and_route()
 
-    assert mock_app.router.current_page_key == "no_games"
+    assert mock_app.router.current_page_key == PageRoute.NO_GAMES
 
 
 def test_scan_and_route_all_patched(mock_app, mocker):
@@ -49,10 +50,10 @@ def test_scan_and_route_all_patched(mock_app, mocker):
     game.components.append(comp)
 
     mocker.patch("patcher.app.GameDetector.scan", return_value=[game])
-    mock_app.router.show_page("library")
+    mock_app.router.show_page(PageRoute.LIBRARY)
     mock_app._scan_and_route()
 
-    assert mock_app.router.current_page_key == "all_patched"
+    assert mock_app.router.current_page_key == PageRoute.ALL_PATCHED
 
 
 def test_scan_and_route_needs_patch(mock_app, mocker):
@@ -61,25 +62,25 @@ def test_scan_and_route_needs_patch(mock_app, mocker):
     game.components.append(comp)
 
     mocker.patch("patcher.app.GameDetector.scan", return_value=[game])
-    mock_app.router.show_page("library")
+    mock_app.router.show_page(PageRoute.LIBRARY)
     mock_app._scan_and_route()
 
-    assert mock_app.router.current_page_key == "selection"
+    assert mock_app.router.current_page_key == PageRoute.SELECTION
 
 
 def test_check_source_warning_with_source(mock_app):
     comp = Component("SourceComp", "test", EngineType.SOURCE, PatchStatus.NEEDS_PATCH, "")
     mock_app.context.selected_components = [comp]
-    mock_app.router.show_page("options")
+    mock_app.router.show_page(PageRoute.OPTIONS)
     mock_app._check_source_warning()
 
-    assert mock_app.router.current_page_key == "warning"
+    assert mock_app.router.current_page_key == PageRoute.WARNING
 
 
 def test_check_source_warning_without_source(mock_app):
     comp = Component("GoldSrcComp", "test", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH, "")
     mock_app.context.selected_components = [comp]
-    mock_app.router.show_page("options")
+    mock_app.router.show_page(PageRoute.OPTIONS)
     mock_app._check_source_warning()
 
-    assert mock_app.router.current_page_key == "progress"
+    assert mock_app.router.current_page_key == PageRoute.PROGRESS
