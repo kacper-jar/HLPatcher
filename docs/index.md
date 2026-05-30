@@ -35,7 +35,7 @@ It lets users enjoy the game again without the hassle of manual binary update.
 
     [:octicons-mark-github-16: Source Code](https://github.com/FWGS/hlsdk-portable/tree/dmc) · [:octicons-person-24: Flying with Gauss](https://github.com/FWGS)
 
--   **Counter-Strike 1.6**
+-   **Counter-Strike**
 
     [:octicons-mark-github-16: Source Code](https://github.com/Velaron/cs16-client) · [:octicons-person-24: Velaron](https://github.com/Velaron)
 
