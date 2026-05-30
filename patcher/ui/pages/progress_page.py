@@ -1,7 +1,7 @@
 import customtkinter as ctk
 import time
 import threading
-from patcher.ui import BasePage
+from patcher.ui import BasePage, PageRoute
 from patcher.core import EngineType, Game, Patcher
 
 
@@ -113,14 +113,14 @@ class ProgressPage(BasePage):
             return
         self._progress_bar.set(1.0)
         self._status_label.configure(text="Patching complete!")
-        self._app.router.show_page("success")
+        self._app.router.show_page(PageRoute.SUCCESS)
 
     def _on_patching_error_threadsafe(self, error: str):
         self.after(0, self._on_patching_error_sync, error)
 
     def _on_patching_error_sync(self, error: str):
         self._app.patching_error = error
-        self._app.router.show_page("failure")
+        self._app.router.show_page(PageRoute.FAILURE)
 
     def stop_patching(self):
         if hasattr(self, 'patcher') and self.patcher:
