@@ -47,3 +47,6 @@ class WarningPage(BasePage):
 
     def get_back_page_key(self) -> str:
         return "options"
+
+    def get_next_button_text(self) -> str:
+        return "Patch"
