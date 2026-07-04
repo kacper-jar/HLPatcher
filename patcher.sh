@@ -30,8 +30,8 @@ if [ ! -d "$VENV_DIR" ]; then
 fi
 
 echo "=> Installing dependencies..."
-"$VENV_DIR/bin/pip" install -q --upgrade pip
-"$VENV_DIR/bin/pip" install -q -r "$SCRIPT_DIR/requirements.txt" || exit 1
+"$VENV_DIR/bin/pip" install --upgrade pip
+"$VENV_DIR/bin/pip" install -r "$SCRIPT_DIR/requirements.txt" || exit 1
 
 HLPATCHER_DEBUG="0"
 for arg in "$@"; do
