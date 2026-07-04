@@ -1,0 +1,114 @@
+--- a/build_deps.py	2026-07-04 17:13:43
++++ b/build_deps.py	2026-07-04 17:13:43
+@@ -22,6 +22,7 @@
+     'freetype': 'https://downloads.sourceforge.net/project/freetype/freetype2/2.14.1/freetype-2.14.1.tar.xz',
+     'sdl2': 'https://github.com/libsdl-org/SDL/releases/download/release-2.32.10/SDL2-2.32.10.tar.gz',
+     'libjpeg': 'https://www.ijg.org/files/jpegsrc.v9f.tar.gz',
++    'openssl': 'https://github.com/openssl/openssl/releases/download/openssl-3.6.3/openssl-3.6.3.tar.gz',
+     'libcurl': 'https://curl.se/download/curl-8.17.0.tar.bz2',
+     'zlib': 'https://zlib.net/zlib-1.3.2.tar.gz'
+ }
+@@ -246,6 +247,40 @@
+     run_command(['make', 'install'], src_dir)
+ 
+ 
++def build_openssl():
++    if is_installed('ssl') and is_installed('crypto'):
++        print('openssl already installed. Skipping.')
++        return
++    src_dir = download_and_extract('openssl', URLS['openssl'])
++    
++    ca_bundle_path = os.path.join(PREFIX, 'cert.pem')
++    if not os.path.exists(ca_bundle_path):
++        print('Downloading cacert.pem...')
++        urllib.request.urlretrieve("https://curl.se/ca/cacert.pem", ca_bundle_path)
++        
++    arch = platform.machine()
++    if arch == 'arm64':
++        target = 'darwin64-arm64-cc'
++    else:
++        target = 'darwin64-x86_64-cc'
++        
++    args = [
++        'perl', './Configure',
++        f'--prefix={PREFIX}',
++        f'--openssldir={PREFIX}',
++        '--libdir=lib',
++        'no-ssl3',
++        'no-ssl3-method',
++        'no-zlib',
++        target,
++        'enable-ec_nistp_64_gcc_128'
++    ]
++    
++    run_command(args, src_dir)
++    run_command(['make', '-j4'], src_dir)
++    run_command(['make', 'install_sw'], src_dir)
++
++
+ def build_libcurl():
+     if is_installed('curl'):
+         print('libcurl already installed. Skipping.')
+@@ -254,35 +289,16 @@
+     args = [
+         './configure',
+         '--disable-silent-rules',
+-        '--without-ca-bundle',
+-        '--without-ca-path',
+-        '--with-ca-fallback',
+         '--without-libpsl'
+     ] + get_std_configure_args()
+     
+     if sys.platform == 'darwin':
+-        try:
+-            openssl_prefix = subprocess.check_output(['brew', '--prefix', 'openssl@3']).decode('utf-8').strip()
+-        except:
+-            try:
+-                openssl_prefix = subprocess.check_output(['brew', '--prefix', 'openssl']).decode('utf-8').strip()
+-            except:
+-                openssl_prefix = '/usr/local/opt/openssl'
+-        
+-        libssh2_prefix = None
+-        try:
+-            libssh2_prefix = subprocess.check_output(['brew', '--prefix', 'libssh2']).decode('utf-8').strip()
+-            if not os.path.exists(libssh2_prefix):
+-                libssh2_prefix = None
+-        except:
+-            pass
++        ca_bundle_path = os.path.join(PREFIX, 'cert.pem')
++        print(f'Using OpenSSL from {PREFIX}')
+             
+-        print(f'Using OpenSSL from {openssl_prefix}')
+-        if libssh2_prefix:
+-            print(f'Using libssh2 from {libssh2_prefix}')
+-            
+         args += [
+-            f'--with-openssl={openssl_prefix}',
++            f'--with-openssl={PREFIX}',
++            f'--with-ca-bundle={ca_bundle_path}',
+             '--with-default-ssl-backend=openssl',
+             '--without-secure-transport',
+             '--without-apple-sectrust',
+@@ -292,12 +308,9 @@
+             '--without-librtmp',
+             '--without-nghttp2',
+             '--without-nghttp3',
+-            '--without-ngtcp2'
++            '--without-ngtcp2',
++            '--without-libssh2'
+         ]
+-        if libssh2_prefix:
+-            args.append(f'--with-libssh2={libssh2_prefix}')
+-        else:
+-            args.append('--without-libssh2')
+     
+     run_command(args, src_dir)
+     run_command(['make', 'install'], src_dir)
+@@ -319,6 +332,7 @@
+     build_freetype()
+     build_fontconfig()
+     build_sdl2()
++    build_openssl()
+     build_libcurl()
+     print('All dependencies built successfully.')
+ 
