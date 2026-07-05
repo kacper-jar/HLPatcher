@@ -8,6 +8,7 @@
     "stable_commit": "2166dbd",
     "patch_dir_name": "xash3d-fwgs",
     "fetcher": "goldsrc_engine",
+    "force_stable": false,
     "builder": "waf",
     "installer": "goldsrc_engine",
     "build_args": [
@@ -27,6 +28,7 @@
     "stable_commit": "7945421",
     "patch_dir_name": "hlsdk-portable-hlfixed",
     "fetcher": "git",
+    "force_stable": false,
     "builder": "waf",
     "installer": "generic",
     "build_args": [
@@ -46,6 +48,7 @@
     "stable_commit": "dbb7242",
     "patch_dir_name": "hlsdk-portable-opforfixed",
     "fetcher": "git",
+    "force_stable": false,
     "builder": "waf",
     "installer": "generic",
     "build_args": [
@@ -65,6 +68,7 @@
     "stable_commit": "cd04b61",
     "patch_dir_name": "hlsdk-portable-bshift",
     "fetcher": "git",
+    "force_stable": false,
     "builder": "waf",
     "installer": "generic",
     "build_args": [
@@ -84,7 +88,7 @@
     "stable_commit": "7e635ff",
     "patch_dir_name": "hlsdk-portable-dmc",
     "fetcher": "git",
-    "force_stable": true,
+    "force_stable": false,
     "builder": "waf",
     "installer": "generic",
     "build_args": [
@@ -104,6 +108,7 @@
     "stable_commit": "934a366",
     "patch_dir_name": "cs16-client",
     "fetcher": "git",
+    "force_stable": false,
     "builder": "cmake",
     "installer": "generic",
     "build_args": [],
@@ -120,6 +125,7 @@
     "patch_dir_name": "source-engine",
     "waf_game": "hl2",
     "fetcher": "git",
+    "force_stable": false,
     "builder": "waf",
     "installer": "source",
     "build_args": [
@@ -141,6 +147,7 @@
     "patch_dir_name": "source-engine",
     "waf_game": "hl2",
     "fetcher": "git",
+    "force_stable": false,
     "builder": "waf",
     "installer": "source",
     "build_args": [
@@ -162,6 +169,7 @@
     "patch_dir_name": "source-engine",
     "waf_game": "episodic",
     "fetcher": "git",
+    "force_stable": false,
     "builder": "waf",
     "installer": "source",
     "build_args": [
@@ -183,6 +191,7 @@
     "patch_dir_name": "source-engine",
     "waf_game": "hl1",
     "fetcher": "git",
+    "force_stable": false,
     "builder": "waf",
     "installer": "source",
     "build_args": [
@@ -204,6 +213,7 @@
     "patch_dir_name": "source-engine",
     "waf_game": "portal",
     "fetcher": "git",
+    "force_stable": false,
     "builder": "waf",
     "installer": "source",
     "build_args": [
