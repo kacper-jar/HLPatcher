@@ -96,15 +96,21 @@ class NavigationFooter(ctk.CTkFrame):
 
     def set_back_visible(self, visible: bool):
         if visible:
-            self._back_button.grid(row=0, column=2, padx=(0, 5), pady=10, sticky="e")
+            is_next_visible = bool(self._next_button.grid_info())
+            padx = (0, 5) if is_next_visible else (0, 10)
+            self._back_button.grid(row=0, column=2, padx=padx, pady=10, sticky="e")
         else:
             self._back_button.grid_remove()
 
     def set_next_visible(self, visible: bool):
         if visible:
             self._next_button.grid(row=0, column=3, padx=10, pady=10, sticky="e")
+            if self._back_button.grid_info():
+                self._back_button.grid_configure(padx=(0, 5))
         else:
             self._next_button.grid_remove()
+            if self._back_button.grid_info():
+                self._back_button.grid_configure(padx=(0, 10))
 
     def set_next_text(self, text: str):
         self._next_button.configure(text=text)
