@@ -1,7 +1,5 @@
 import webbrowser
-
 import customtkinter as ctk
-
 from patcher.ui import BasePage, PageRoute
 
 
