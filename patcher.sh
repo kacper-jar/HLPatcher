@@ -43,3 +43,22 @@ done
 
 echo "=> Starting HLPatcher..."
 HLPATCHER_DEBUG="$HLPATCHER_DEBUG" HLPATCHER_VERSION="$HLPATCHER_VERSION" "$VENV_DIR/bin/python3" -m patcher
+EXIT_CODE=$?
+
+if [ $EXIT_CODE -ne 0 ]; then
+    echo ""
+    echo "================================================================================"
+    echo "                               HLPATCHER CRASHED                                "
+    echo "================================================================================"
+    echo " HLPatcher encountered an unexpected error while running and crashed."
+    echo ""
+    echo " To help fix this issue, please report it on GitHub by opening a new issue:"
+    echo " -> https://github.com/kacper-jar/HLPatcher/issues/new?template=bug_patcher.md"
+    echo ""
+    echo " Important:"
+    echo "  - Please copy and paste the ENTIRE terminal output above into the"
+    echo "    \"Error Messages or Logs\" section of the report."
+    echo "  - You will need a GitHub account to submit an issue."
+    echo "================================================================================"
+    exit $EXIT_CODE
+fi
