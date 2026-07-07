@@ -105,7 +105,7 @@
     "engine_type": "GoldSrc",
     "repo_url": "https://github.com/Velaron/cs16-client",
     "repo_branch": "",
-    "stable_commit": "934a366",
+    "stable_commit": "a1b526f",
     "patch_dir_name": "cs16-client",
     "fetcher": "git",
     "force_stable": false,
