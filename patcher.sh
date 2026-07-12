@@ -1,6 +1,6 @@
 #!/bin/bash
 
-HLPATCHER_VERSION="3.1.3"
+HLPATCHER_VERSION="3.1.4"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
 VENV_DIR="$SCRIPT_DIR/.venv"
