@@ -50,35 +50,6 @@ class WelcomePage(BasePage):
         )
         closing_label.pack(fill="x", padx=15, pady=(5, 10))
 
-        notice_frame = ctk.CTkFrame(self, fg_color="gray20", corner_radius=8)
-        notice_frame.pack(fill="x", padx=20, pady=5)
-
-        notice_title = ctk.CTkLabel(
-            notice_frame,
-            text="Known Issue",
-            font=ctk.CTkFont(weight="bold"),
-            text_color="#f39c12",
-            anchor="w",
-        )
-        notice_title.pack(fill="x", padx=15, pady=(10, 5))
-
-        notice_text = (
-            "Due to a bug in the Tkinter library, the window may feel "
-            "unresponsive and button clicks may not register. "
-            "The workaround is to move the window or take the cursor "
-            "outside the window and then back in."
-        )
-
-        notice_label = ctk.CTkLabel(
-            notice_frame,
-            text=notice_text,
-            anchor="w",
-            wraplength=340,
-            justify="left",
-            font=ctk.CTkFont(size=12),
-        )
-        notice_label.pack(fill="x", padx=15, pady=(0, 10))
-
     def get_title(self) -> str:
         return f"Welcome to HLPatcher ({patcher.__version__})"
 
