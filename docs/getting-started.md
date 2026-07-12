@@ -18,13 +18,7 @@ xcode-select --install
 
 A system prompt will appear asking you to confirm the installation. Click **Install** and wait for it to finish.
 
-## Step 3: Install Python Certificates
-
-Open your **Applications** folder and find the **Python 3.9** folder. Inside, double-click the `Install Certificates.command` script to run it. This is required to verify SSL certificates later on during patching.
-
-![Python 3.9 Folder](imgs/getting-started-step-3.png)
-
-## Step 4: Run HLPatcher
+## Step 3: Run the Patcher
 
 In **Terminal**, navigate to the folder where you unzipped HLPatcher, then run:
 
@@ -37,7 +31,7 @@ The `patcher.sh` bootstrap script will automatically verify prerequisites, set u
 !!! tip
     You only need to run `chmod +x ./patcher.sh` once. On subsequent runs, just use `./patcher.sh`.
 
-## Step 5: Follow the UI
+## Step 4: Follow the UI
 
 Once HLPatcher opens, it will guide you through the rest of the process:
 
