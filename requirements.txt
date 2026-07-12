@@ -1,2 +1,3 @@
 customtkinter>=5.2.0
 packaging
+certifi

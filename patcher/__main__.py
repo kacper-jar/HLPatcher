@@ -1,7 +1,10 @@
 import logging
 import os
+import certifi
 import patcher
 from patcher.core import AppConfig
+
+os.environ["SSL_CERT_FILE"] = certifi.where()
 
 patcher.__version__ = os.environ.get("HLPATCHER_VERSION", "indev")
 
