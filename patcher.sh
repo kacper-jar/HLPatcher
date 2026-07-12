@@ -18,15 +18,28 @@ if ! xcode-select -p &>/dev/null; then
     exit 1
 fi
 
-if ! command -v python3 &>/dev/null; then
-    echo "Python 3 is required but not found."
-    echo "Please install Python 3 and try again."
+PYTHON_ARCHIVE_URL="https://github.com/astral-sh/python-build-standalone/releases/download/20260623/cpython-3.14.6+20260623-aarch64-apple-darwin-pgo+lto-full.tar.zst"
+PYTHON_ARCHIVE="cpython-3.14.6+20260623-aarch64-apple-darwin-pgo+lto-full.tar.zst"
+PYTHON_DIR="$SCRIPT_DIR/.python"
+PYTHON_BIN="$PYTHON_DIR/python/install/bin/python3"
+
+if [ ! -d "$PYTHON_DIR" ]; then
+    echo "=> Downloading standalone Python..."
+    mkdir -p "$PYTHON_DIR"
+    curl -L -o "$SCRIPT_DIR/$PYTHON_ARCHIVE" "$PYTHON_ARCHIVE_URL" || exit 1
+    echo "=> Extracting standalone Python..."
+    tar -xf "$SCRIPT_DIR/$PYTHON_ARCHIVE" -C "$PYTHON_DIR" || exit 1
+    rm "$SCRIPT_DIR/$PYTHON_ARCHIVE"
+fi
+
+if [ ! -x "$PYTHON_BIN" ]; then
+    echo "Failed to find standalone Python at $PYTHON_BIN."
     exit 1
 fi
 
 if [ ! -d "$VENV_DIR" ]; then
     echo "=> Creating virtual environment..."
-    python3 -m venv "$VENV_DIR" || exit 1
+    "$PYTHON_BIN" -m venv "$VENV_DIR" || exit 1
 fi
 
 echo "=> Installing dependencies..."
@@ -37,6 +50,7 @@ HLPATCHER_DEBUG="0"
 for arg in "$@"; do
     if [ "$arg" = "debug" ]; then
         echo "Debug mode enabled."
+        "$VENV_DIR/bin/pip" install -r "$SCRIPT_DIR/requirements-dev.txt" || exit 1
         HLPATCHER_DEBUG="1"
     fi
 done
