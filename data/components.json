@@ -5,7 +5,7 @@
     "engine_type": "GoldSrc",
     "repo_url": "https://github.com/FWGS/xash3d-fwgs",
     "repo_branch": "",
-    "stable_commit": "2166dbd",
+    "stable_commit": "f2166a2",
     "patch_dir_name": "xash3d-fwgs",
     "fetcher": "goldsrc_engine",
     "force_stable": false,
