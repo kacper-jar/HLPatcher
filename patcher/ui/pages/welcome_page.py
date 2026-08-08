@@ -20,7 +20,7 @@ class WelcomePage(BasePage):
 
         credits_title = ctk.CTkLabel(
             credits_frame,
-            text="Thanks to:",
+            text="Thanks to",
             font=ctk.CTkFont(weight="bold"),
             anchor="w",
         )
@@ -49,6 +49,29 @@ class WelcomePage(BasePage):
             anchor="w",
         )
         closing_label.pack(fill="x", padx=15, pady=(5, 10))
+
+        note_frame = ctk.CTkFrame(self, fg_color="gray20", corner_radius=8)
+        note_frame.pack(fill="x", padx=20, pady=(5, 10))
+
+        note_title = ctk.CTkLabel(
+            note_frame,
+            text="Note",
+            font=ctk.CTkFont(weight="bold"),
+            text_color="#f39c12",
+            anchor="w",
+        )
+        note_title.pack(fill="x", padx=15, pady=(10, 0))
+
+        note_label = ctk.CTkLabel(
+            note_frame,
+            text="Please be aware that patched multiplayer titles "
+                 "cannot connect to standard PC and VAC-secured "
+                 "servers.",
+            anchor="w",
+            wraplength=320,
+            justify="left",
+        )
+        note_label.pack(fill="x", padx=15, pady=(2, 10))
 
     def get_title(self) -> str:
         return f"Welcome to HLPatcher ({patcher.__version__})"
