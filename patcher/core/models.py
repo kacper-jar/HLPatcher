@@ -26,21 +26,43 @@ class PatchStatus(Enum):
 
 
 @dataclass
+class StepConfig:
+    type: str
+
+
+@dataclass
+class FetchStepConfig(StepConfig):
+    url: str = ""
+    patch_dir_name: str = ""
+    branch: str = ""
+    stable_commit: str = ""
+    force_stable: bool = False
+
+
+@dataclass
+class PatchStepConfig(StepConfig):
+    patch_dir_name: str = ""
+
+
+@dataclass
+class BuildStepConfig(StepConfig):
+    patch_dir_name: str = ""
+    build_args: list[str] = field(default_factory=list)
+    waf_game: str = ""
+
+
+@dataclass
+class InstallStepConfig(StepConfig):
+    patch_dir_name: str = ""
+
+
+@dataclass
 class Component:
     name: str
     subfolder: str
     engine_type: EngineType
     status: PatchStatus
-    repo_url: str
-    repo_branch: str = ""
-    stable_commit: str = ""
-    patch_dir_name: str = ""
-    waf_game: str = ""
-    fetcher: str = "git"
-    builder: str = "waf"
-    installer: str = "generic"
-    build_args: list[str] = field(default_factory=list)
-    force_stable: bool = False
+    steps: list[StepConfig] = field(default_factory=list)
     estimated_patch_time: int = 0
     estimated_free_space_required: int = 0
 

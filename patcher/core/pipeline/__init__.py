@@ -1,3 +1,4 @@
-from .base import BaseFetcher, BaseBuilder, BaseInstaller
+from .base import BaseStep
+from .registry import step, STEP_REGISTRY
 
-__all__ = ["BaseFetcher", "BaseBuilder", "BaseInstaller"]
+__all__ = ["BaseStep", "step", "STEP_REGISTRY"]

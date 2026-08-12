@@ -1,6 +1,7 @@
 from pathlib import Path
 
-from patcher.core.models import AppConfig, Component, EngineType, Game, PatchMode, PatchStatus
+from patcher.core.models import AppConfig, Component, EngineType, Game, PatchMode, PatchStatus, FetchStepConfig, \
+    BuildStepConfig
 from patcher.core import Patcher
 from patcher.core.pipeline.fetchers import GitFetcher, GoldSrcEngineFetcher
 from patcher.core.pipeline.builders import WafBuilder, CMakeBuilder
@@ -10,12 +11,12 @@ from patcher.core.pipeline.installers import GenericInstaller, GoldSrcEngineInst
 def test_get_total_steps(mock_patch_context):
     patcher = Patcher(mock_patch_context, AppConfig())
 
-    comp1 = Component("GoldSrc Engine", "", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH, "")
-    comp2 = Component("Half-Life", "valve", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH, "")
+    comp1 = Component("GoldSrc Engine", "", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH)
+    comp2 = Component("Half-Life", "valve", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH)
     game1 = Game("GoldSrc", Path("/fake"), EngineType.GOLDSRC, [comp1, comp2])
 
-    comp3 = Component("Half-Life 2", "hl2", EngineType.SOURCE, PatchStatus.NEEDS_PATCH, "", waf_game="hl2")
-    comp4 = Component("Portal", "portal", EngineType.SOURCE, PatchStatus.NEEDS_PATCH, "", waf_game="portal")
+    comp3 = Component("Half-Life 2", "hl2", EngineType.SOURCE, PatchStatus.NEEDS_PATCH)
+    comp4 = Component("Portal", "portal", EngineType.SOURCE, PatchStatus.NEEDS_PATCH)
     game2 = Game("HL2", Path("/fake2"), EngineType.SOURCE, [comp3, comp4])
 
     steps = patcher.get_total_steps([game1, game2])
@@ -28,7 +29,7 @@ def test_create_backup(mock_patch_context, mocker):
 
     mock_copytree = mocker.patch("shutil.copytree")
 
-    comp = Component("GoldSrc Engine", "", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH, "")
+    comp = Component("GoldSrc Engine", "", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH)
     game = Game("GoldSrc", Path("/fake/GoldSrc"), EngineType.GOLDSRC, [comp])
     patcher._create_backup([game])
 
@@ -44,10 +45,10 @@ def test_create_backup_skips_unpatched(mock_patch_context, mocker):
 
     mock_copytree = mocker.patch("shutil.copytree")
 
-    comp = Component("GoldSrc Engine", "", EngineType.GOLDSRC, PatchStatus.ALREADY_PATCHED, "")
+    comp = Component("GoldSrc Engine", "", EngineType.GOLDSRC, PatchStatus.ALREADY_PATCHED)
     game1 = Game("GoldSrc", Path("/fake/GoldSrc"), EngineType.GOLDSRC, [comp])
 
-    comp_needs_patch = Component("Portal", "portal", EngineType.SOURCE, PatchStatus.NEEDS_PATCH, "", waf_game="portal")
+    comp_needs_patch = Component("Portal", "portal", EngineType.SOURCE, PatchStatus.NEEDS_PATCH)
     game2 = Game("Portal", Path("/fake/Portal"), EngineType.SOURCE, [comp_needs_patch])
 
     patcher._create_backup([game1, game2])
@@ -60,8 +61,12 @@ def test_create_backup_skips_unpatched(mock_patch_context, mocker):
 
 def test_git_fetcher(mock_patch_context, mock_run_command):
     patcher = Patcher(mock_patch_context, AppConfig())
-    fetcher = GitFetcher(patcher, "target_dir", "http://repo", "branch", "commit", force_stable=False)
-    fetcher.fetch()
+    fetcher = GitFetcher(patcher)
+    comp = Component("Test", "", EngineType.SOURCE, PatchStatus.NEEDS_PATCH)
+    game = Game("Test", mock_patch_context.working_dir, EngineType.SOURCE, [comp])
+    step_config = FetchStepConfig("git-fetcher", patch_dir_name="target_dir", url="http://repo", branch="branch",
+                                  stable_commit="commit")
+    fetcher.execute(game, comp, step_config)
 
     assert len(mock_run_command.commands) >= 1
     assert mock_run_command.commands[0][0][0] == "git"
@@ -71,8 +76,12 @@ def test_git_fetcher(mock_patch_context, mock_run_command):
 def test_git_fetcher_stable(mock_patch_context, mock_run_command):
     mock_patch_context.patch_mode = PatchMode.STABLE
     patcher = Patcher(mock_patch_context, AppConfig())
-    fetcher = GitFetcher(patcher, "target_dir", "http://repo", "branch", "1234567", force_stable=False)
-    fetcher.fetch()
+    fetcher = GitFetcher(patcher)
+    comp = Component("Test", "", EngineType.SOURCE, PatchStatus.NEEDS_PATCH)
+    game = Game("Test", mock_patch_context.working_dir, EngineType.SOURCE, [comp])
+    step_config = FetchStepConfig("git-fetcher", patch_dir_name="target_dir", url="http://repo", branch="branch",
+                                  stable_commit="1234567")
+    fetcher.execute(game, comp, step_config)
 
     assert len(mock_run_command.commands) == 3
     assert mock_run_command.commands[1][0][0] == "git"
@@ -82,10 +91,14 @@ def test_git_fetcher_stable(mock_patch_context, mock_run_command):
 
 def test_goldsrc_engine_fetcher(mock_patch_context, mock_run_command, mocker):
     patcher = Patcher(mock_patch_context, AppConfig())
-    fetcher = GoldSrcEngineFetcher(patcher, "target_dir", "http://repo", "branch", "commit", force_stable=False)
+    fetcher = GoldSrcEngineFetcher(patcher)
+    comp = Component("Test", "", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH)
+    game = Game("Test", mock_patch_context.working_dir, EngineType.GOLDSRC, [comp])
+    step_config = FetchStepConfig("goldsrc-engine-fetcher", patch_dir_name="target_dir", url="http://repo",
+                                  branch="branch", stable_commit="commit")
     mocker.patch("shutil.copytree")
 
-    fetcher.fetch()
+    fetcher.execute(game, comp, step_config)
 
     assert len(mock_run_command.commands) == 5
 
@@ -93,18 +106,25 @@ def test_goldsrc_engine_fetcher(mock_patch_context, mock_run_command, mocker):
 def test_goldsrc_engine_fetcher_stable(mock_patch_context, mock_run_command, mocker):
     mock_patch_context.patch_mode = PatchMode.STABLE
     patcher = Patcher(mock_patch_context, AppConfig())
-    fetcher = GoldSrcEngineFetcher(patcher, "target_dir", "http://repo", "branch", "1234567", force_stable=False)
+    fetcher = GoldSrcEngineFetcher(patcher)
+    comp = Component("Test", "", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH)
+    game = Game("Test", mock_patch_context.working_dir, EngineType.GOLDSRC, [comp])
+    step_config = FetchStepConfig("goldsrc-engine-fetcher", patch_dir_name="target_dir", url="http://repo",
+                                  branch="branch", stable_commit="1234567")
     mocker.patch("shutil.copytree")
 
-    fetcher.fetch()
+    fetcher.execute(game, comp, step_config)
 
     assert len(mock_run_command.commands) == 7
 
 
 def test_waf_builder(mock_patch_context, mock_run_command):
     patcher = Patcher(mock_patch_context, AppConfig())
-    builder = WafBuilder(patcher, "target_dir", ["-8"])
-    builder.build()
+    builder = WafBuilder(patcher)
+    comp = Component("Test", "", EngineType.SOURCE, PatchStatus.NEEDS_PATCH)
+    game = Game("Test", mock_patch_context.working_dir, EngineType.SOURCE, [comp])
+    step_config = BuildStepConfig("waf-builder", patch_dir_name="target_dir", build_args=["-8"])
+    builder.execute(game, comp, step_config)
 
     assert len(mock_run_command.commands) == 1
     assert mock_run_command.commands[0][0][0] == "./waf"
@@ -113,8 +133,11 @@ def test_waf_builder(mock_patch_context, mock_run_command):
 
 def test_cmake_builder(mock_patch_context, mock_run_command):
     patcher = Patcher(mock_patch_context, AppConfig())
-    builder = CMakeBuilder(patcher, "target_dir")
-    builder.build()
+    builder = CMakeBuilder(patcher)
+    comp = Component("Test", "", EngineType.SOURCE, PatchStatus.NEEDS_PATCH)
+    game = Game("Test", mock_patch_context.working_dir, EngineType.SOURCE, [comp])
+    step_config = BuildStepConfig("cmake-builder", patch_dir_name="target_dir")
+    builder.execute(game, comp, step_config)
 
     assert len(mock_run_command.commands) == 4
     assert mock_run_command.commands[0][0][1] == "build_deps.py"
@@ -124,11 +147,13 @@ def test_cmake_builder(mock_patch_context, mock_run_command):
 
 def test_generic_installer(mock_patch_context, mocker):
     patcher = Patcher(mock_patch_context, AppConfig())
-    installer = GenericInstaller(patcher, "target_dir")
-    game = Game("Test", Path("/fake"), EngineType.GOLDSRC, [])
+    installer = GenericInstaller(patcher)
+    comp = Component("Test", "", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH)
+    game = Game("Test", Path("/fake"), EngineType.GOLDSRC, [comp])
+    step_config = BuildStepConfig("generic-installer", patch_dir_name="target_dir")
 
     mock_copytree = mocker.patch("shutil.copytree")
-    installer.install(game)
+    installer.execute(game, comp, step_config)
 
     mock_copytree.assert_called_once()
     assert "target_dir/output" in str(mock_copytree.call_args[0][0])
@@ -136,11 +161,13 @@ def test_generic_installer(mock_patch_context, mocker):
 
 def test_goldsrc_engine_installer(mock_patch_context, mocker):
     patcher = Patcher(mock_patch_context, AppConfig())
-    installer = GoldSrcEngineInstaller(patcher, "target_dir")
-    game = Game("Test", mock_patch_context.working_dir, EngineType.GOLDSRC, [])
+    installer = GoldSrcEngineInstaller(patcher)
+    comp = Component("Test", "", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH)
+    game = Game("Test", mock_patch_context.working_dir, EngineType.GOLDSRC, [comp])
+    step_config = BuildStepConfig("goldsrc-engine-installer", patch_dir_name="target_dir")
 
     mock_copytree = mocker.patch("shutil.copytree")
-    installer.install(game)
+    installer.execute(game, comp, step_config)
 
     assert mock_copytree.call_count == 2
     assert "SDL2.framework" in str(mock_copytree.call_args_list[1][0][0])
@@ -149,7 +176,9 @@ def test_goldsrc_engine_installer(mock_patch_context, mocker):
 def test_source_installer(mock_patch_context, mocker, mock_run_command):
     patcher = Patcher(mock_patch_context, AppConfig())
     installer = SourceInstaller(patcher)
-    game = Game("Test", mock_patch_context.working_dir, EngineType.SOURCE, [])
+    comp = Component("Test", "hl2", EngineType.SOURCE, PatchStatus.NEEDS_PATCH)
+    game = Game("Test", mock_patch_context.working_dir, EngineType.SOURCE, [comp])
+    step_config = BuildStepConfig("source-installer", patch_dir_name="source-engine")
 
     bin_dir = mock_patch_context.working_dir / "bin"
     bin_dir.mkdir(parents=True, exist_ok=True)
@@ -162,7 +191,7 @@ def test_source_installer(mock_patch_context, mocker, mock_run_command):
     mock_copytree = mocker.patch("shutil.copytree")
     mock_copy2 = mocker.patch("shutil.copy2")
 
-    installer.install(game, subfolders=["hl2"])
+    installer.execute(game, comp, step_config)
 
     assert mock_copytree.call_count >= 1
     assert len(mock_run_command.commands) >= 1

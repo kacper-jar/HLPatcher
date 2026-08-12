@@ -2,16 +2,18 @@ from __future__ import annotations
 
 import shutil
 
-from patcher.core import Game
+from patcher.core import Game, Component, InstallStepConfig
+from patcher.core.pipeline import step
 from patcher.core.pipeline.installers import GenericInstaller
 
 
+@step("goldsrc-engine-installer")
 class GoldSrcEngineInstaller(GenericInstaller):
-    def install(self, game: Game, **kwargs):
-        super().install(game, **kwargs)
+    def execute(self, game: Game, comp: Component, step_config: InstallStepConfig):
+        super().execute(game, comp, step_config)
 
         self.patcher.log("Installing GoldSrc Engine...")
-        xash_dir = self.patcher._context.working_dir / self.target_dir_name
+        xash_dir = self.patcher._context.working_dir / step_config.patch_dir_name
 
         sdl_src = xash_dir / "3rdparty" / "SDL2.framework"
         sdl_dest = game.path / "SDL2.framework"

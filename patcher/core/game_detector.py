@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Callable
 
 from patcher.core import (
-    Component, EngineType, Game, PatchStatus
+    Component, EngineType, Game, PatchStatus, FetchStepConfig, PatchStepConfig, BuildStepConfig, InstallStepConfig
 )
 from patcher.core.config_loader import load_components_config
 
@@ -36,7 +36,7 @@ class GameDetector:
             games.append(goldsrc_game)
 
         hl2_comps = [c for c in self._components_config if
-                     c.get("engine_type") == "Source" and c.get("waf_game") != "portal"]
+                     c.get("engine_type") == "Source" and c.get("subfolder") != "portal"]
         hl2_game = self._scan_game(
             HL2_FOLDER_NAME,
             "hl2_osx",
@@ -48,7 +48,7 @@ class GameDetector:
             games.append(hl2_game)
 
         portal_comps = [c for c in self._components_config if
-                        c.get("engine_type") == "Source" and c.get("waf_game") == "portal"]
+                        c.get("engine_type") == "Source" and c.get("subfolder") == "portal"]
         portal_game = self._scan_game(
             PORTAL_FOLDER_NAME,
             "hl2_osx",
@@ -114,16 +114,7 @@ class GameDetector:
             subfolder=subfolder,
             engine_type=EngineType.GOLDSRC,
             status=status,
-            repo_url=comp_def["repo_url"],
-            repo_branch=comp_def.get("repo_branch", ""),
-            stable_commit=comp_def.get("stable_commit", ""),
-            patch_dir_name=comp_def.get("patch_dir_name", ""),
-            waf_game=comp_def.get("waf_game", ""),
-            fetcher=comp_def.get("fetcher", "git"),
-            builder=comp_def.get("builder", "waf"),
-            installer=comp_def.get("installer", "generic"),
-            build_args=comp_def.get("build_args", []),
-            force_stable=comp_def.get("force_stable", False),
+            steps=self._parse_steps(comp_def.get("steps", [])),
             estimated_patch_time=comp_def.get("estimated_time", 0),
             estimated_free_space_required=comp_def.get("estimated_space", 0),
         )
@@ -142,19 +133,42 @@ class GameDetector:
             subfolder=subfolder,
             engine_type=EngineType.SOURCE,
             status=status,
-            repo_url=comp_def["repo_url"],
-            repo_branch=comp_def.get("repo_branch", ""),
-            stable_commit=comp_def.get("stable_commit", ""),
-            patch_dir_name=comp_def.get("patch_dir_name", ""),
-            waf_game=comp_def.get("waf_game", ""),
-            fetcher=comp_def.get("fetcher", "git"),
-            builder=comp_def.get("builder", "waf"),
-            installer=comp_def.get("installer", "generic"),
-            build_args=comp_def.get("build_args", []),
-            force_stable=comp_def.get("force_stable", False),
+            steps=self._parse_steps(comp_def.get("steps", [])),
             estimated_patch_time=comp_def.get("estimated_time", 0),
             estimated_free_space_required=comp_def.get("estimated_space", 0),
         )
+
+    def _parse_steps(self, steps_def: list[dict]) -> list:
+        parsed_steps = []
+        for step in steps_def:
+            step_type = step.get("type", "")
+            if step_type.endswith("-fetcher"):
+                parsed_steps.append(FetchStepConfig(
+                    type=step_type,
+                    url=step.get("url", ""),
+                    patch_dir_name=step.get("patch_dir_name", ""),
+                    branch=step.get("branch", ""),
+                    stable_commit=step.get("stable_commit", ""),
+                    force_stable=step.get("force_stable", False)
+                ))
+            elif step_type == "patch":
+                parsed_steps.append(PatchStepConfig(
+                    type=step_type,
+                    patch_dir_name=step.get("patch_dir_name", "")
+                ))
+            elif step_type.endswith("-builder"):
+                parsed_steps.append(BuildStepConfig(
+                    type=step_type,
+                    patch_dir_name=step.get("patch_dir_name", ""),
+                    build_args=step.get("build_args", []),
+                    waf_game=step.get("waf_game", "")
+                ))
+            else:
+                parsed_steps.append(InstallStepConfig(
+                    type=step_type,
+                    patch_dir_name=step.get("patch_dir_name", "")
+                ))
+        return parsed_steps
 
     def _detect_goldsrc_engine_status(self, game_path: Path) -> PatchStatus:
         required_files = [

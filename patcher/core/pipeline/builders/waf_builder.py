@@ -1,18 +1,23 @@
 from __future__ import annotations
 
-from patcher.core.pipeline import BaseBuilder
+from patcher.core import Game, Component, BuildStepConfig
+from patcher.core.pipeline import BaseStep, step
 
 
-class WafBuilder(BaseBuilder):
-    def __init__(self, patcher, target_dir_name: str, configure_args: list[str]):
-        super().__init__(patcher)
-        self.target_dir_name = target_dir_name
-        self.configure_args = configure_args
-
-    def build(self):
-        self.patcher.log(f"Building {self.target_dir_name}...")
-        mod_dir = self.patcher._context.working_dir / self.target_dir_name
+@step("waf-builder")
+class WafBuilder(BaseStep):
+    def execute(self, game: Game, comp: Component, step_config: BuildStepConfig):
+        target_dir_name = step_config.patch_dir_name
+        self.patcher.log(f"Building {target_dir_name}...")
+        mod_dir = self.patcher._context.working_dir / target_dir_name
         output_dir = mod_dir / "output"
 
-        cmd = ["./waf", "configure"] + self.configure_args + ["build", "install", f"--destdir={output_dir}"]
+        args = []
+        for arg in step_config.build_args:
+            args.append(arg.format(
+                working_dir=str(self.patcher._context.working_dir),
+                waf_game=step_config.waf_game
+            ))
+
+        cmd = ["./waf", "configure"] + args + ["build", "install", f"--destdir={output_dir}"]
         self.patcher.executor.run(cmd, cwd=mod_dir)

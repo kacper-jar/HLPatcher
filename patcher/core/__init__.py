@@ -10,6 +10,11 @@ from .models import (
     PatchMode,
     PatchStatus,
     UpdateInfo,
+    StepConfig,
+    FetchStepConfig,
+    PatchStepConfig,
+    BuildStepConfig,
+    InstallStepConfig,
 )
 from .command_executor import CommandExecutor
 from .updater import Updater
@@ -30,4 +35,9 @@ __all__ = [
     "SOURCE_LINK_FIXES",
     "Updater",
     "CommandExecutor",
+    "StepConfig",
+    "FetchStepConfig",
+    "PatchStepConfig",
+    "BuildStepConfig",
+    "InstallStepConfig",
 ]

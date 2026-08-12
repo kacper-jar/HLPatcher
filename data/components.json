@@ -3,226 +3,353 @@
     "name": "GoldSrc Engine",
     "subfolder": "",
     "engine_type": "GoldSrc",
-    "repo_url": "https://github.com/FWGS/xash3d-fwgs",
-    "repo_branch": "",
-    "stable_commit": "04fbe1a",
-    "patch_dir_name": "xash3d-fwgs",
-    "fetcher": "goldsrc_engine",
-    "force_stable": false,
-    "builder": "waf",
-    "installer": "goldsrc_engine",
-    "build_args": [
-      "-8",
-      "--enable-bundled-deps",
-      "--sdl2={working_dir}/xash3d-fwgs/3rdparty/SDL2.framework"
-    ],
     "estimated_time": 1,
-    "estimated_space": 350
+    "estimated_space": 350,
+    "steps": [
+      {
+        "type": "goldsrc-engine-fetcher",
+        "url": "https://github.com/FWGS/xash3d-fwgs",
+        "patch_dir_name": "xash3d-fwgs",
+        "stable_commit": "04fbe1a",
+        "force_stable": false
+      },
+      {
+        "type": "waf-builder",
+        "patch_dir_name": "xash3d-fwgs",
+        "build_args": [
+          "-8",
+          "--enable-bundled-deps",
+          "--sdl2={working_dir}/xash3d-fwgs/3rdparty/SDL2.framework"
+        ]
+      },
+      {
+        "type": "goldsrc-engine-installer",
+        "patch_dir_name": "xash3d-fwgs"
+      }
+    ]
   },
   {
     "name": "Half-Life",
     "subfolder": "valve",
     "engine_type": "GoldSrc",
-    "repo_url": "https://github.com/FWGS/hlsdk-portable",
-    "repo_branch": "hlfixed",
-    "stable_commit": "7945421",
-    "patch_dir_name": "hlsdk-portable-hlfixed",
-    "fetcher": "git",
-    "force_stable": false,
-    "builder": "waf",
-    "installer": "generic",
-    "build_args": [
-      "-T",
-      "release",
-      "-8"
-    ],
     "estimated_time": 1,
-    "estimated_space": 60
+    "estimated_space": 60,
+    "steps": [
+      {
+        "type": "git-fetcher",
+        "url": "https://github.com/FWGS/hlsdk-portable",
+        "patch_dir_name": "hlsdk-portable-hlfixed",
+        "branch": "hlfixed",
+        "stable_commit": "7945421",
+        "force_stable": false
+      },
+      {
+        "type": "waf-builder",
+        "patch_dir_name": "hlsdk-portable-hlfixed",
+        "build_args": [
+          "-T",
+          "release",
+          "-8"
+        ]
+      },
+      {
+        "type": "generic-installer",
+        "patch_dir_name": "hlsdk-portable-hlfixed"
+      }
+    ]
   },
   {
     "name": "Half-Life: Opposing Force",
     "subfolder": "gearbox",
     "engine_type": "GoldSrc",
-    "repo_url": "https://github.com/FWGS/hlsdk-portable",
-    "repo_branch": "opforfixed",
-    "stable_commit": "dbb7242",
-    "patch_dir_name": "hlsdk-portable-opforfixed",
-    "fetcher": "git",
-    "force_stable": false,
-    "builder": "waf",
-    "installer": "generic",
-    "build_args": [
-      "-T",
-      "release",
-      "-8"
-    ],
     "estimated_time": 1,
-    "estimated_space": 60
+    "estimated_space": 60,
+    "steps": [
+      {
+        "type": "git-fetcher",
+        "url": "https://github.com/FWGS/hlsdk-portable",
+        "patch_dir_name": "hlsdk-portable-opforfixed",
+        "branch": "opforfixed",
+        "stable_commit": "dbb7242",
+        "force_stable": false
+      },
+      {
+        "type": "waf-builder",
+        "patch_dir_name": "hlsdk-portable-opforfixed",
+        "build_args": [
+          "-T",
+          "release",
+          "-8"
+        ]
+      },
+      {
+        "type": "generic-installer",
+        "patch_dir_name": "hlsdk-portable-opforfixed"
+      }
+    ]
   },
   {
     "name": "Half-Life: Blue Shift",
     "subfolder": "bshift",
     "engine_type": "GoldSrc",
-    "repo_url": "https://github.com/FWGS/hlsdk-portable",
-    "repo_branch": "bshift",
-    "stable_commit": "cd04b61",
-    "patch_dir_name": "hlsdk-portable-bshift",
-    "fetcher": "git",
-    "force_stable": false,
-    "builder": "waf",
-    "installer": "generic",
-    "build_args": [
-      "-T",
-      "release",
-      "-8"
-    ],
     "estimated_time": 1,
-    "estimated_space": 60
+    "estimated_space": 60,
+    "steps": [
+      {
+        "type": "git-fetcher",
+        "url": "https://github.com/FWGS/hlsdk-portable",
+        "patch_dir_name": "hlsdk-portable-bshift",
+        "branch": "bshift",
+        "stable_commit": "cd04b61",
+        "force_stable": false
+      },
+      {
+        "type": "waf-builder",
+        "patch_dir_name": "hlsdk-portable-bshift",
+        "build_args": [
+          "-T",
+          "release",
+          "-8"
+        ]
+      },
+      {
+        "type": "generic-installer",
+        "patch_dir_name": "hlsdk-portable-bshift"
+      }
+    ]
   },
   {
     "name": "Deathmatch Classic",
     "subfolder": "dmc",
     "engine_type": "GoldSrc",
-    "repo_url": "https://github.com/FWGS/hlsdk-portable",
-    "repo_branch": "dmc",
-    "stable_commit": "7e635ff",
-    "patch_dir_name": "hlsdk-portable-dmc",
-    "fetcher": "git",
-    "force_stable": false,
-    "builder": "waf",
-    "installer": "generic",
-    "build_args": [
-      "-T",
-      "release",
-      "-8"
-    ],
     "estimated_time": 1,
-    "estimated_space": 60
+    "estimated_space": 60,
+    "steps": [
+      {
+        "type": "git-fetcher",
+        "url": "https://github.com/FWGS/hlsdk-portable",
+        "patch_dir_name": "hlsdk-portable-dmc",
+        "branch": "dmc",
+        "stable_commit": "7e635ff",
+        "force_stable": false
+      },
+      {
+        "type": "waf-builder",
+        "patch_dir_name": "hlsdk-portable-dmc",
+        "build_args": [
+          "-T",
+          "release",
+          "-8"
+        ]
+      },
+      {
+        "type": "generic-installer",
+        "patch_dir_name": "hlsdk-portable-dmc"
+      }
+    ]
   },
   {
     "name": "Counter-Strike",
     "subfolder": "cstrike",
     "engine_type": "GoldSrc",
-    "repo_url": "https://github.com/Velaron/cs16-client",
-    "repo_branch": "",
-    "stable_commit": "a1b526f",
-    "patch_dir_name": "cs16-client",
-    "fetcher": "git",
-    "force_stable": false,
-    "builder": "cmake",
-    "installer": "generic",
-    "build_args": [],
     "estimated_time": 2,
-    "estimated_space": 350
+    "estimated_space": 350,
+    "steps": [
+      {
+        "type": "git-fetcher",
+        "url": "https://github.com/Velaron/cs16-client",
+        "patch_dir_name": "cs16-client",
+        "stable_commit": "a1b526f",
+        "force_stable": false
+      },
+      {
+        "type": "patch",
+        "patch_dir_name": "cs16-client"
+      },
+      {
+        "type": "cmake-builder",
+        "patch_dir_name": "cs16-client",
+        "build_args": []
+      },
+      {
+        "type": "generic-installer",
+        "patch_dir_name": "cs16-client"
+      }
+    ]
   },
   {
     "name": "Half-Life 2",
     "subfolder": "hl2",
     "engine_type": "Source",
-    "repo_url": "https://github.com/nillerusr/source-engine",
-    "repo_branch": "",
-    "stable_commit": "ed8209c",
-    "patch_dir_name": "source-engine",
-    "waf_game": "hl2",
-    "fetcher": "git",
-    "force_stable": false,
-    "builder": "waf",
-    "installer": "source",
-    "build_args": [
-      "-T",
-      "release",
-      "--prefix=",
-      "--build-games=hl2"
-    ],
     "estimated_time": 3,
-    "estimated_space": 25
+    "estimated_space": 25,
+    "steps": [
+      {
+        "type": "git-fetcher",
+        "url": "https://github.com/nillerusr/source-engine",
+        "patch_dir_name": "source-engine",
+        "stable_commit": "ed8209c",
+        "force_stable": false
+      },
+      {
+        "type": "patch",
+        "patch_dir_name": "source-engine"
+      },
+      {
+        "type": "waf-builder",
+        "patch_dir_name": "source-engine",
+        "build_args": [
+          "-T",
+          "release",
+          "--prefix=",
+          "--build-games=hl2"
+        ],
+        "waf_game": "hl2"
+      },
+      {
+        "type": "source-installer",
+        "patch_dir_name": "source-engine"
+      }
+    ]
   },
   {
     "name": "Half-Life 2: Lost Coast",
     "subfolder": "lostcoast",
     "engine_type": "Source",
-    "repo_url": "https://github.com/nillerusr/source-engine",
-    "repo_branch": "",
-    "stable_commit": "ed8209c",
-    "patch_dir_name": "source-engine",
-    "waf_game": "hl2",
-    "fetcher": "git",
-    "force_stable": false,
-    "builder": "waf",
-    "installer": "source",
-    "build_args": [
-      "-T",
-      "release",
-      "--prefix=",
-      "--build-games=hl2"
-    ],
     "estimated_time": 3,
-    "estimated_space": 25
+    "estimated_space": 25,
+    "steps": [
+      {
+        "type": "git-fetcher",
+        "url": "https://github.com/nillerusr/source-engine",
+        "patch_dir_name": "source-engine",
+        "stable_commit": "ed8209c",
+        "force_stable": false
+      },
+      {
+        "type": "patch",
+        "patch_dir_name": "source-engine"
+      },
+      {
+        "type": "waf-builder",
+        "patch_dir_name": "source-engine",
+        "build_args": [
+          "-T",
+          "release",
+          "--prefix=",
+          "--build-games=hl2"
+        ],
+        "waf_game": "hl2"
+      },
+      {
+        "type": "source-installer",
+        "patch_dir_name": "source-engine"
+      }
+    ]
   },
   {
     "name": "Half-Life 2: Episodic (Episodes 1 & 2)",
     "subfolder": "episodic",
     "engine_type": "Source",
-    "repo_url": "https://github.com/nillerusr/source-engine",
-    "repo_branch": "",
-    "stable_commit": "ed8209c",
-    "patch_dir_name": "source-engine",
-    "waf_game": "episodic",
-    "fetcher": "git",
-    "force_stable": false,
-    "builder": "waf",
-    "installer": "source",
-    "build_args": [
-      "-T",
-      "release",
-      "--prefix=",
-      "--build-games=episodic"
-    ],
     "estimated_time": 3,
-    "estimated_space": 25
+    "estimated_space": 25,
+    "steps": [
+      {
+        "type": "git-fetcher",
+        "url": "https://github.com/nillerusr/source-engine",
+        "patch_dir_name": "source-engine",
+        "stable_commit": "ed8209c",
+        "force_stable": false
+      },
+      {
+        "type": "patch",
+        "patch_dir_name": "source-engine"
+      },
+      {
+        "type": "waf-builder",
+        "patch_dir_name": "source-engine",
+        "build_args": [
+          "-T",
+          "release",
+          "--prefix=",
+          "--build-games=episodic"
+        ],
+        "waf_game": "episodic"
+      },
+      {
+        "type": "source-installer",
+        "patch_dir_name": "source-engine"
+      }
+    ]
   },
   {
     "name": "Half-Life: Source",
     "subfolder": "hl1",
     "engine_type": "Source",
-    "repo_url": "https://github.com/nillerusr/source-engine",
-    "repo_branch": "",
-    "stable_commit": "ed8209c",
-    "patch_dir_name": "source-engine",
-    "waf_game": "hl1",
-    "fetcher": "git",
-    "force_stable": false,
-    "builder": "waf",
-    "installer": "source",
-    "build_args": [
-      "-T",
-      "release",
-      "--prefix=",
-      "--build-games=hl1"
-    ],
     "estimated_time": 3,
-    "estimated_space": 25
+    "estimated_space": 25,
+    "steps": [
+      {
+        "type": "git-fetcher",
+        "url": "https://github.com/nillerusr/source-engine",
+        "patch_dir_name": "source-engine",
+        "stable_commit": "ed8209c",
+        "force_stable": false
+      },
+      {
+        "type": "patch",
+        "patch_dir_name": "source-engine"
+      },
+      {
+        "type": "waf-builder",
+        "patch_dir_name": "source-engine",
+        "build_args": [
+          "-T",
+          "release",
+          "--prefix=",
+          "--build-games=hl1"
+        ],
+        "waf_game": "hl1"
+      },
+      {
+        "type": "source-installer",
+        "patch_dir_name": "source-engine"
+      }
+    ]
   },
   {
     "name": "Portal",
     "subfolder": "portal",
     "engine_type": "Source",
-    "repo_url": "https://github.com/nillerusr/source-engine",
-    "repo_branch": "",
-    "stable_commit": "ed8209c",
-    "patch_dir_name": "source-engine",
-    "waf_game": "portal",
-    "fetcher": "git",
-    "force_stable": false,
-    "builder": "waf",
-    "installer": "source",
-    "build_args": [
-      "-T",
-      "release",
-      "--prefix=",
-      "--build-games=portal"
-    ],
     "estimated_time": 3,
-    "estimated_space": 25
+    "estimated_space": 25,
+    "steps": [
+      {
+        "type": "git-fetcher",
+        "url": "https://github.com/nillerusr/source-engine",
+        "patch_dir_name": "source-engine",
+        "stable_commit": "ed8209c",
+        "force_stable": false
+      },
+      {
+        "type": "patch",
+        "patch_dir_name": "source-engine"
+      },
+      {
+        "type": "waf-builder",
+        "patch_dir_name": "source-engine",
+        "build_args": [
+          "-T",
+          "release",
+          "--prefix=",
+          "--build-games=portal"
+        ],
+        "waf_game": "portal"
+      },
+      {
+        "type": "source-installer",
+        "patch_dir_name": "source-engine"
+      }
+    ]
   }
 ]

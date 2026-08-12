@@ -3,30 +3,30 @@ from __future__ import annotations
 import shutil
 from pathlib import Path
 
-from patcher.core import Game, SOURCE_LINK_FIXES
-from patcher.core.pipeline import BaseInstaller
+from patcher.core import Game, Component, InstallStepConfig, SOURCE_LINK_FIXES
+from patcher.core.pipeline import BaseStep, step
 
 
-class SourceInstaller(BaseInstaller):
-    def install(self, game: Game, **kwargs):
-        subfolders = kwargs.get("subfolders", [])
+@step("source-installer")
+class SourceInstaller(BaseStep):
+    def execute(self, game: Game, comp: Component, step_config: InstallStepConfig):
+        subfolder = comp.subfolder
         self.patcher.log(f"Installing to {game.name}...")
 
-        source_dir = self.patcher._context.working_dir / "source-engine"
+        source_dir = self.patcher._context.working_dir / step_config.patch_dir_name
         output_dir = source_dir / "output"
 
         bin_src = output_dir / "bin"
         if bin_src.is_dir():
             shutil.copytree(bin_src, game.path / "bin", dirs_exist_ok=True)
 
-        for sub in subfolders:
-            if sub == "lostcoast":
-                mod_src = output_dir / "hl2"
-            else:
-                mod_src = output_dir / sub
+        if subfolder == "lostcoast":
+            mod_src = output_dir / "hl2"
+        else:
+            mod_src = output_dir / subfolder
 
-            if mod_src.is_dir():
-                shutil.copytree(mod_src, game.path / sub, dirs_exist_ok=True)
+        if mod_src.is_dir():
+            shutil.copytree(mod_src, game.path / subfolder, dirs_exist_ok=True)
 
         thirdparty_libs = source_dir / "thirdparty" / "install" / "lib"
         bin_dir = game.path / "bin"
@@ -42,22 +42,21 @@ class SourceInstaller(BaseInstaller):
             shutil.copy2(hl2_launcher, hl2_osx)
             hl2_osx.chmod(0o755)
 
-        self._fix_source_links(game.path)
-        for sub in subfolders:
-            self._fix_source_game_links(game.path, sub)
+        self._fix_source_links(game.path, step_config.patch_dir_name)
+        self._fix_source_game_links(game.path, subfolder, step_config.patch_dir_name)
 
-    def _fix_source_links(self, game_path: Path):
+    def _fix_source_links(self, game_path: Path, patch_dir_name: str):
         self.patcher.log("Fixing Source Engine links...")
         bin_dir = game_path / "bin"
         working_dir = self.patcher._context.working_dir
-        build_prefix = str(working_dir / "source-engine" / "build")
-        thirdparty_prefix = str(working_dir / "source-engine" / "thirdparty" / "install" / "lib")
+        build_prefix = str(working_dir / patch_dir_name / "build")
+        thirdparty_prefix = str(working_dir / patch_dir_name / "thirdparty" / "install" / "lib")
 
         for lib_name, changes in SOURCE_LINK_FIXES.items():
             lib_path = bin_dir / lib_name
             if not lib_path.exists():
                 continue
-                
+
             cmd = ["install_name_tool", "-id", f"@loader_path/{lib_name}"]
             for old_path_template, new_path in changes:
                 old_path = old_path_template.format(
@@ -66,18 +65,18 @@ class SourceInstaller(BaseInstaller):
                 )
                 cmd.extend(["-change", old_path, new_path])
             cmd.append(lib_name)
-            
+
             self.patcher.executor.run(cmd, cwd=bin_dir)
 
-    def _fix_source_game_links(self, game_path: Path, game_name: str):
+    def _fix_source_game_links(self, game_path: Path, game_name: str, patch_dir_name: str):
         self.patcher.log(f"Fixing source game links for {game_name}...")
         bin_dir = game_path / game_name / "bin"
         if not bin_dir.exists():
             return
 
         working_dir = self.patcher._context.working_dir
-        build_prefix = str(working_dir / "source-engine" / "build")
-        thirdparty_prefix = str(working_dir / "source-engine" / "thirdparty" / "install" / "lib")
+        build_prefix = str(working_dir / patch_dir_name / "build")
+        thirdparty_prefix = str(working_dir / patch_dir_name / "thirdparty" / "install" / "lib")
 
         for lib_name, loader_prefix in [("libclient.dylib", "../../bin"), ("libserver.dylib", "../../bin")]:
             lib_path = bin_dir / lib_name
@@ -100,5 +99,5 @@ class SourceInstaller(BaseInstaller):
             for old_path, new_path in changes:
                 cmd.extend(["-change", old_path, new_path])
             cmd.append(lib_name)
-            
+
             self.patcher.executor.run(cmd, cwd=bin_dir)

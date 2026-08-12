@@ -2,16 +2,14 @@ from __future__ import annotations
 
 import shutil
 
-from patcher.core import Game
-from patcher.core.pipeline import BaseInstaller
+from patcher.core import Game, Component, InstallStepConfig
+from patcher.core.pipeline import BaseStep, step
 
 
-class GenericInstaller(BaseInstaller):
-    def __init__(self, patcher, target_dir_name: str):
-        super().__init__(patcher)
-        self.target_dir_name = target_dir_name
-
-    def install(self, game: Game, **kwargs):
-        self.patcher.log(f"Installing {self.target_dir_name}...")
-        output_dir = self.patcher._context.working_dir / self.target_dir_name / "output"
+@step("generic-installer")
+class GenericInstaller(BaseStep):
+    def execute(self, game: Game, comp: Component, step_config: InstallStepConfig):
+        target_dir_name = step_config.patch_dir_name
+        self.patcher.log(f"Installing {target_dir_name}...")
+        output_dir = self.patcher._context.working_dir / target_dir_name / "output"
         shutil.copytree(output_dir, game.path, dirs_exist_ok=True)

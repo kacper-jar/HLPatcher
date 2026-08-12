@@ -3,15 +3,23 @@ from __future__ import annotations
 import shutil
 from pathlib import Path
 
+from patcher.core import Game, Component, FetchStepConfig
+from patcher.core.pipeline import step
 from patcher.core.pipeline.fetchers import GitFetcher
 
 
+@step("goldsrc-engine-fetcher")
 class GoldSrcEngineFetcher(GitFetcher):
-    def fetch(self):
-        super().fetch()
-
+    def execute(self, game: Game, comp: Component, step_config: FetchStepConfig):
+        target_dir_name = step_config.patch_dir_name
         working_dir = self.patcher._context.working_dir
-        xash_dir = working_dir / self.target_dir_name
+        xash_dir = working_dir / target_dir_name
+
+        if xash_dir.exists():
+            self.patcher.log(f"Directory {target_dir_name} already exists. Skipping fetch.")
+            return
+
+        super().execute(game, comp, step_config)
 
         sdl_dmg = working_dir / "SDL2-2.32.10.dmg"
         self.patcher.executor.run([
