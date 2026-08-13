@@ -91,6 +91,12 @@ It lets users enjoy the game again without the hassle of manual binary update.
 
 Without them, HLPatcher wouldn't exist.
 
+## Copyright Notice
+
+HLPatcher utilizes various third-party patches, modifications and open-source components to function. I respect the intellectual property rights of others.
+
+If you are a copyright owner and believe that any material provided through this project infringes upon your rights, please submit a notification of your claim. You can contact me at [contact@kzl21.ovh](mailto:contact@kzl21.ovh) with the details and any infringing material will be promptly addressed.
+
 ---
 
 ### Made with ❤️ by Kacper Jarosławski
