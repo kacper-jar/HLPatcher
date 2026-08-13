@@ -20,6 +20,17 @@ class ProgressPage(BasePage):
         self._progress_bar.pack(pady=10, padx=20)
         self._progress_bar.set(0)
 
+        self._step_progress_bar = ctk.CTkProgressBar(self, width=340)
+        self._step_progress_bar.pack(pady=(10, 10), padx=20)
+        self._step_progress_bar.set(0)
+
+        self._step_label = ctk.CTkLabel(
+            self,
+            text="Step 0 out of 0",
+            font=ctk.CTkFont(size=14, weight="bold"),
+        )
+        self._step_label.pack(pady=(0, 10))
+
         self._elapsed_time_label = ctk.CTkLabel(
             self,
             text="Elapsed time: 00:00",
@@ -36,7 +47,8 @@ class ProgressPage(BasePage):
         self._patching_complete = False
         self._patching_error = None
         self._progress_bar.set(0)
-        self._status_label.configure(text="Preparing to patch...")
+        self._step_progress_bar.set(0)
+        self._status_label.configure(text="Preparing to patch")
 
         self._app.footer.set_next_enabled(False)
         self._app.footer.set_back_enabled(False)
@@ -64,7 +76,8 @@ class ProgressPage(BasePage):
                 context,
                 self._app.config,
                 log_callback=None,
-                component_callback=self._on_component_start_threadsafe
+                component_callback=self._on_component_start_threadsafe,
+                step_callback=self._on_step_start_threadsafe
             )
             self._total_steps = self.patcher.get_total_steps(selected_games)
             self.patcher.run(selected_games)
@@ -105,6 +118,14 @@ class ProgressPage(BasePage):
             self._progress_bar.set(self._current_step / self._total_steps)
         self._current_step += 1
 
+    def _on_step_start_threadsafe(self, current: int, total: int):
+        self.after(0, self._on_step_start, current, total)
+
+    def _on_step_start(self, current: int, total: int):
+        self._step_label.configure(text=f"Step {current} out of {total}")
+        if total > 0:
+            self._step_progress_bar.set(current / total)
+
     def _on_patching_complete_threadsafe(self):
         self.after(0, self._on_patching_complete)
 
@@ -112,7 +133,9 @@ class ProgressPage(BasePage):
         if self._patching_error:
             return
         self._progress_bar.set(1.0)
+        self._step_progress_bar.set(1.0)
         self._status_label.configure(text="Patching complete!")
+        self._step_label.configure(text="Done.")
         self._app.router.show_page(PageRoute.SUCCESS)
 
     def _on_patching_error_threadsafe(self, error: str):

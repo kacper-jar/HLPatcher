@@ -13,11 +13,13 @@ logger = logging.getLogger(__name__)
 
 class Patcher:
     def __init__(self, context: PatchContext, config: AppConfig, log_callback: Callable[[str], None] | None = None,
-                 component_callback: Callable[[str], None] | None = None):
+                 component_callback: Callable[[str], None] | None = None,
+                 step_callback: Callable[[int, int], None] | None = None):
         self._context = context
         self._config = config
         self._log_callback = log_callback
         self._component_callback = component_callback
+        self._step_callback = step_callback
         self.executor = CommandExecutor(self._context.working_dir, self._log_callback)
         self._patched_dirs: set[str] = set()
 
@@ -32,6 +34,10 @@ class Patcher:
     def _notify_component(self, name: str):
         if self._component_callback:
             self._component_callback(name)
+
+    def _notify_step(self, current: int, total: int):
+        if self._step_callback:
+            self._step_callback(current, total)
 
     def get_total_steps(self, selected_games: list[Game]) -> int:
         return sum(1 for g in selected_games for c in g.components if c.needs_patch)
@@ -54,7 +60,8 @@ class Patcher:
 
                     self._notify_component(comp.name)
 
-                    for step_config in comp.steps:
+                    for i, step_config in enumerate(comp.steps):
+                        self._notify_step(i + 1, len(comp.steps))
                         step_type = step_config.type
                         step_class = STEP_REGISTRY.get(step_type)
                         if not step_class:
