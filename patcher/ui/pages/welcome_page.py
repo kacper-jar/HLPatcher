@@ -43,35 +43,27 @@ class WelcomePage(BasePage):
 
         credits_title = ctk.CTkLabel(
             credits_frame,
-            text=self._app.i18n.t("welcome_thanks"),
+            text=self._app.i18n.t("welcome_credits_title"),
             font=ctk.CTkFont(weight="bold"),
             anchor="w",
         )
         credits_title.pack(fill="x", padx=15, pady=(10, 5))
 
-        credits = [
-            self._app.i18n.t("welcome_credits_1"),
-            self._app.i18n.t("welcome_credits_2"),
-            self._app.i18n.t("welcome_credits_3"),
-        ]
-
-        for credit in credits:
-            credit_label = ctk.CTkLabel(
-                credits_frame,
-                text=f"- {credit}",
-                anchor="w",
-                wraplength=320,
-                justify="left",
-            )
-            credit_label.pack(fill="x", padx=15, pady=2)
-
-        closing_label = ctk.CTkLabel(
+        credits_label = ctk.CTkLabel(
             credits_frame,
-            text=self._app.i18n.t("welcome_thanks_closing"),
-            font=ctk.CTkFont(size=11),
+            text=self._app.i18n.t("welcome_credits_desc"),
             anchor="w",
+            wraplength=320,
+            justify="left",
         )
-        closing_label.pack(fill="x", padx=15, pady=(5, 10))
+        credits_label.pack(fill="x", padx=15, pady=(2, 10))
+
+        credits_btn = ctk.CTkButton(
+            credits_frame,
+            text=self._app.i18n.t("welcome_credits_btn"),
+            command=self._open_credits_site,
+        )
+        credits_btn.pack(fill="x", padx=15, pady=(0, 10))
 
         note_frame = ctk.CTkFrame(self, fg_color="gray20", corner_radius=8)
         note_frame.pack(fill="x", padx=20, pady=(5, 10))
@@ -128,3 +120,7 @@ class WelcomePage(BasePage):
     def _open_translation_site(self):
         import webbrowser
         webbrowser.open("https://crowdin.com/project/hlpatcher")
+
+    def _open_credits_site(self):
+        import webbrowser
+        webbrowser.open("https://hlpatcher.kzl21.ovh/#thanks-to")
