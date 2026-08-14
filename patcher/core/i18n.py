@@ -1,4 +1,6 @@
 import json
+import locale
+import os
 from pathlib import Path
 from typing import Callable, Optional
 import logging
@@ -9,11 +11,28 @@ logger = logging.getLogger(__name__)
 class I18n:
     def __init__(self, locales_dir: Path):
         self.locales_dir = locales_dir
-        self.current_lang = "en"
         self.translations: dict[str, str] = {}
         self.available_langs: list[str] = []
         self.on_language_changed: Optional[Callable[[str], None]] = None
         self._scan_locales()
+
+        try:
+            loc, _ = locale.getlocale()
+            if not loc:
+                loc = os.environ.get("LANG", "en_US")
+            default_lang = loc.split(".")[0].replace("_", "-")
+        except Exception:
+            default_lang = "en-US"
+
+        if default_lang not in self.available_langs:
+            lang_only = default_lang.split("-")[0]
+            matches = [l for l in self.available_langs if l.startswith(f"{lang_only}-")]
+            if matches:
+                default_lang = matches[0]
+            else:
+                default_lang = "en-US"
+
+        self.current_lang = default_lang
         self.set_language(self.current_lang, notify=False)
 
     def _scan_locales(self):
@@ -25,13 +44,13 @@ class I18n:
         for file in self.locales_dir.glob("*.json"):
             self.available_langs.append(file.stem)
 
-        if "en" not in self.available_langs:
-            self.available_langs.append("en")
+        if "en-US" not in self.available_langs:
+            self.available_langs.append("en-US")
 
     def set_language(self, lang_code: str, notify: bool = True):
-        if lang_code not in self.available_langs and lang_code != "en":
-            logger.warning(f"Language {lang_code} not available, falling back to en.")
-            lang_code = "en"
+        if lang_code not in self.available_langs and lang_code != "en-US":
+            logger.warning(f"Language {lang_code} not available, falling back to en-US.")
+            lang_code = "en-US"
 
         file_path = self.locales_dir / f"{lang_code}.json"
         if file_path.exists():

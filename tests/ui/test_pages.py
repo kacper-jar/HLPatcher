@@ -15,8 +15,8 @@ def mock_app_context():
     app.context.create_backup = False
 
     app.i18n = Mock()
-    app.i18n.available_langs = ["en", "pl"]
-    app.i18n.current_lang = "en"
+    app.i18n.available_langs = ["en-US", "pl-PL"]
+    app.i18n.current_lang = "en-US"
 
     def mock_t(key, **kwargs):
         return {
@@ -25,7 +25,7 @@ def mock_app_context():
         }.get(key, key)
 
     app.i18n.t.side_effect = mock_t
-    app.i18n.get_language_name.side_effect = lambda code: "English" if code == "en" else "Polski"
+    app.i18n.get_language_name.side_effect = lambda code: "English" if code == "en-US" else "Polski"
 
     return app
 
