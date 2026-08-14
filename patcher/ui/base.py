@@ -39,7 +39,10 @@ class BasePage(ctk.CTkFrame):
         return True
 
     def get_next_button_text(self) -> str:
-        return "Next"
+        return self._app.i18n.t("btn_next")
+
+    def get_custom_footer_widget(self, parent: ctk.CTkFrame) -> ctk.CTkFrame | None:
+        return None
 
 
 class PageHeader(ctk.CTkFrame):
@@ -58,6 +61,9 @@ class PageHeader(ctk.CTkFrame):
     def set_title(self, title: str):
         self._title_label.configure(text=title)
 
+    def retranslate(self, title: str):
+        self.set_title(title)
+
 
 class NavigationFooter(ctk.CTkFrame):
     def __init__(self, parent, on_quit, on_back, on_next, **kwargs):
@@ -75,6 +81,12 @@ class NavigationFooter(ctk.CTkFrame):
             hover_color="#e74c3c",
         )
         self._quit_button.grid(row=0, column=0, padx=10, pady=10, sticky="w")
+
+        self.custom_container = ctk.CTkFrame(self, fg_color="transparent")
+        self.custom_container.grid(row=0, column=1, sticky="nsew", padx=10)
+        self.custom_container.grid_rowconfigure(0, weight=1)
+        self.custom_container.grid_columnconfigure(0, weight=1)
+        self._current_custom_widget = None
 
         self._back_button = ctk.CTkButton(
             self,
@@ -120,3 +132,15 @@ class NavigationFooter(ctk.CTkFrame):
 
     def set_back_enabled(self, enabled: bool):
         self._back_button.configure(state="normal" if enabled else "disabled")
+
+    def set_custom_content(self, widget: ctk.CTkFrame | None):
+        if self._current_custom_widget:
+            self._current_custom_widget.destroy()
+
+        self._current_custom_widget = widget
+        if self._current_custom_widget:
+            self._current_custom_widget.grid(row=0, column=0, sticky="nsew")
+
+    def retranslate(self, i18n):
+        self._quit_button.configure(text=i18n.t("btn_quit"))
+        self._back_button.configure(text=i18n.t("btn_back"))

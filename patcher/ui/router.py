@@ -61,6 +61,9 @@ class Router:
         self.footer.set_next_enabled(True)
         self.footer.set_back_enabled(True)
 
+        custom_footer = page.get_custom_footer_widget(self.footer.custom_container)
+        self.footer.set_custom_content(custom_footer)
+
         self.current_page_key = page_key
 
     def invalidate_page(self, page_key: PageRoute):

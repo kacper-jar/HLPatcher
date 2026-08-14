@@ -7,15 +7,9 @@ class UpdateAvailablePage(BasePage):
     def __init__(self, parent, app, **kwargs):
         super().__init__(parent, app, **kwargs)
 
-        msg = (
-            "A new version of HLPatcher is available!\n\n"
-            "Using an outdated version may lead to broken game installs "
-            "or compatibility issues with modern macOS versions."
-        )
-
         msg_label = ctk.CTkLabel(
             self,
-            text=msg,
+            text=self._app.i18n.t("update_msg"),
             justify="center",
             wraplength=350,
             font=ctk.CTkFont(size=14),
@@ -23,7 +17,7 @@ class UpdateAvailablePage(BasePage):
         msg_label.pack(pady=(40, 20))
 
         if self._app.update_info:
-            version_text = f"Latest version: v{self._app.update_info.latest_version}"
+            version_text = self._app.i18n.t("update_latest_version", version=self._app.update_info.latest_version)
             version_label = ctk.CTkLabel(
                 self,
                 text=version_text,
@@ -33,7 +27,7 @@ class UpdateAvailablePage(BasePage):
 
         self.github_button = ctk.CTkButton(
             self,
-            text="Open GitHub Releases",
+            text=self._app.i18n.t("update_btn"),
             command=self._open_github,
             fg_color="#27ae60",
             hover_color="#2ecc71",
@@ -42,7 +36,7 @@ class UpdateAvailablePage(BasePage):
 
         skip_label = ctk.CTkLabel(
             self,
-            text="You can proceed without updating, but it is not recommended.",
+            text=self._app.i18n.t("update_skip"),
             font=ctk.CTkFont(size=11),
             text_color="gray",
         )
@@ -57,13 +51,13 @@ class UpdateAvailablePage(BasePage):
         webbrowser.open(url)
 
     def get_title(self) -> str:
-        return "Update Available"
+        return self._app.i18n.t("update_title")
 
     def get_next_page_key(self) -> PageRoute:
         return PageRoute.LIBRARY
 
     def get_next_button_text(self) -> str:
-        return "Proceed"
+        return self._app.i18n.t("btn_proceed")
 
     def show_back_button(self) -> bool:
         return True

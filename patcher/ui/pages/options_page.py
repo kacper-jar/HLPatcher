@@ -12,7 +12,7 @@ class OptionsPage(BasePage):
 
         mode_title = ctk.CTkLabel(
             mode_frame,
-            text="Patch Mode",
+            text=self._app.i18n.t("options_mode_title"),
             font=ctk.CTkFont(weight="bold"),
             anchor="w",
         )
@@ -22,7 +22,7 @@ class OptionsPage(BasePage):
 
         latest_radio = ctk.CTkRadioButton(
             mode_frame,
-            text="Latest",
+            text=self._app.i18n.t("options_mode_latest"),
             variable=self._mode_var,
             value=PatchMode.LATEST.value,
         )
@@ -30,7 +30,7 @@ class OptionsPage(BasePage):
 
         latest_desc = ctk.CTkLabel(
             mode_frame,
-            text="Uses the most up-to-date code. May be unstable.",
+            text=self._app.i18n.t("options_mode_latest_desc"),
             font=ctk.CTkFont(size=11),
             text_color="gray60",
             anchor="w",
@@ -39,7 +39,7 @@ class OptionsPage(BasePage):
 
         stable_radio = ctk.CTkRadioButton(
             mode_frame,
-            text="Stable",
+            text=self._app.i18n.t("options_mode_stable"),
             variable=self._mode_var,
             value=PatchMode.STABLE.value,
         )
@@ -47,7 +47,7 @@ class OptionsPage(BasePage):
 
         stable_desc = ctk.CTkLabel(
             mode_frame,
-            text="Uses specific versions known to work. Recommended if Latest fails.",
+            text=self._app.i18n.t("options_mode_stable_desc"),
             font=ctk.CTkFont(size=11),
             text_color="gray60",
             anchor="w",
@@ -60,7 +60,7 @@ class OptionsPage(BasePage):
 
         backup_title = ctk.CTkLabel(
             backup_frame,
-            text="Backup",
+            text=self._app.i18n.t("options_backup_title"),
             font=ctk.CTkFont(weight="bold"),
             anchor="w",
         )
@@ -70,14 +70,14 @@ class OptionsPage(BasePage):
 
         backup_checkbox = ctk.CTkCheckBox(
             backup_frame,
-            text="Create backup before patching",
+            text=self._app.i18n.t("options_backup_check"),
             variable=self._backup_var,
         )
         backup_checkbox.pack(fill="x", padx=15, pady=5)
 
         backup_desc = ctk.CTkLabel(
             backup_frame,
-            text="Backup will be stored in your Documents folder.",
+            text=self._app.i18n.t("options_backup_desc"),
             font=ctk.CTkFont(size=11),
             text_color="gray60",
             anchor="w",
@@ -89,7 +89,7 @@ class OptionsPage(BasePage):
         self._app.context.create_backup = self._backup_var.get()
 
     def get_title(self) -> str:
-        return "Patching Options"
+        return self._app.i18n.t("options_title")
 
     def get_next_page_key(self) -> PageRoute:
         return PageRoute.CHECK_SOURCE_WARNING
@@ -102,4 +102,4 @@ class OptionsPage(BasePage):
             c.engine_type == EngineType.SOURCE
             for c in self._app.context.selected_components
         )
-        return "Next" if has_source else "Patch"
+        return self._app.i18n.t("btn_next") if has_source else self._app.i18n.t("btn_patch")

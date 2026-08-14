@@ -12,9 +12,7 @@ class LibraryPage(BasePage):
 
         hint_label = ctk.CTkLabel(
             self,
-            text="Select the folder where your GoldSrc and Source games are installed.\n"
-                 "If downloaded from Steam, this is the 'common' folder\n"
-                 "inside your Steam library directory.",
+            text=self._app.i18n.t("library_hint"),
             justify="center",
             font=ctk.CTkFont(size=12),
         )
@@ -57,7 +55,7 @@ class LibraryPage(BasePage):
         self._error_label.configure(text="")
 
     def get_title(self) -> str:
-        return "Select Your Games Folder"
+        return self._app.i18n.t("library_title")
 
     def _browse(self):
         initial = self._path_var.get()
@@ -65,7 +63,7 @@ class LibraryPage(BasePage):
             initial = str(Path.home())
 
         folder = filedialog.askdirectory(
-            title="Select games folder",
+            title=self._app.i18n.t("library_browse_title"),
             initialdir=initial,
         )
         if folder:
@@ -75,7 +73,7 @@ class LibraryPage(BasePage):
     def can_go_next(self) -> bool:
         path = Path(self._path_var.get())
         if not path.is_dir():
-            self._error_label.configure(text="Selected path does not exist.")
+            self._error_label.configure(text=self._app.i18n.t("library_error_invalid"))
             return False
         self._error_label.configure(text="")
         return True

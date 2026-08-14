@@ -13,6 +13,20 @@ def mock_app_context():
     app.context = Mock()
     app.context.patch_mode = None
     app.context.create_backup = False
+
+    app.i18n = Mock()
+    app.i18n.available_langs = ["en", "pl"]
+    app.i18n.current_lang = "en"
+
+    def mock_t(key, **kwargs):
+        return {
+            "welcome_title": "Welcome to HLPatcher",
+            "options_title": "Patching Options",
+        }.get(key, key)
+
+    app.i18n.t.side_effect = mock_t
+    app.i18n.get_language_name.side_effect = lambda code: "English" if code == "en" else "Polski"
+
     return app
 
 

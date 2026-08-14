@@ -7,7 +7,7 @@ from pathlib import Path
 
 import customtkinter as ctk
 
-from patcher.core import AppConfig, EngineType, GameDetector, PatchContext, UpdateInfo, Updater
+from patcher.core import AppConfig, EngineType, GameDetector, PatchContext, UpdateInfo, Updater, I18n
 from patcher.ui import (
     NavigationFooter,
     PageHeader,
@@ -43,6 +43,10 @@ class App(ctk.CTk):
         self.patching_error = ""
         self.update_info: UpdateInfo | None = None
 
+        locales_dir = self.context.script_dir / "data" / "locales"
+        self.i18n = I18n(locales_dir)
+        self.i18n.on_language_changed = self._on_language_changed
+
         self._start_update_check()
 
         self._header = PageHeader(self)
@@ -57,11 +61,22 @@ class App(ctk.CTk):
             on_back=lambda: getattr(self, 'router', None) and self.router.go_back(),
             on_next=lambda: getattr(self, 'router', None) and self.router.go_next(),
         )
+        self.footer.retranslate(self.i18n)
         self.footer.pack(fill="x")
 
         self.router = Router(self, self._content_frame, self._header, self.footer)
         self.router.route_interceptor = self._on_route_intercept
         self.router.show_page(PageRoute.WELCOME)
+
+    def _on_language_changed(self, lang_code: str):
+        if not getattr(self, "router", None) or not self.router.current_page_key:
+            return
+
+        self.footer.retranslate(self.i18n)
+
+        current = self.router.current_page_key
+        self.router.invalidate_page(current)
+        self.router.show_page(current)
 
     def _start_update_check(self):
         def check():

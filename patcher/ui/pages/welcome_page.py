@@ -7,11 +7,7 @@ class WelcomePage(BasePage):
     def __init__(self, parent, app, **kwargs):
         super().__init__(parent, app, **kwargs)
 
-        description = (
-            "HLPatcher makes Half-Life and other Valve games\n"
-            "playable on modern ARM Macs that only support\n"
-            "64-bit applications."
-        )
+        description = self._app.i18n.t("welcome_desc")
         desc_label = ctk.CTkLabel(self, text=description, justify="center")
         desc_label.pack(pady=(0, 10))
 
@@ -20,16 +16,16 @@ class WelcomePage(BasePage):
 
         credits_title = ctk.CTkLabel(
             credits_frame,
-            text="Thanks to",
+            text=self._app.i18n.t("welcome_thanks"),
             font=ctk.CTkFont(weight="bold"),
             anchor="w",
         )
         credits_title.pack(fill="x", padx=15, pady=(10, 5))
 
         credits = [
-            "Flying with Gauss team for Xash3D FWGS and HLSDK Portable",
-            "Velaron for Counter-Strike 1.6 reverse-engineered client",
-            "Nillerusr for Source Engine modifications",
+            self._app.i18n.t("welcome_credits_1"),
+            self._app.i18n.t("welcome_credits_2"),
+            self._app.i18n.t("welcome_credits_3"),
         ]
 
         for credit in credits:
@@ -44,7 +40,7 @@ class WelcomePage(BasePage):
 
         closing_label = ctk.CTkLabel(
             credits_frame,
-            text="Without them, HLPatcher wouldn't exist.",
+            text=self._app.i18n.t("welcome_thanks_closing"),
             font=ctk.CTkFont(size=11),
             anchor="w",
         )
@@ -55,7 +51,7 @@ class WelcomePage(BasePage):
 
         note_title = ctk.CTkLabel(
             note_frame,
-            text="Note",
+            text=self._app.i18n.t("welcome_note_title"),
             font=ctk.CTkFont(weight="bold"),
             text_color="#f39c12",
             anchor="w",
@@ -64,9 +60,7 @@ class WelcomePage(BasePage):
 
         note_label = ctk.CTkLabel(
             note_frame,
-            text="Please be aware that patched multiplayer titles "
-                 "cannot connect to standard PC and VAC-secured "
-                 "servers.",
+            text=self._app.i18n.t("welcome_note_desc"),
             anchor="w",
             wraplength=320,
             justify="left",
@@ -74,10 +68,32 @@ class WelcomePage(BasePage):
         note_label.pack(fill="x", padx=15, pady=(2, 10))
 
     def get_title(self) -> str:
-        return f"Welcome to HLPatcher ({patcher.__version__})"
+        return self._app.i18n.t("welcome_title", version=patcher.__version__)
 
     def show_back_button(self) -> bool:
         return False
 
     def get_next_page_key(self) -> PageRoute:
         return PageRoute.LIBRARY
+
+    def get_custom_footer_widget(self, parent: ctk.CTkFrame) -> ctk.CTkFrame | None:
+        frame = ctk.CTkFrame(parent, fg_color="transparent")
+
+        lang_names = [self._app.i18n.get_language_name(code) for code in self._app.i18n.available_langs]
+        current_name = self._app.i18n.get_language_name(self._app.i18n.current_lang)
+
+        dropdown = ctk.CTkOptionMenu(
+            frame,
+            values=lang_names,
+            width=120,
+            command=self._on_lang_selected
+        )
+        dropdown.set(current_name)
+        dropdown.pack(expand=True)
+        return frame
+
+    def _on_lang_selected(self, selected_name: str):
+        for code in self._app.i18n.available_langs:
+            if self._app.i18n.get_language_name(code) == selected_name:
+                self._app.i18n.set_language(code)
+                break

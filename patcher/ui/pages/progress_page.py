@@ -11,7 +11,7 @@ class ProgressPage(BasePage):
 
         self._status_label = ctk.CTkLabel(
             self,
-            text="Preparing to patch...",
+            text=self._app.i18n.t("progress_preparing"),
             font=ctk.CTkFont(size=14, weight="bold"),
         )
         self._status_label.pack(pady=(20, 10))
@@ -26,14 +26,14 @@ class ProgressPage(BasePage):
 
         self._step_label = ctk.CTkLabel(
             self,
-            text="Step 0 out of 0",
+            text=self._app.i18n.t("progress_step_format", current=0, total=0),
             font=ctk.CTkFont(size=14, weight="bold"),
         )
         self._step_label.pack(pady=(0, 10))
 
         self._elapsed_time_label = ctk.CTkLabel(
             self,
-            text="Elapsed time: 00:00",
+            text=self._app.i18n.t("progress_time_format", mins=0, secs=0),
             font=ctk.CTkFont(size=13, weight="bold"),
             text_color="gray70"
         )
@@ -48,7 +48,7 @@ class ProgressPage(BasePage):
         self._patching_error = None
         self._progress_bar.set(0)
         self._step_progress_bar.set(0)
-        self._status_label.configure(text="Preparing to patch")
+        self._status_label.configure(text=self._app.i18n.t("progress_preparing"))
 
         self._app.footer.set_next_enabled(False)
         self._app.footer.set_back_enabled(False)
@@ -65,7 +65,7 @@ class ProgressPage(BasePage):
         if not self._patching_complete and not self._patching_error:
             elapsed = int(time.time() - self._start_time)
             mins, secs = divmod(elapsed, 60)
-            self._elapsed_time_label.configure(text=f"Elapsed time: {mins:02d}:{secs:02d}")
+            self._elapsed_time_label.configure(text=self._app.i18n.t("progress_time_format", mins=mins, secs=secs))
             self.after(1000, self._update_timer)
 
     def _run_patching(self):
@@ -113,7 +113,7 @@ class ProgressPage(BasePage):
         self.after(0, self._on_component_start, component_name)
 
     def _on_component_start(self, component_name: str):
-        self._status_label.configure(text=f"Patching: {component_name}")
+        self._status_label.configure(text=self._app.i18n.t("progress_patching_comp", component=component_name))
         if self._total_steps > 0:
             self._progress_bar.set(self._current_step / self._total_steps)
         self._current_step += 1
@@ -122,7 +122,7 @@ class ProgressPage(BasePage):
         self.after(0, self._on_step_start, current, total)
 
     def _on_step_start(self, current: int, total: int):
-        self._step_label.configure(text=f"Step {current} out of {total}")
+        self._step_label.configure(text=self._app.i18n.t("progress_step_format", current=current, total=total))
         if total > 0:
             self._step_progress_bar.set(current / total)
 
@@ -134,8 +134,8 @@ class ProgressPage(BasePage):
             return
         self._progress_bar.set(1.0)
         self._step_progress_bar.set(1.0)
-        self._status_label.configure(text="Patching complete!")
-        self._step_label.configure(text="Done.")
+        self._status_label.configure(text=self._app.i18n.t("progress_complete"))
+        self._step_label.configure(text=self._app.i18n.t("progress_done"))
         self._app.router.show_page(PageRoute.SUCCESS)
 
     def _on_patching_error_threadsafe(self, error: str):
@@ -150,7 +150,7 @@ class ProgressPage(BasePage):
             self.patcher.stop()
 
     def get_title(self) -> str:
-        return "Patching"
+        return self._app.i18n.t("progress_title")
 
     def show_back_button(self) -> bool:
         return False

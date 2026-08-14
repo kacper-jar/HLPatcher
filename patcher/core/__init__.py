@@ -20,6 +20,7 @@ from .command_executor import CommandExecutor
 from .updater import Updater
 from .game_detector import GameDetector
 from .patcher import Patcher
+from .i18n import I18n
 
 __all__ = [
     "AppConfig",
@@ -40,4 +41,5 @@ __all__ = [
     "PatchStepConfig",
     "BuildStepConfig",
     "InstallStepConfig",
+    "I18n",
 ]

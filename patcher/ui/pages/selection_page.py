@@ -9,7 +9,7 @@ class SelectionPage(BasePage):
 
         hint_label = ctk.CTkLabel(
             self,
-            text="Check the games you want to patch.\nAlready patched games are shown but disabled.",
+            text=self._app.i18n.t("selection_hint"),
             justify="center",
             font=ctk.CTkFont(size=12),
         )
@@ -20,7 +20,7 @@ class SelectionPage(BasePage):
 
         self._time_label = ctk.CTkLabel(
             self,
-            text="Estimated patching time: ~0 minutes",
+            text=self._app.i18n.t("selection_time_est", mins=0),
             font=ctk.CTkFont(size=13, weight="bold"),
             text_color="gray70"
         )
@@ -28,7 +28,7 @@ class SelectionPage(BasePage):
 
         self._space_label = ctk.CTkLabel(
             self,
-            text="Estimated free space required: ~0 MB",
+            text=self._app.i18n.t("selection_space_est", mb=0),
             font=ctk.CTkFont(size=13, weight="bold"),
             text_color="gray70"
         )
@@ -82,7 +82,7 @@ class SelectionPage(BasePage):
             child_keys.append(child_key)
 
             is_disabled = not component.needs_patch
-            status_text = " (already patched)" if is_disabled else ""
+            status_text = self._app.i18n.t("selection_already_patched") if is_disabled else ""
 
             child_checkbox = ctk.CTkCheckBox(
                 self._scroll_frame,
@@ -164,8 +164,8 @@ class SelectionPage(BasePage):
         if goldsrc_any_selected or source_any_selected:
             total_mb += 150
 
-        self._time_label.configure(text=f"Estimated patching time: ~{total_mins} minutes")
-        self._space_label.configure(text=f"Estimated free space required: ~{total_mb} MB")
+        self._time_label.configure(text=self._app.i18n.t("selection_time_est", mins=total_mins))
+        self._space_label.configure(text=self._app.i18n.t("selection_space_est", mb=total_mb))
 
     def can_go_next(self) -> bool:
         return any(v.get() for k, v in self._checkbox_vars.items() if k.startswith("child_"))
@@ -180,7 +180,7 @@ class SelectionPage(BasePage):
         self._app.context.selected_components = selected
 
     def get_title(self) -> str:
-        return "Select Games to Patch"
+        return self._app.i18n.t("selection_title")
 
     def get_next_page_key(self) -> PageRoute:
         return PageRoute.OPTIONS

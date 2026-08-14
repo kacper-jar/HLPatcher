@@ -11,27 +11,16 @@ class SuccessPage(BasePage):
 
         warning_title = ctk.CTkLabel(
             warning_frame,
-            text="Important Note",
+            text=self._app.i18n.t("success_warning_title"),
             font=ctk.CTkFont(weight="bold"),
             text_color="#f39c12",
             anchor="w",
         )
         warning_title.pack(fill="x", padx=15, pady=(10, 5))
 
-        warning_text = (
-            "macOS may block 'SDL2.framework' when launching the game "
-            "for the first time. SDL2 is a crucial part of the game - it "
-            "creates the game window and renders its content. "
-            "Half-Life will not run without it.\n\n"
-            "If it gets blocked, open System Settings, go to "
-            "'Privacy & Security', and look for a message saying "
-            "SDL2.framework was blocked. Click 'Open Anyway' "
-            "and confirm."
-        )
-
         warning_label = ctk.CTkLabel(
             warning_frame,
-            text=warning_text,
+            text=self._app.i18n.t("success_warning_text"),
             justify="left",
             anchor="w",
             wraplength=340,
@@ -40,13 +29,13 @@ class SuccessPage(BasePage):
 
         enjoy_label = ctk.CTkLabel(
             self,
-            text="Enjoy!",
+            text=self._app.i18n.t("success_enjoy"),
             font=ctk.CTkFont(size=14),
         )
         enjoy_label.pack(pady=10)
 
     def get_title(self) -> str:
-        return "Patching Complete"
+        return self._app.i18n.t("success_title")
 
     def show_back_button(self) -> bool:
         return False
