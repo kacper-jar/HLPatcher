@@ -11,6 +11,33 @@ class WelcomePage(BasePage):
         desc_label = ctk.CTkLabel(self, text=description, justify="center")
         desc_label.pack(pady=(0, 10))
 
+        trans_frame = ctk.CTkFrame(self, fg_color="gray20", corner_radius=8)
+        trans_frame.pack(fill="x", padx=20, pady=5)
+
+        trans_title = ctk.CTkLabel(
+            trans_frame,
+            text=self._app.i18n.t("welcome_translations_title"),
+            font=ctk.CTkFont(weight="bold"),
+            anchor="w",
+        )
+        trans_title.pack(fill="x", padx=15, pady=(10, 0))
+
+        trans_label = ctk.CTkLabel(
+            trans_frame,
+            text=self._app.i18n.t("welcome_translations_desc"),
+            anchor="w",
+            wraplength=320,
+            justify="left",
+        )
+        trans_label.pack(fill="x", padx=15, pady=(2, 10))
+
+        trans_btn = ctk.CTkButton(
+            trans_frame,
+            text=self._app.i18n.t("welcome_translations_btn"),
+            command=self._open_translation_site,
+        )
+        trans_btn.pack(fill="x", padx=15, pady=(0, 10))
+
         credits_frame = ctk.CTkFrame(self, fg_color="gray20", corner_radius=8)
         credits_frame.pack(fill="x", padx=20, pady=5)
 
@@ -97,3 +124,7 @@ class WelcomePage(BasePage):
             if self._app.i18n.get_language_name(code) == selected_name:
                 self._app.i18n.set_language(code)
                 break
+
+    def _open_translation_site(self):
+        import webbrowser
+        webbrowser.open("https://crowdin.com/project/hlpatcher")
