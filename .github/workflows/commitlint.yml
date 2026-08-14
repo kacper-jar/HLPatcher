@@ -1,0 +1,17 @@
+name: Lint Commit Messages
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  commitlint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Lint commits
+        uses: wagoid/commitlint-github-action@v5
+        with:
+          configFile: commitlint.config.js
