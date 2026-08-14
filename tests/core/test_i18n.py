@@ -10,23 +10,30 @@ def mock_locales_dir(tmp_path):
     locales_dir = tmp_path / "locales"
     locales_dir.mkdir()
 
+    locales_json = {
+        "en-US": "English",
+        "pl-PL": "Polski"
+    }
+    with open(tmp_path / "locales.json", "w", encoding="utf-8") as f:
+        json.dump(locales_json, f)
+
     en_data = {
         "hello": "Hello",
         "greeting": "Hello {name}",
-        "lang_en-US": "English",
-        "lang_pl-PL": "Polski"
+        "only_in_en": "English only string"
     }
     with open(locales_dir / "en-US.json", "w", encoding="utf-8") as f:
         json.dump(en_data, f)
 
     pl_data = {
         "hello": "Cześć",
-        "greeting": "Cześć {name}",
-        "lang_en-US": "English",
-        "lang_pl-PL": "Polski"
+        "greeting": "Cześć {name}"
     }
     with open(locales_dir / "pl-PL.json", "w", encoding="utf-8") as f:
         json.dump(pl_data, f)
+
+    with open(locales_dir / "empty-XX.json", "w", encoding="utf-8") as f:
+        json.dump({}, f)
 
     return locales_dir
 
@@ -41,6 +48,14 @@ def test_i18n_initialization(mock_locales_dir):
 def test_i18n_translation(mock_locales_dir):
     i18n = I18n(mock_locales_dir)
     assert i18n.t("hello") == "Hello"
+    assert i18n.t("missing_key") == "missing_key"
+
+
+def test_i18n_translation_fallback(mock_locales_dir):
+    i18n = I18n(mock_locales_dir)
+    i18n.set_language("pl-PL")
+    assert i18n.t("hello") == "Cześć"
+    assert i18n.t("only_in_en") == "English only string"
     assert i18n.t("missing_key") == "missing_key"
 
 

@@ -12,8 +12,11 @@ class I18n:
     def __init__(self, locales_dir: Path):
         self.locales_dir = locales_dir
         self.translations: dict[str, str] = {}
+        self.fallback_translations: dict[str, str] = {}
         self.available_langs: list[str] = []
+        self.locale_names: dict[str, str] = {}
         self.on_language_changed: Callable[[str], None] | None = None
+        self._load_fallback()
         self._scan_locales()
 
         try:
@@ -35,13 +38,37 @@ class I18n:
         self.current_lang = default_lang
         self.set_language(self.current_lang, notify=False)
 
+    def _load_fallback(self):
+        fallback_path = self.locales_dir / "en-US.json"
+        if fallback_path.exists():
+            try:
+                with open(fallback_path, encoding="utf-8") as f:
+                    self.fallback_translations = json.load(f)
+            except Exception as e:
+                logger.error(f"Failed to load fallback language en-US: {e}")
+
     def _scan_locales(self):
         if not self.locales_dir.exists():
             logger.warning(f"Locales directory {self.locales_dir} does not exist.")
             return
 
+        index_file = self.locales_dir.parent / "locales.json"
+        if index_file.exists():
+            try:
+                with open(index_file, encoding="utf-8") as f:
+                    self.locale_names = json.load(f)
+            except Exception as e:
+                logger.error(f"Failed to load locales.json: {e}")
+
         self.available_langs = []
         for file in self.locales_dir.glob("*.json"):
+            try:
+                with open(file, encoding="utf-8") as f:
+                    data = json.load(f)
+                    if not data:
+                        continue
+            except Exception:
+                continue
             self.available_langs.append(file.stem)
 
         if "en-US" not in self.available_langs:
@@ -68,7 +95,7 @@ class I18n:
             self.on_language_changed(self.current_lang)
 
     def t(self, key: str, **kwargs) -> str:
-        text = self.translations.get(key, key)
+        text = self.translations.get(key, self.fallback_translations.get(key, key))
         if kwargs:
             try:
                 text = text.format(**kwargs)
@@ -77,4 +104,4 @@ class I18n:
         return text
 
     def get_language_name(self, lang_code: str) -> str:
-        return self.t(f"lang_{lang_code}")
+        return self.locale_names.get(lang_code, lang_code)

@@ -4,8 +4,6 @@
   "btn_next": "Dalej",
   "btn_patch": "Patchuj",
   "btn_proceed": "Kontynuuj",
-  "lang_en-US": "English",
-  "lang_pl-PL": "Polski",
   "welcome_title": "Witaj w HLPatcher ({version})",
   "welcome_desc": "HLPatcher umożliwia granie w Half-Life i inne gry Valve\nna nowoczesnych Macach z procesorami ARM, które obsługują\ntylko 64-bitowe aplikacje.",
   "welcome_thanks": "Podziękowania dla",
