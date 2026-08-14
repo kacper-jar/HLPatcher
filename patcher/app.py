@@ -1,19 +1,20 @@
-from __future__ import annotations
 
 import logging
 import shutil
 import threading
 from pathlib import Path
-
 import customtkinter as ctk
 
-from patcher.core import AppConfig, EngineType, GameDetector, PatchContext, UpdateInfo, Updater, I18n
-from patcher.ui import (
-    NavigationFooter,
-    PageHeader,
-    Router,
-    PageRoute
+from patcher.core import (
+    AppConfig,
+    EngineType,
+    GameDetector,
+    I18n,
+    PatchContext,
+    UpdateInfo,
+    Updater,
 )
+from patcher.ui import NavigationFooter, PageHeader, PageRoute, Router
 
 logger = logging.getLogger(__name__)
 

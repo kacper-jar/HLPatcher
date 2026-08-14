@@ -1,9 +1,6 @@
-import subprocess
-from pathlib import Path
-
 import pytest
 
-from patcher.core import AppConfig, Component, EngineType, Game, PatchContext, PatchStatus
+from patcher.core import PatchContext
 
 
 @pytest.fixture

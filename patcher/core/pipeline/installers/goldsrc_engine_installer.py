@@ -1,8 +1,6 @@
-from __future__ import annotations
-
 import shutil
 
-from patcher.core import Game, Component, InstallStepConfig
+from patcher.core import Component, Game, InstallStepConfig
 from patcher.core.pipeline import step
 from patcher.core.pipeline.installers import GenericInstaller
 

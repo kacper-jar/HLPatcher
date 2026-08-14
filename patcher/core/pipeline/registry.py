@@ -1,6 +1,6 @@
-from typing import Dict, Type, Any
+from typing import Any
 
-STEP_REGISTRY: Dict[str, Type[Any]] = {}
+STEP_REGISTRY: dict[str, type[Any]] = {}
 
 
 def step(type_name: str):

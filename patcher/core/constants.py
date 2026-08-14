@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 SOURCE_LINK_FIXES = {
     "libvphysics.dylib": [
         ("{build_prefix}/vstdlib/libvstdlib.dylib", "@loader_path/libvstdlib.dylib"),

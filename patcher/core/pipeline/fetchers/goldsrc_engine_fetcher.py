@@ -1,9 +1,7 @@
-from __future__ import annotations
-
 import shutil
 from pathlib import Path
 
-from patcher.core import Game, Component, FetchStepConfig
+from patcher.core import Component, FetchStepConfig, Game
 from patcher.core.pipeline import step
 from patcher.core.pipeline.fetchers import GitFetcher
 

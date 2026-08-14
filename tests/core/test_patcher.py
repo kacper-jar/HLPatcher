@@ -34,7 +34,7 @@ def test_create_backup(mock_patch_context, mocker):
     patcher._create_backup([game])
 
     mock_copytree.assert_called_once()
-    args, kwargs = mock_copytree.call_args
+    args, _ = mock_copytree.call_args
     assert args[0] == Path("/fake/GoldSrc")
     assert "Documents" in str(args[1])
 
@@ -54,7 +54,7 @@ def test_create_backup_skips_unpatched(mock_patch_context, mocker):
     patcher._create_backup([game1, game2])
 
     mock_copytree.assert_called_once()
-    args, kwargs = mock_copytree.call_args
+    args, _ = mock_copytree.call_args
     assert args[0] == Path("/fake/Portal")
     assert "Documents" in str(args[1])
 
@@ -189,7 +189,7 @@ def test_source_installer(mock_patch_context, mocker, mock_run_command):
     (output_dir / "hl2").mkdir(parents=True, exist_ok=True)
 
     mock_copytree = mocker.patch("shutil.copytree")
-    mock_copy2 = mocker.patch("shutil.copy2")
+    mocker.patch("shutil.copy2")
 
     installer.execute(game, comp, step_config)
 

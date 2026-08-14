@@ -1,4 +1,4 @@
 from .base import BaseStep
-from .registry import step, STEP_REGISTRY
+from .registry import STEP_REGISTRY, step
 
-__all__ = ["BaseStep", "step", "STEP_REGISTRY"]
+__all__ = ["STEP_REGISTRY", "BaseStep", "step"]

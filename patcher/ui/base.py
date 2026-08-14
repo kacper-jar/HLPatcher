@@ -1,8 +1,7 @@
-from __future__ import annotations
-
-import customtkinter as ctk
 from abc import abstractmethod
-from patcher.ui import PageRoute
+import customtkinter as ctk
+
+from patcher.ui.page_route import PageRoute
 
 
 class BasePage(ctk.CTkFrame):

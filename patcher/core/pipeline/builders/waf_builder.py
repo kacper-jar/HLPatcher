@@ -1,6 +1,5 @@
-from __future__ import annotations
 
-from patcher.core import Game, Component, BuildStepConfig
+from patcher.core import BuildStepConfig, Component, Game
 from patcher.core.pipeline import BaseStep, step
 
 

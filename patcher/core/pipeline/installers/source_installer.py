@@ -1,9 +1,7 @@
-from __future__ import annotations
-
 import shutil
 from pathlib import Path
 
-from patcher.core import Game, Component, InstallStepConfig, SOURCE_LINK_FIXES
+from patcher.core import SOURCE_LINK_FIXES, Component, Game, InstallStepConfig
 from patcher.core.pipeline import BaseStep, step
 
 

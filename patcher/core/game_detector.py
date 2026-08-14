@@ -1,13 +1,18 @@
-from __future__ import annotations
-
 import logging
+from collections.abc import Callable
 from pathlib import Path
-from typing import Callable
 
-from patcher.core import (
-    Component, EngineType, Game, PatchStatus, FetchStepConfig, PatchStepConfig, BuildStepConfig, InstallStepConfig
-)
 from patcher.core.config_loader import load_components_config
+from patcher.core.models import (
+    BuildStepConfig,
+    Component,
+    EngineType,
+    FetchStepConfig,
+    Game,
+    InstallStepConfig,
+    PatchStatus,
+    PatchStepConfig,
+)
 
 logger = logging.getLogger(__name__)
 

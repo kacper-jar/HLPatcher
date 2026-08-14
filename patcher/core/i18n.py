@@ -1,9 +1,9 @@
 import json
 import locale
-import os
-from pathlib import Path
-from typing import Callable, Optional
 import logging
+import os
+from collections.abc import Callable
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +13,7 @@ class I18n:
         self.locales_dir = locales_dir
         self.translations: dict[str, str] = {}
         self.available_langs: list[str] = []
-        self.on_language_changed: Optional[Callable[[str], None]] = None
+        self.on_language_changed: Callable[[str], None] | None = None
         self._scan_locales()
 
         try:
@@ -55,7 +55,7 @@ class I18n:
         file_path = self.locales_dir / f"{lang_code}.json"
         if file_path.exists():
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(file_path, encoding="utf-8") as f:
                     self.translations = json.load(f)
                 self.current_lang = lang_code
             except Exception as e:

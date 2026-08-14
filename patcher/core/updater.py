@@ -1,9 +1,8 @@
-from __future__ import annotations
-
 import json
 import logging
 import urllib.request
 from packaging import version
+
 from patcher.core import UpdateInfo
 
 logger = logging.getLogger(__name__)

@@ -1,4 +1,4 @@
-from .waf_builder import WafBuilder
 from .cmake_builder import CMakeBuilder
+from .waf_builder import WafBuilder
 
-__all__ = ["WafBuilder", "CMakeBuilder"]
+__all__ = ["CMakeBuilder", "WafBuilder"]

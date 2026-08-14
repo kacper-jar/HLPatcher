@@ -1,10 +1,8 @@
-from __future__ import annotations
-
 import logging
 import shutil
-from datetime import datetime
+from collections.abc import Callable
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Callable
 
 from patcher.core import AppConfig, CommandExecutor, Game, PatchContext
 
@@ -85,7 +83,7 @@ class Patcher:
             return
 
         self.log("Creating backup...")
-        date_str = datetime.now().strftime("%Y-%m-%d")
+        date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         for game in games_to_backup:
             backup_dest = Path.home() / "Documents" / f"{game.name} backup ({date_str})"
             self.log(f"Backing up {game.path} to {backup_dest}")

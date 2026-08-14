@@ -34,7 +34,7 @@ def test_check_for_update_not_available(mocker):
 
 
 def test_check_for_update_error(mocker):
-    mock_urlopen = mocker.patch("urllib.request.urlopen", side_effect=urllib.error.URLError("Network error"))
+    mocker.patch("urllib.request.urlopen", side_effect=urllib.error.URLError("Network error"))
 
     updater = Updater()
     info = updater.check_for_update("3.0.0")

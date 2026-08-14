@@ -1,8 +1,6 @@
-from __future__ import annotations
-
 import subprocess
 
-from patcher.core import Game, Component, PatchStepConfig
+from patcher.core import Component, Game, PatchStepConfig
 from patcher.core.pipeline import BaseStep, step
 
 
@@ -33,7 +31,7 @@ class PatchStep(BaseStep):
             self.patcher.log(f"Applying patch: {patch_file.name}")
             try:
                 self.patcher.executor.run(["patch", "-p1", "--forward", "-i", str(patch_file)], cwd=target_dir)
-            except subprocess.CalledProcessError as e:
+            except subprocess.CalledProcessError:
                 self.patcher.log(f"Warning: Patch {patch_file.name} failed to apply cleanly or was already applied.")
 
         self.patcher._patched_dirs.add(target_dir_name)
