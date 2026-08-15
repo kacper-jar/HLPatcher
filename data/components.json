@@ -5,6 +5,7 @@
     "engine_type": "GoldSrc",
     "estimated_time": 1,
     "estimated_space": 350,
+    "requires": {},
     "steps": [
       {
         "type": "goldsrc-engine-fetcher",
@@ -34,6 +35,7 @@
     "engine_type": "GoldSrc",
     "estimated_time": 1,
     "estimated_space": 60,
+    "requires": {},
     "steps": [
       {
         "type": "git-fetcher",
@@ -64,6 +66,7 @@
     "engine_type": "GoldSrc",
     "estimated_time": 1,
     "estimated_space": 60,
+    "requires": {},
     "steps": [
       {
         "type": "git-fetcher",
@@ -94,6 +97,7 @@
     "engine_type": "GoldSrc",
     "estimated_time": 1,
     "estimated_space": 60,
+    "requires": {},
     "steps": [
       {
         "type": "git-fetcher",
@@ -124,6 +128,7 @@
     "engine_type": "GoldSrc",
     "estimated_time": 1,
     "estimated_space": 60,
+    "requires": {},
     "steps": [
       {
         "type": "git-fetcher",
@@ -154,6 +159,7 @@
     "engine_type": "GoldSrc",
     "estimated_time": 2,
     "estimated_space": 350,
+    "requires": {},
     "steps": [
       {
         "type": "git-fetcher",
@@ -183,6 +189,10 @@
     "engine_type": "Source",
     "estimated_time": 3,
     "estimated_space": 25,
+    "requires": {
+      "hl2/bin/client.dylib": "4061b231e406ec7c7b35efee59c306fcf136c06ca4371216102215b9ef58ad35",
+      "hl2/bin/server.dylib": "c28d38ba7fd9b66164bf454d0bd2b08872c74678bf7b9d5e42ed30dbc0e29aa7"
+    },
     "steps": [
       {
         "type": "git-fetcher",
@@ -218,6 +228,10 @@
     "engine_type": "Source",
     "estimated_time": 3,
     "estimated_space": 25,
+    "requires": {
+      "lostcoast/bin/client.dylib": "caeec4bdea829dd9658db9348e20f032d6b4c2275a07637b72e47fbaf0ef7aa8",
+      "lostcoast/bin/server.dylib": "8645ca9e54c9ed2caf31590a9561c167d71fcd40d170e1d91b66acfc03c98174"
+    },
     "steps": [
       {
         "type": "git-fetcher",
@@ -253,6 +267,10 @@
     "engine_type": "Source",
     "estimated_time": 3,
     "estimated_space": 25,
+    "requires": {
+      "episodic/bin/client.dylib": "894dbe1838279d7d5d81e13df27d83a705b83839d44470cd2826a763168be0c5",
+      "episodic/bin/server.dylib": "b87392dea7cd0955791c393c66e40af8869f42e1b08a9df31bf4c9f2d5cf5db1"
+    },
     "steps": [
       {
         "type": "git-fetcher",
@@ -288,6 +306,9 @@
     "engine_type": "Source",
     "estimated_time": 3,
     "estimated_space": 25,
+    "requires": {
+      "hl1/glshaders.cfg": "53983f67d4ab1af83cc90e207aed7930832a44d5465c0494a7c20f0c898a0e4d"
+    },
     "steps": [
       {
         "type": "git-fetcher",
@@ -323,6 +344,11 @@
     "engine_type": "Source",
     "estimated_time": 3,
     "estimated_space": 25,
+    "requires": {
+      "portal/bin/client.dylib": "4ae4640240b75781eb816f991c2974ab6ac82edb40e188077e7bcd5a07273c9c",
+      "portal/bin/server.dylib": "040ed94eb91edf619e057f35ef939f7616bc855dec5a2b43bb77e2409fea8d96",
+      "portal/steam.inf": "4e154b119ed0eaa63a560a46b926f5961b8c67b45248622b54d538044de22ff7"
+    },
     "steps": [
       {
         "type": "git-fetcher",
