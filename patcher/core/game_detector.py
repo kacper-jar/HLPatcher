@@ -120,6 +120,7 @@ class GameDetector:
             engine_type=EngineType.GOLDSRC,
             status=status,
             steps=self._parse_steps(comp_def.get("steps", [])),
+            requires=comp_def.get("requires", {}),
             estimated_patch_time=comp_def.get("estimated_time", 0),
             estimated_free_space_required=comp_def.get("estimated_space", 0),
         )
@@ -139,6 +140,7 @@ class GameDetector:
             engine_type=EngineType.SOURCE,
             status=status,
             steps=self._parse_steps(comp_def.get("steps", [])),
+            requires=comp_def.get("requires", {}),
             estimated_patch_time=comp_def.get("estimated_time", 0),
             estimated_free_space_required=comp_def.get("estimated_space", 0),
         )
