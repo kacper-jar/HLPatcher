@@ -5,6 +5,8 @@
   "btn_patch": "Patch",
   "btn_proceed": "Proceed",
   "btn_open_link": "Open Link",
+  "btn_close": "Close",
+  "btn_copy": "Copy",
   "welcome_title": "Welcome to HLPatcher ({version})",
   "welcome_desc": "HLPatcher makes Half-Life and other Valve games\nplayable on modern ARM Macs that only support\n64-bit applications.",
   "welcome_translations_title": "Translations available",
