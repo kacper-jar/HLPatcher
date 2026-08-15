@@ -186,6 +186,7 @@
   {
     "name": "Half-Life 2",
     "subfolder": "hl2",
+    "downgrade_group": "hl2",
     "engine_type": "Source",
     "estimated_time": 3,
     "estimated_space": 25,
@@ -225,6 +226,7 @@
   {
     "name": "Half-Life 2: Lost Coast",
     "subfolder": "lostcoast",
+    "downgrade_group": "hl2",
     "engine_type": "Source",
     "estimated_time": 3,
     "estimated_space": 25,
@@ -264,6 +266,7 @@
   {
     "name": "Half-Life 2: Episodic (Episodes 1 & 2)",
     "subfolder": "episodic",
+    "downgrade_group": "hl2",
     "engine_type": "Source",
     "estimated_time": 3,
     "estimated_space": 25,
@@ -303,6 +306,7 @@
   {
     "name": "Half-Life: Source",
     "subfolder": "hl1",
+    "downgrade_group": "hl2",
     "engine_type": "Source",
     "estimated_time": 3,
     "estimated_space": 25,
