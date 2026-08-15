@@ -39,7 +39,7 @@ class BaseGuideWindow(ctk.CTkToplevel):
 
         self.close_button = ctk.CTkButton(
             self.footer_frame,
-            text="Close",
+            text=self._app.i18n.t("btn_close"),
             width=80,
             command=self.destroy,
         )
@@ -93,7 +93,7 @@ class BaseGuideWindow(ctk.CTkToplevel):
 
             copy_btn = ctk.CTkButton(
                 cmd_container,
-                text="Copy",
+                text=self._app.i18n.t("btn_copy"),
                 width=50,
                 height=24,
                 command=copy_to_clipboard
