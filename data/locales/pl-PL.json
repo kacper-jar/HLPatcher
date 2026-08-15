@@ -57,7 +57,5 @@
   "update_msg": "Nowa wersja HLPatcher jest dostępna!\n\nUżywanie przestarzałej wersji może prowadzić do uszkodzonych instalacji gier lub problemów z kompatybilnością na nowszych wersjach macOS.",
   "update_latest_version": "Najnowsza wersja: v{version}",
   "update_btn": "Otwórz GitHub Releases",
-  "update_skip": "Możesz kontynuować bez aktualizacji, ale nie jest to zalecane.",
-  "warning_title": "Zanim Kontynuujesz!",
-  "warning_text": "Zanim przejdziesz dalej, MUSISZ przełączyć swoje instalacje gier\nna właściwe gałęzie 'legacy'.\n\nUstaw te gry w tej kolejności (aby uniknąć resetów),\npomijając te, których nie patchujesz:\n1. Half-Life: Source\n2. Half-Life 2: Episode One\n3. Half-Life 2: Episode Two\n4. Half-Life 2: Lost Coast\n5. Half-Life 2\n6. Portal\n\nAby to zrobić:\n1. Otwórz Steam\n2. Kliknij prawym przyciskiem myszy Grę -> Właściwości\n3. Przejdź do zakładki Bety\n4. Wybierz 'steam_legacy' (lub 'beta' dla Portala)\n\nZignorowanie tego spowoduje zepsucie gry.\n\nKliknij Dalej, gdy zmienisz gałęzie, a Steam\nzakończy degradację plików."
+  "update_skip": "Możesz kontynuować bez aktualizacji, ale nie jest to zalecane."
 }
