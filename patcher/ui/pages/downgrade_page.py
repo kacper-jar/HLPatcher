@@ -27,13 +27,36 @@ class DowngradePage(BasePage):
                 if component in context.selected_components and component.requires:
                     components_to_downgrade.append((game, component))
 
+        groups = {}
         for game, component in components_to_downgrade:
+            group_key = component.downgrade_group if component.downgrade_group else component.subfolder
+            key = (game.path, group_key)
+            if key not in groups:
+                groups[key] = {
+                    'game': game,
+                    'group_key': group_key,
+                    'components': []
+                }
+            groups[key]['components'].append(component)
+
+        for key, group in groups.items():
+            game = group['game']
+            group_key = group['group_key']
+            components = group['components']
+
             card_frame = ctk.CTkFrame(self._scroll_frame, fg_color="gray20", corner_radius=8)
             card_frame.pack(fill="x", padx=20, pady=5)
 
+            if len(components) == 1:
+                title_text = components[0].name
+            else:
+                others_count = len(components) - 1
+                suffix = self._app.i18n.t("downgrade_group_others", count=others_count)
+                title_text = f"{components[0].name}{suffix}"
+
             card_title = ctk.CTkLabel(
                 card_frame,
-                text=component.name,
+                text=title_text,
                 font=ctk.CTkFont(weight="bold"),
                 anchor="w",
             )
@@ -42,16 +65,16 @@ class DowngradePage(BasePage):
             card_btn = ctk.CTkButton(
                 card_frame,
                 text=self._app.i18n.t("downgrade_guide_btn"),
-                command=lambda g=game, c=component: self._open_downgrade_guide(g, c),
+                command=lambda g_key=group_key: self._open_downgrade_guide(g_key),
             )
             card_btn.pack(fill="x", padx=15, pady=(0, 10))
 
-            card_key = f"{game.name}_{component.name}"
+            card_key = f"{game.name}_{group_key}"
             self._cards[card_key] = {
                 'frame': card_frame,
                 'btn': card_btn,
                 'game': game,
-                'component': component,
+                'components': components,
                 'orig_fg': card_btn.cget("fg_color"),
                 'orig_hover': card_btn.cget("hover_color")
             }
@@ -66,12 +89,12 @@ class DowngradePage(BasePage):
             self.after_cancel(self._check_job)
             self._check_job = None
 
-    def _open_downgrade_guide(self, game, component):
+    def _open_downgrade_guide(self, group_key):
         from patcher.ui import BaseGuideWindow
 
-        config = self._app.guide_registry.get_guide(component.subfolder)
+        config = self._app.guide_registry.get_guide(group_key)
         if config:
-            guide = BaseGuideWindow(self, self._app, title=config.title)
+            guide = BaseGuideWindow(self, self._app, title=self._app.i18n.t(config.title))
             for step in config.steps:
                 guide.add_step(
                     title_key=step.step_title,
@@ -90,30 +113,36 @@ class DowngradePage(BasePage):
 
         for card_key, card_info in self._cards.items():
             game = card_info['game']
-            component = card_info['component']
-            comp_match = True
+            components = card_info['components']
+            group_match = True
 
-            if component in context.selected_components and component.requires:
-                for filename, expected_hash in component.requires.items():
-                    file_path = game.path / filename
-                    if not file_path.is_file():
-                        comp_match = False
-                        break
-
-                    if expected_hash == "":
-                        continue
-
-                    try:
-                        with open(file_path, "rb") as f:
-                            file_hash = hashlib.sha256(f.read()).hexdigest()
-                        if file_hash != expected_hash:
+            for component in components:
+                comp_match = True
+                if component in context.selected_components and component.requires:
+                    for filename, expected_hash in component.requires.items():
+                        file_path = game.path / filename
+                        if not file_path.is_file():
                             comp_match = False
                             break
-                    except Exception:
-                        comp_match = False
-                        break
 
-            if comp_match:
+                        if expected_hash == "":
+                            continue
+
+                        try:
+                            with open(file_path, "rb") as f:
+                                file_hash = hashlib.sha256(f.read()).hexdigest()
+                            if file_hash != expected_hash:
+                                comp_match = False
+                                break
+                        except Exception:
+                            comp_match = False
+                            break
+
+                if not comp_match:
+                    group_match = False
+                    remaining_count += 1
+
+            if group_match:
                 card_info['btn'].configure(
                     text=self._app.i18n.t("downgraded_success_btn"),
                     fg_color="green",
@@ -122,7 +151,6 @@ class DowngradePage(BasePage):
                 )
             else:
                 all_match = False
-                remaining_count += 1
                 card_info['btn'].configure(
                     text=self._app.i18n.t("downgrade_guide_btn"),
                     fg_color=card_info['orig_fg'],

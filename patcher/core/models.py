@@ -60,6 +60,7 @@ class Component:
     subfolder: str
     engine_type: EngineType
     status: PatchStatus
+    downgrade_group: str = ""
     requires: dict[str, str] = field(default_factory=dict)
     steps: list[StepConfig] = field(default_factory=list)
     estimated_patch_time: int = 0

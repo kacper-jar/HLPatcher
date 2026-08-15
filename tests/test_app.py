@@ -46,7 +46,7 @@ def test_scan_and_route_no_games(mock_app, mocker):
 
 def test_scan_and_route_all_patched(mock_app, mocker):
     game = Game("Test", None, EngineType.GOLDSRC)
-    comp = Component("TestComp", "test", EngineType.GOLDSRC, PatchStatus.ALREADY_PATCHED, "")
+    comp = Component("TestComp", "test", EngineType.GOLDSRC, PatchStatus.ALREADY_PATCHED, "", "")
     game.components.append(comp)
 
     mocker.patch("patcher.app.GameDetector.scan", return_value=[game])
@@ -58,7 +58,7 @@ def test_scan_and_route_all_patched(mock_app, mocker):
 
 def test_scan_and_route_needs_patch(mock_app, mocker):
     game = Game("Test", None, EngineType.GOLDSRC)
-    comp = Component("TestComp", "test", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH, "")
+    comp = Component("TestComp", "test", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH, "", "")
     game.components.append(comp)
 
     mocker.patch("patcher.app.GameDetector.scan", return_value=[game])
@@ -69,7 +69,7 @@ def test_scan_and_route_needs_patch(mock_app, mocker):
 
 
 def test_check_downgrade_needed_with_requires(mock_app):
-    comp = Component("Comp", "test", EngineType.SOURCE, PatchStatus.NEEDS_PATCH, {"file": "hash"})
+    comp = Component("Comp", "test", EngineType.SOURCE, PatchStatus.NEEDS_PATCH, "", {"file": "hash"})
     mock_app.context.selected_components = [comp]
     mock_app.router.show_page(PageRoute.OPTIONS)
     mock_app._check_downgrade_needed()
@@ -78,7 +78,7 @@ def test_check_downgrade_needed_with_requires(mock_app):
 
 
 def test_check_downgrade_needed_without_requires(mock_app):
-    comp = Component("Comp", "test", EngineType.SOURCE, PatchStatus.NEEDS_PATCH, {})
+    comp = Component("Comp", "test", EngineType.SOURCE, PatchStatus.NEEDS_PATCH, "", {})
     mock_app.context.selected_components = [comp]
     mock_app.router.show_page(PageRoute.OPTIONS)
     mock_app._check_downgrade_needed()
