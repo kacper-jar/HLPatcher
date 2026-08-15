@@ -1,0 +1,21 @@
+{
+  "title": "Portal",
+  "steps": [
+    {
+      "step_title": "guide_portal_beta_step1_title",
+      "step_description": "guide_portal_beta_step1_desc"
+    },
+    {
+      "step_title": "guide_portal_beta_step2_title",
+      "step_description": "guide_portal_beta_step2_desc"
+    },
+    {
+      "step_title": "guide_portal_beta_step3_title",
+      "step_description": "guide_portal_beta_step3_desc"
+    },
+    {
+      "step_title": "guide_portal_beta_step4_title",
+      "step_description": "guide_portal_beta_step4_desc"
+    }
+  ]
+}

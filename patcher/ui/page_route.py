@@ -6,7 +6,7 @@ class PageRoute(Enum):
     LIBRARY = "library"
     SELECTION = "selection"
     OPTIONS = "options"
-    WARNING = "warning"
+    DOWNGRADE = "downgrade"
     PROGRESS = "progress"
     SUCCESS = "success"
     FAILURE = "failure"
@@ -16,5 +16,5 @@ class PageRoute(Enum):
 
     # Interceptor specific routes
     SCAN_AND_ROUTE = "scan_and_route"
-    CHECK_SOURCE_WARNING = "check_source_warning"
+    CHECK_DOWNGRADE = "check_downgrade"
     HALT = "HALT"

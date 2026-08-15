@@ -1,5 +1,6 @@
 from .page_route import PageRoute
-from .base import BasePage, NavigationFooter, PageHeader
+from .base_page import BasePage, NavigationFooter, PageHeader
+from .guide_window import BaseGuideWindow
 from .pages import (
     AllPatchedPage,
     FailurePage,
@@ -9,7 +10,7 @@ from .pages import (
     ProgressPage,
     SelectionPage,
     SuccessPage,
-    WarningPage,
+    DowngradePage,
     WelcomePage,
     UpdateAvailablePage,
 )
@@ -21,6 +22,7 @@ __all__ = [
     "BasePage",
     "NavigationFooter",
     "PageHeader",
+    "BaseGuideWindow",
     "AllPatchedPage",
     "FailurePage",
     "LibraryPage",
@@ -29,7 +31,7 @@ __all__ = [
     "ProgressPage",
     "SelectionPage",
     "SuccessPage",
-    "WarningPage",
+    "DowngradePage",
     "WelcomePage",
     "UpdateAvailablePage",
 ]

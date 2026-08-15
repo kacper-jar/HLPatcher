@@ -4,6 +4,7 @@
   "btn_next": "Next",
   "btn_patch": "Patch",
   "btn_proceed": "Proceed",
+  "btn_open_link": "Open Link",
   "welcome_title": "Welcome to HLPatcher ({version})",
   "welcome_desc": "HLPatcher makes Half-Life and other Valve games\nplayable on modern ARM Macs that only support\n64-bit applications.",
   "welcome_translations_title": "Translations available",
@@ -58,6 +59,17 @@
   "update_latest_version": "Latest version: v{version}",
   "update_btn": "Open GitHub Releases",
   "update_skip": "You can proceed without updating, but it is not recommended.",
-  "warning_title": "Before You Continue!",
-  "warning_text": "Before proceeding, you MUST switch your game\ninstallations to the correct legacy branches.\n\nSet these games in this order (to avoid resets),\nskipping any you are not patching:\n1. Half-Life: Source\n2. Half-Life 2: Episode One\n3. Half-Life 2: Episode Two\n4. Half-Life 2: Lost Coast\n5. Half-Life 2\n6. Portal\n\nTo do this:\n1. Open Steam\n2. Right-click Game -> Properties\n3. Go to Betas\n4. Select 'steam_legacy' (or 'beta' for Portal)\n\nThis is required because the newest versions are incompatible with available patches.\n\nThe Patch button will be enabled once all games are downgraded correctly."
+  "downgrade_title": "Downgrade Required",
+  "downgrade_guide_btn": "Open downgrade guide",
+  "downgraded_success_btn": "Downgraded successfully",
+  "downgrade_status_remaining": "{count} games\nto downgrade",
+  "downgrade_status_all": "All games\ndowngraded",
+  "guide_portal_beta_step1_title": "Step 1: Open Steam",
+  "guide_portal_beta_step1_desc": "Launch the Steam client.",
+  "guide_portal_beta_step2_title": "Step 2: Open Properties",
+  "guide_portal_beta_step2_desc": "Right-click Portal in your Steam Library and select 'Properties' from the context menu.",
+  "guide_portal_beta_step3_title": "Step 3: Go to Betas",
+  "guide_portal_beta_step3_desc": "Navigate to the 'Betas' tab on the left side of the Properties window.",
+  "guide_portal_beta_step4_title": "Step 4: Select Beta Branch",
+  "guide_portal_beta_step4_desc": "Select 'beta' from the Beta Participation dropdown."
 }

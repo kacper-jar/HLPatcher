@@ -2,7 +2,7 @@ from .welcome_page import WelcomePage
 from .library_page import LibraryPage
 from .selection_page import SelectionPage
 from .options_page import OptionsPage
-from .warning_page import WarningPage
+from .downgrade_page import DowngradePage
 from .progress_page import ProgressPage
 from .success_page import SuccessPage
 from .failure_page import FailurePage
@@ -15,7 +15,7 @@ __all__ = [
     "LibraryPage",
     "SelectionPage",
     "OptionsPage",
-    "WarningPage",
+    "DowngradePage",
     "ProgressPage",
     "SuccessPage",
     "FailurePage",
