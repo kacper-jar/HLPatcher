@@ -44,7 +44,7 @@ def test_options_page(mock_app_context):
     page = OptionsPage(master, mock_app_context)
 
     assert page.get_title() == "Patching Options"
-    assert page.get_next_page_key() == PageRoute.CHECK_SOURCE_WARNING
+    assert page.get_next_page_key() == PageRoute.CHECK_DOWNGRADE
 
     from patcher.core.models import PatchMode
     page._mode_var.set(PatchMode.LATEST.value)

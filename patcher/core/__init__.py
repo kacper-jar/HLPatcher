@@ -15,10 +15,13 @@ from .models import (
     PatchStepConfig,
     BuildStepConfig,
     InstallStepConfig,
+    GuideConfig,
+    GuideStepConfig
 )
 from .command_executor import CommandExecutor
 from .updater import Updater
 from .game_detector import GameDetector
+from .guide_registry import GuideRegistry
 from .patcher import Patcher
 from .i18n import I18n
 
@@ -31,8 +34,11 @@ __all__ = [
     "PatchMode",
     "PatchStatus",
     "GameDetector",
+    "GuideRegistry",
     "Patcher",
     "UpdateInfo",
+    "GuideConfig",
+    "GuideStepConfig",
     "SOURCE_LINK_FIXES",
     "Updater",
     "CommandExecutor",

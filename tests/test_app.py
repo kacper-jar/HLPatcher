@@ -68,19 +68,19 @@ def test_scan_and_route_needs_patch(mock_app, mocker):
     assert mock_app.router.current_page_key == PageRoute.SELECTION
 
 
-def test_check_source_warning_with_source(mock_app):
-    comp = Component("SourceComp", "test", EngineType.SOURCE, PatchStatus.NEEDS_PATCH, "")
+def test_check_downgrade_needed_with_requires(mock_app):
+    comp = Component("Comp", "test", EngineType.SOURCE, PatchStatus.NEEDS_PATCH, {"file": "hash"})
     mock_app.context.selected_components = [comp]
     mock_app.router.show_page(PageRoute.OPTIONS)
-    mock_app._check_source_warning()
+    mock_app._check_downgrade_needed()
 
-    assert mock_app.router.current_page_key == PageRoute.WARNING
+    assert mock_app.router.current_page_key == PageRoute.DOWNGRADE
 
 
-def test_check_source_warning_without_source(mock_app):
-    comp = Component("GoldSrcComp", "test", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH, "")
+def test_check_downgrade_needed_without_requires(mock_app):
+    comp = Component("Comp", "test", EngineType.SOURCE, PatchStatus.NEEDS_PATCH, {})
     mock_app.context.selected_components = [comp]
     mock_app.router.show_page(PageRoute.OPTIONS)
-    mock_app._check_source_warning()
+    mock_app._check_downgrade_needed()
 
     assert mock_app.router.current_page_key == PageRoute.PROGRESS

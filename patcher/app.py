@@ -1,4 +1,3 @@
-
 import logging
 import shutil
 import threading
@@ -9,6 +8,7 @@ from patcher.core import (
     AppConfig,
     EngineType,
     GameDetector,
+    GuideRegistry,
     I18n,
     PatchContext,
     UpdateInfo,
@@ -47,6 +47,9 @@ class App(ctk.CTk):
         locales_dir = self.context.script_dir / "data" / "locales"
         self.i18n = I18n(locales_dir)
         self.i18n.on_language_changed = self._on_language_changed
+
+        guides_dir = self.context.script_dir / "data" / "guides"
+        self.guide_registry = GuideRegistry(guides_dir)
 
         self._start_update_check()
 
@@ -93,8 +96,8 @@ class App(ctk.CTk):
             self._scan_and_route()
             return PageRoute.HALT
 
-        if next_key == PageRoute.CHECK_SOURCE_WARNING:
-            self._check_source_warning()
+        if next_key == PageRoute.CHECK_DOWNGRADE:
+            self._check_downgrade_needed()
             return PageRoute.HALT
 
         if (
@@ -137,13 +140,13 @@ class App(ctk.CTk):
         self.router.push_history(self.router.current_page_key)
         self.router.show_page(PageRoute.SELECTION)
 
-    def _check_source_warning(self):
-        has_source = any(
-            c.engine_type == EngineType.SOURCE
+    def _check_downgrade_needed(self):
+        needs_downgrade = any(
+            bool(c.requires)
             for c in self.context.selected_components
         )
         self.router.push_history(self.router.current_page_key)
-        if has_source:
-            self.router.show_page(PageRoute.WARNING)
+        if needs_downgrade:
+            self.router.show_page(PageRoute.DOWNGRADE)
         else:
             self.router.show_page(PageRoute.PROGRESS)

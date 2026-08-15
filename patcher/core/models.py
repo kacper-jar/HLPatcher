@@ -106,3 +106,18 @@ class UpdateInfo:
     latest_version: str
     update_available: bool
     release_url: str
+
+
+@dataclass
+class GuideStepConfig:
+    step_title: str
+    step_description: str
+    step_command: str = ""
+    step_button_text: str = ""
+    step_button_url: str = ""
+
+
+@dataclass
+class GuideConfig:
+    title: str
+    steps: list[GuideStepConfig] = field(default_factory=list)
