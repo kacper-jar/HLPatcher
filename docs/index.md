@@ -85,7 +85,13 @@ It lets users enjoy the game again without the hassle of manual binary update.
 
     [:octicons-mark-github-16: GitHub](https://github.com/nillerusr)
 
-    For developing modifications of the [Source Engine](https://github.com/nillerusr/source-engine) leak.
+    For developing modifications in the [Source Engine](https://github.com/nillerusr/source-engine) repository.
+
+-   **Sethur (Tris)**
+
+    [:octicons-mark-github-16: GitHub](https://github.com/Sethur)
+
+    For [fixing the mouse Y offset issue in fullscreen mode on devices with a camera notch](https://github.com/nillerusr/source-engine/pull/456).
 
 </div>
 

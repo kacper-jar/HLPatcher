@@ -6,7 +6,8 @@ HLPatcher makes Half-Life and other Valve games playable on modern ARM Macs that
 ## Thanks to
  - [Flying with Gauss](https://xash.su/) team for developing [Xash3D FWGS](https://github.com/FWGS/xash3d-fwgs) engine and [HLSDK Portable](https://github.com/FWGS/hlsdk-portable). 
  - [Velaron](https://github.com/Velaron) for developing [Counter-Strike 1.6 reverse-engineered client](https://github.com/Velaron/cs16-client).
- - [Nillerusr](https://github.com/nillerusr) for developing modifications of the [Source Engine](https://github.com/nillerusr/source-engine) leak.
+ - [Nillerusr](https://github.com/nillerusr) for developing modifications in the [Source Engine](https://github.com/nillerusr/source-engine) repository.
+ - [Sethur (Tris)](https://github.com/Sethur) for [fixing the mouse Y offset issue in fullscreen mode on devices with a camera notch](https://github.com/nillerusr/source-engine/pull/456).
 
 Without them, HLPatcher wouldn't exist.
 
