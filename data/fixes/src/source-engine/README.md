@@ -19,5 +19,5 @@ Adds OpenSSL to the local dependency downloads in build_deps.py.
 Fixes an issue where the user had to click under a button due to an incorrectly calculated mouse Y scale in fullscreen
 mode on devices with a camera notch.
 
-Code from [this unmerged PR](https://github.com/nillerusr/source-engine/pull/456) by [Sethur](https://github.com/Sethur) and
-Tris.
+Code from [this unmerged PR](https://github.com/nillerusr/source-engine/pull/456) by [Sethur](https://github.com/Sethur)
+(Tris).
