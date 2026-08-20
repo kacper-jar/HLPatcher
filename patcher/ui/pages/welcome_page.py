@@ -7,9 +7,25 @@ class WelcomePage(BasePage):
     def __init__(self, parent, app, **kwargs):
         super().__init__(parent, app, **kwargs)
 
-        description = self._app.i18n.t("welcome_desc")
-        desc_label = ctk.CTkLabel(self, text=description, justify="center")
-        desc_label.pack(pady=(0, 10))
+        about_frame = ctk.CTkFrame(self, fg_color="gray20", corner_radius=8)
+        about_frame.pack(fill="x", padx=20, pady=5)
+
+        about_title = ctk.CTkLabel(
+            about_frame,
+            text=self._app.i18n.t("welcome_about_title"),
+            font=ctk.CTkFont(weight="bold"),
+            anchor="w",
+        )
+        about_title.pack(fill="x", padx=15, pady=(10, 0))
+
+        about_label = ctk.CTkLabel(
+            about_frame,
+            text=self._app.i18n.t("welcome_about_desc"),
+            anchor="w",
+            wraplength=320,
+            justify="left",
+        )
+        about_label.pack(fill="x", padx=15, pady=(2, 10))
 
         trans_frame = ctk.CTkFrame(self, fg_color="gray20", corner_radius=8)
         trans_frame.pack(fill="x", padx=20, pady=5)
@@ -47,7 +63,7 @@ class WelcomePage(BasePage):
             font=ctk.CTkFont(weight="bold"),
             anchor="w",
         )
-        credits_title.pack(fill="x", padx=15, pady=(10, 5))
+        credits_title.pack(fill="x", padx=15, pady=(10, 0))
 
         credits_label = ctk.CTkLabel(
             credits_frame,
@@ -66,7 +82,7 @@ class WelcomePage(BasePage):
         credits_btn.pack(fill="x", padx=15, pady=(0, 10))
 
         note_frame = ctk.CTkFrame(self, fg_color="gray20", corner_radius=8)
-        note_frame.pack(fill="x", padx=20, pady=(5, 10))
+        note_frame.pack(fill="x", padx=20, pady=5)
 
         note_title = ctk.CTkLabel(
             note_frame,
