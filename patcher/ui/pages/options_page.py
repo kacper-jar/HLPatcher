@@ -92,14 +92,10 @@ class OptionsPage(BasePage):
         return self._app.i18n.t("options_title")
 
     def get_next_page_key(self) -> PageRoute:
-        return PageRoute.CHECK_DOWNGRADE
+        return PageRoute.LIMITATIONS
 
     def get_back_page_key(self) -> PageRoute:
         return PageRoute.SELECTION
 
     def get_next_button_text(self) -> str:
-        needs_downgrade = any(
-            bool(c.requires)
-            for c in self._app.context.selected_components
-        )
-        return self._app.i18n.t("btn_next") if needs_downgrade else self._app.i18n.t("btn_patch")
+        return self._app.i18n.t("btn_next")

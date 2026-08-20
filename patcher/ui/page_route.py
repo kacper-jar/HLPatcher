@@ -6,6 +6,7 @@ class PageRoute(Enum):
     LIBRARY = "library"
     SELECTION = "selection"
     OPTIONS = "options"
+    LIMITATIONS = "limitations"
     DOWNGRADE = "downgrade"
     PROGRESS = "progress"
     SUCCESS = "success"

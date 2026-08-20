@@ -182,7 +182,7 @@ class DowngradePage(BasePage):
         return PageRoute.PROGRESS
 
     def get_back_page_key(self) -> PageRoute:
-        return PageRoute.OPTIONS
+        return PageRoute.LIMITATIONS
 
     def get_next_button_text(self) -> str:
         return self._app.i18n.t("btn_patch")
