@@ -310,9 +310,7 @@
     "engine_type": "Source",
     "estimated_time": 3,
     "estimated_space": 25,
-    "requires": {
-      "hl1/glshaders.cfg": "53983f67d4ab1af83cc90e207aed7930832a44d5465c0494a7c20f0c898a0e4d"
-    },
+    "requires": {},
     "steps": [
       {
         "type": "git-fetcher",
