@@ -40,6 +40,7 @@ class FetchStepConfig(StepConfig):
 @dataclass
 class PatchStepConfig(StepConfig):
     patch_dir_name: str = ""
+    patch_container: str = ""
 
 
 @dataclass

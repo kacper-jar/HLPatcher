@@ -19,7 +19,7 @@ class Patcher:
         self._component_callback = component_callback
         self._step_callback = step_callback
         self.executor = CommandExecutor(self._context.working_dir, self._log_callback)
-        self._patched_dirs: set[str] = set()
+        self.applied_containers: set[tuple[str, str]] = set()
 
     def stop(self):
         self.executor.stop()
