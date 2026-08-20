@@ -2,6 +2,7 @@ from .welcome_page import WelcomePage
 from .library_page import LibraryPage
 from .selection_page import SelectionPage
 from .options_page import OptionsPage
+from .limitations_page import LimitationsPage
 from .downgrade_page import DowngradePage
 from .progress_page import ProgressPage
 from .success_page import SuccessPage
@@ -15,6 +16,7 @@ __all__ = [
     "LibraryPage",
     "SelectionPage",
     "OptionsPage",
+    "LimitationsPage",
     "DowngradePage",
     "ProgressPage",
     "SuccessPage",
