@@ -81,26 +81,27 @@ class WelcomePage(BasePage):
         )
         credits_btn.pack(fill="x", padx=15, pady=(0, 10))
 
-        note_frame = ctk.CTkFrame(self, fg_color="gray20", corner_radius=8)
-        note_frame.pack(fill="x", padx=20, pady=5)
+        sponsor_frame = ctk.CTkFrame(self, fg_color="gray20", corner_radius=8)
+        sponsor_frame.pack(fill="x", padx=20, pady=5)
 
-        note_title = ctk.CTkLabel(
-            note_frame,
-            text=self._app.i18n.t("welcome_note_title"),
+        sponsor_title = ctk.CTkLabel(
+            sponsor_frame,
+            text=self._app.i18n.t("welcome_sponsor_title"),
             font=ctk.CTkFont(weight="bold"),
-            text_color="#f39c12",
+            text_color="#FFDD00",
             anchor="w",
         )
-        note_title.pack(fill="x", padx=15, pady=(10, 0))
+        sponsor_title.pack(fill="x", padx=15, pady=(10, 5))
 
-        note_label = ctk.CTkLabel(
-            note_frame,
-            text=self._app.i18n.t("welcome_note_desc"),
-            anchor="w",
-            wraplength=320,
-            justify="left",
+        sponsor_btn = ctk.CTkButton(
+            sponsor_frame,
+            text="Buy Me a Coffee",
+            fg_color="#FFDD00",
+            text_color="black",
+            hover_color="#E6C700",
+            command=self._open_sponsor_site,
         )
-        note_label.pack(fill="x", padx=15, pady=(2, 10))
+        sponsor_btn.pack(fill="x", padx=15, pady=(0, 10))
 
     def get_title(self) -> str:
         return self._app.i18n.t("welcome_title", version=patcher.__version__)
@@ -140,3 +141,7 @@ class WelcomePage(BasePage):
     def _open_credits_site(self):
         import webbrowser
         webbrowser.open("https://hlpatcher.kzl21.ovh/#thanks-to")
+
+    def _open_sponsor_site(self):
+        import webbrowser
+        webbrowser.open("https://buymeacoffee.com/kacperjar")
