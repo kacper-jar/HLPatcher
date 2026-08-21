@@ -11,6 +11,11 @@ HLPatcher makes Half-Life and other Valve games playable on modern ARM Macs that
 
 Without them, HLPatcher wouldn't exist.
 
+## Help Make HLPatcher Better
+ - **Contribute** – Help improve HLPatcher by contributing code or ideas. Check out the [Contributing Guide](https://hlpatcher.kzl21.ovh/contributing/) to get started.
+ - **Translate** – Make HLPatcher accessible in your native language via [Crowdin](https://crowdin.com/project/hlpatcher).
+ - **Support Financially** – If you enjoy HLPatcher, consider supporting the project on [Buy Me a Coffee](https://buymeacoffee.com/kacperjar).
+
 ## Copyright Notice
 
 HLPatcher utilizes various third-party patches, modifications and open-source components to function. I respect the intellectual property rights of others.

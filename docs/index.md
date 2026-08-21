@@ -97,6 +97,24 @@ It lets users enjoy the game again without the hassle of manual binary update.
 
 Without them, HLPatcher wouldn't exist.
 
+## Help Make HLPatcher Better
+
+<div class="grid cards" markdown>
+
+-   **Contribute**
+
+    Help improve HLPatcher by contributing code or ideas. Check out the [Contributing Guide](contributing.md) to get started.
+
+-   **Translate**
+
+    Make HLPatcher accessible in your native language via [:octicons-link-external-24: Crowdin](https://crowdin.com/project/hlpatcher).
+
+-   **Support Financially**
+
+    If you enjoy HLPatcher, consider supporting the project on [:octicons-link-external-24: Buy Me a Coffee](https://buymeacoffee.com/kacperjar).
+
+</div>
+
 ## Copyright Notice
 
 HLPatcher utilizes various third-party patches, modifications and open-source components to function. I respect the intellectual property rights of others.
