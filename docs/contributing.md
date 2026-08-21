@@ -42,17 +42,26 @@ Here is a quick overview of the project's structure to help you navigate the cod
 
 - `.github/`: GitHub Actions workflows and issue templates.
     - `workflows/tests.yml`: Runs the full test suite on every push and pull request to `main`.
+    - `workflows/commitlint.yml`: Validates commit messages against Conventional Commits.
     - `workflows/release.yml`: Triggered on a tag push - runs tests, creates a ZIP archive, and opens a draft GitHub Release.
     - `workflows/docs.yml`: Builds and deploys MkDocs documentation.
+- `data/`: Game data, patches, guides, and localization files.
+    - `fixes/`: Game-specific patch scripts and binary fixes applied during the patching process.
+    - `guides/`: Game downgrade guides shown to the user (JSON format).
+    - `locales/`: Translation files for each supported language.
+    - `components.json`: Game component definitions used by the patcher.
+    - `locales.json`: Language mappings.
 - `docs/`: Documentation source files (MkDocs + Material theme).
-- `fixes/`: Game-specific patch scripts and binary fixes applied during the patching process.
 - `patcher/`: Main application source code.
-    - `patcher.core`: Core logic - game detection, patch orchestration, models, update checker.
-    - `patcher.ui`: CustomTkinter-based GUI - pages, navigation, and base components.
+    - `patcher.core`: Core logic - game detection, patching, models, i18n, update checker, and pipeline.
+    - `patcher.ui`: CustomTkinter-based GUI - pages, navigation, router, and base components.
 - `tests/`: Unit and integration tests (pytest).
-    - `tests/core/`: Tests for game detection, patching logic, and models.
-    - `tests/ui/`: Tests for UI pages and navigation flow.
+    - `tests/core/`: Tests for game detection, patching logic, i18n, and models.
+    - `tests/ui/`: Tests for UI pages.
 - `patcher.sh`: Bootstrap shell script - sets up the virtual environment and launches the app.
+- `crowdin.yml`: Crowdin localization configuration.
+- `commitlint.config.js`: Commit message linting rules.
+- `mkdocs.yml`: MkDocs documentation configuration.
 - `requirements.txt`: Runtime dependencies.
 - `requirements-dev.txt`: Development dependencies.
 
