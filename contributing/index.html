@@ -528,6 +528,62 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Testing Changes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#automated-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automated Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manual-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Manual Testing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Manual Testing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#getting-started_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting Started
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -695,6 +751,62 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Testing Changes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#automated-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automated Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manual-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Manual Testing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Manual Testing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#getting-started_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Getting Started
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -794,23 +906,34 @@ your own copy of the project to work on.</p>
 <ul>
 <li><code>.github/</code>: GitHub Actions workflows and issue templates.<ul>
 <li><code>workflows/tests.yml</code>: Runs the full test suite on every push and pull request to <code>main</code>.</li>
+<li><code>workflows/commitlint.yml</code>: Validates commit messages against Conventional Commits.</li>
 <li><code>workflows/release.yml</code>: Triggered on a tag push - runs tests, creates a ZIP archive, and opens a draft GitHub Release.</li>
 <li><code>workflows/docs.yml</code>: Builds and deploys MkDocs documentation.</li>
 </ul>
 </li>
-<li><code>docs/</code>: Documentation source files (MkDocs + Material theme).</li>
+<li><code>data/</code>: Game data, patches, guides, and localization files.<ul>
 <li><code>fixes/</code>: Game-specific patch scripts and binary fixes applied during the patching process.</li>
+<li><code>guides/</code>: Game downgrade guides shown to the user (JSON format).</li>
+<li><code>locales/</code>: Translation files for each supported language.</li>
+<li><code>components.json</code>: Game component definitions used by the patcher.</li>
+<li><code>locales.json</code>: Language mappings.</li>
+</ul>
+</li>
+<li><code>docs/</code>: Documentation source files (MkDocs + Material theme).</li>
 <li><code>patcher/</code>: Main application source code.<ul>
-<li><code>patcher.core</code>: Core logic - game detection, patch orchestration, models, update checker.</li>
-<li><code>patcher.ui</code>: CustomTkinter-based GUI - pages, navigation, and base components.</li>
+<li><code>patcher.core</code>: Core logic - game detection, patching, models, i18n, update checker, and pipeline.</li>
+<li><code>patcher.ui</code>: CustomTkinter-based GUI - pages, navigation, router, and base components.</li>
 </ul>
 </li>
 <li><code>tests/</code>: Unit and integration tests (pytest).<ul>
-<li><code>tests/core/</code>: Tests for game detection, patching logic, and models.</li>
-<li><code>tests/ui/</code>: Tests for UI pages and navigation flow.</li>
+<li><code>tests/core/</code>: Tests for game detection, patching logic, i18n, and models.</li>
+<li><code>tests/ui/</code>: Tests for UI pages.</li>
 </ul>
 </li>
 <li><code>patcher.sh</code>: Bootstrap shell script - sets up the virtual environment and launches the app.</li>
+<li><code>crowdin.yml</code>: Crowdin localization configuration.</li>
+<li><code>commitlint.config.js</code>: Commit message linting rules.</li>
+<li><code>mkdocs.yml</code>: MkDocs documentation configuration.</li>
 <li><code>requirements.txt</code>: Runtime dependencies.</li>
 <li><code>requirements-dev.txt</code>: Development dependencies.</li>
 </ul>
@@ -827,6 +950,7 @@ your own copy of the project to work on.</p>
 This can be helpful when troubleshooting patching-related issues.</p>
 </div>
 <h2 id="testing-changes">Testing Changes</h2>
+<h3 id="automated-testing">Automated Testing</h3>
 <p>We use <code>pytest</code> for testing. Tests run on <strong>macOS</strong> (matching the CI environment). Run the full suite with:</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>pytest
 </span></code></pre></div>
@@ -836,10 +960,37 @@ This can be helpful when troubleshooting patching-related issues.</p>
 <p>All tests must pass before a Pull Request can be merged. The CI pipeline runs the test suite automatically on every PR targeting <code>main</code>.</p>
 </div>
 <p>If you are adding a new feature, please add tests to cover it.</p>
+<h3 id="manual-testing">Manual Testing</h3>
+<p>To test patches against actual game files, you can use the <a href="https://github.com/kacper-jar/HLPatcher-test-env-builder">HLPatcher Test Environment Builder</a> tool. It automatically downloads and sets up clean testing environments by fetching games directly via Steam, eliminating the need to manually download games through the Steam client.</p>
+<div class="admonition important">
+<p class="admonition-title">Steam Account Prerequisites &amp; Login Flow</p>
+<ul>
+<li>You must sign in with a Steam account that already owns all the games you intend to download.</li>
+<li>The internal downloading tool does not keep you logged in between tasks. As a result, you will need to scan a new QR code with your Steam mobile app for each individual game as it begins downloading.</li>
+</ul>
+</div>
+<h4 id="getting-started_1">Getting Started</h4>
+<p>Clone the repository and install the dependencies:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/kacper-jar/HLPatcher-test-env-builder.git
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nb">cd</span><span class="w"> </span>HLPatcher-test-env-builder
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</span></code></pre></div>
+<p>Then run the builder:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>python3<span class="w"> </span>builder.py
+</span></code></pre></div>
+<h4 id="workflow">Workflow</h4>
+<p>The builder will guide you through the following steps in a terminal UI:</p>
+<ol>
+<li><strong>Target directory</strong> – Enter the path where the test environment should be created.</li>
+<li><strong>Preset selection</strong> – Choose a preset that determines which games to download.</li>
+<li><strong>Summary</strong> – Review the components that will be installed.</li>
+<li><strong>Installation</strong> – The builder downloads game files via Steam, authenticating with QR codes as needed, and merges everything into the target directory.</li>
+</ol>
+<p>Once the environment is ready, point HLPatcher at the target directory to test your patches.</p>
 <h2 id="commit-message-convention">Commit Message Convention</h2>
 <p>We follow the <strong>Conventional Commits</strong> style to keep the commit history readable.</p>
 <p>Each commit message should follow this format:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>&lt;type&gt;: &lt;short description&gt;
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>&lt;type&gt;: &lt;short description&gt;
 </span></code></pre></div>
 <h3 id="common-types">Common Types</h3>
 <table>
