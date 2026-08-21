@@ -75,6 +75,8 @@ This will install any missing dependencies and launch the HLPatcher UI.
 
 ## Testing Changes
 
+### Automated Testing
+
 We use `pytest` for testing. Tests run on **macOS** (matching the CI environment). Run the full suite with:
 
 ```bash
@@ -87,6 +89,41 @@ This will also generate a coverage report for the `patcher/` package. The config
     All tests must pass before a Pull Request can be merged. The CI pipeline runs the test suite automatically on every PR targeting `main`.
 
 If you are adding a new feature, please add tests to cover it.
+
+### Manual Testing
+
+To test patches against actual game files, you can use the [HLPatcher Test Environment Builder](https://github.com/kacper-jar/HLPatcher-test-env-builder) tool. It automatically downloads and sets up clean testing environments by fetching games directly via Steam, eliminating the need to manually download games through the Steam client.
+
+!!! important "Steam Account Prerequisites & Login Flow"
+    - You must sign in with a Steam account that already owns all the games you intend to download.
+    - The internal downloading tool does not keep you logged in between tasks. As a result, you will need to scan a new QR code with your Steam mobile app for each individual game as it begins downloading.
+
+#### Getting Started
+
+Clone the repository and install the dependencies:
+
+```bash
+git clone https://github.com/kacper-jar/HLPatcher-test-env-builder.git
+cd HLPatcher-test-env-builder
+python3 -m pip install -r requirements.txt
+```
+
+Then run the builder:
+
+```bash
+python3 builder.py
+```
+
+#### Workflow
+
+The builder will guide you through the following steps in a terminal UI:
+
+1. **Target directory** – Enter the path where the test environment should be created.
+2. **Preset selection** – Choose a preset that determines which games to download.
+3. **Summary** – Review the components that will be installed.
+4. **Installation** – The builder downloads game files via Steam, authenticating with QR codes as needed, and merges everything into the target directory.
+
+Once the environment is ready, point HLPatcher at the target directory to test your patches.
 
 ## Commit Message Convention
 
