@@ -3,3 +3,4 @@ pytest-mock
 pytest-cov
 mkdocs
 mkdocs-material
+mkdocs-ultralytics-plugin
