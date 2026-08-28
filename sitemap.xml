@@ -1,3 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://hlpatcher.kzl21.ovh/</loc>
+         <lastmod>2026-08-28</lastmod>
+    </url>
+    <url>
+         <loc>https://hlpatcher.kzl21.ovh/contributing/</loc>
+         <lastmod>2026-08-28</lastmod>
+    </url>
+    <url>
+         <loc>https://hlpatcher.kzl21.ovh/getting-started/</loc>
+         <lastmod>2026-08-28</lastmod>
+    </url>
+    <url>
+         <loc>https://hlpatcher.kzl21.ovh/removing-patches/</loc>
+         <lastmod>2026-08-28</lastmod>
+    </url>
 </urlset>
