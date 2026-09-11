@@ -135,7 +135,7 @@
         "url": "https://github.com/FWGS/hlsdk-portable",
         "patch_dir_name": "hlsdk-portable-dmc",
         "branch": "dmc",
-        "stable_commit": "53ec328",
+        "stable_commit": "670aebd",
         "force_stable": false
       },
       {
