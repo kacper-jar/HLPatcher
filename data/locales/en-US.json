@@ -117,7 +117,7 @@
   "guide_hl2_step16_title": "Step 16: Select Beta Branch",
   "guide_hl2_step16_desc": "Select 'steam_legacy' from the Beta Participation dropdown.",
   "hl2_required_title": "Half-Life 2 Required",
-  "hl2_required_text": "To proceed with patching Half-Life 2: Deathmatch or Day of Defeat: Source, you'll need to have the base game, Half-Life 2, installed on Steam.\n\nHLPatcher requires some original files from Half-Life 2 to replace the broken shaders currently present in these games. You don't need to patch Half-Life 2 itself, simply having it installed is enough.\n\nOnce you have installed Half-Life 2 via Steam, you must click 'Back' and then 'Next' again for HLPatcher to detect it. Alternatively, click 'Back' and uncheck the dependent games to continue without them.",
+  "hl2_required_text": "To proceed with patching Half-Life 2: Deathmatch, Day of Defeat: Source or Counter-Strike: Source, you'll need to have the base game, Half-Life 2, installed on Steam.\n\nHLPatcher requires some original files from Half-Life 2 to replace the broken shaders currently present in these games. You don't need to patch Half-Life 2 itself, simply having it installed is enough.\n\nOnce you have installed Half-Life 2 via Steam, you must click 'Back' and then 'Next' again for HLPatcher to detect it. Alternatively, click 'Back' and uncheck the dependent games to continue without them.",
   "guide_dod_title": "Day of Defeat: Source",
   "guide_dod_step1_title": "Step 1: Open Steam",
   "guide_dod_step1_desc": "Launch the Steam client.",
@@ -135,5 +135,14 @@
   "guide_hl2mp_step3_title": "Step 3: Go to Betas",
   "guide_hl2mp_step3_desc": "Navigate to the 'Betas' tab on the left side of the Properties window.",
   "guide_hl2mp_step4_title": "Step 4: Select Beta Branch",
-  "guide_hl2mp_step4_desc": "Select 'steam_legacy' from the Beta Participation dropdown."
+  "guide_hl2mp_step4_desc": "Select 'steam_legacy' from the Beta Participation dropdown.",
+  "guide_css_title": "Counter-Strike: Source",
+  "guide_css_step1_title": "Step 1: Open Steam",
+  "guide_css_step1_desc": "Launch the Steam client.",
+  "guide_css_step2_title": "Step 2: Open Properties",
+  "guide_css_step2_desc": "Right-click Counter-Strike: Source in your Steam Library and select 'Properties' from the context menu.",
+  "guide_css_step3_title": "Step 3: Go to Betas",
+  "guide_css_step3_desc": "Navigate to the 'Betas' tab on the left side of the Properties window.",
+  "guide_css_step4_title": "Step 4: Select Beta Branch",
+  "guide_css_step4_desc": "Select 'previous_build' from the Beta Participation dropdown."
 }

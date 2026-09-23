@@ -101,8 +101,9 @@ class App(ctk.CTk):
             return PageRoute.HALT
 
         if current_key == PageRoute.SELECTION and next_key == PageRoute.OPTIONS:
-            requires_hl2 = any(c.name in ("Half-Life 2: Deathmatch", "Day of Defeat: Source") for c in
-                               self.context.selected_components)
+            requires_hl2 = any(
+                c.name in ("Half-Life 2: Deathmatch", "Day of Defeat: Source", "Counter-Strike: Source") for c in
+                self.context.selected_components)
             if requires_hl2:
                 has_hl2_installed = any(g.name == "Source (Half-Life 2)" for g in self.context.games)
                 if not has_hl2_installed:
