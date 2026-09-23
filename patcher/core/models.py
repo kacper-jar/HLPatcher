@@ -56,6 +56,19 @@ class InstallStepConfig(StepConfig):
 
 
 @dataclass
+class VpkExtractStepConfig(StepConfig):
+    vpk_path: str = ""
+    files: list[str] = field(default_factory=list)
+    output_dir: str = ""
+
+
+@dataclass
+class ArchiveInstallStepConfig(InstallStepConfig):
+    output_dir: str = ""
+    file_pattern: str = ""
+
+
+@dataclass
 class Component:
     name: str
     subfolder: str

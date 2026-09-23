@@ -12,6 +12,8 @@ from patcher.core.models import (
     InstallStepConfig,
     PatchStatus,
     PatchStepConfig,
+    ArchiveInstallStepConfig,
+    VpkExtractStepConfig,
 )
 
 logger = logging.getLogger(__name__)
@@ -19,6 +21,7 @@ logger = logging.getLogger(__name__)
 GOLDSRC_FOLDER_NAME = "Half-Life"
 HL2_FOLDER_NAME = "Half-Life 2"
 PORTAL_FOLDER_NAME = "Portal"
+HL2DM_FOLDER_NAME = "Half-Life 2 Deathmatch"
 
 
 class GameDetector:
@@ -41,7 +44,7 @@ class GameDetector:
             games.append(goldsrc_game)
 
         hl2_comps = [c for c in self._components_config if
-                     c.get("engine_type") == "Source" and c.get("subfolder") != "portal"]
+                     c.get("engine_type") == "Source" and c.get("subfolder") not in ("portal", "hl2mp")]
         hl2_game = self._scan_game(
             HL2_FOLDER_NAME,
             "hl2_osx",
@@ -63,6 +66,18 @@ class GameDetector:
         )
         if portal_game:
             games.append(portal_game)
+
+        hl2dm_comps = [c for c in self._components_config if
+                       c.get("engine_type") == "Source" and c.get("subfolder") == "hl2mp"]
+        hl2dm_game = self._scan_game(
+            HL2DM_FOLDER_NAME,
+            "hl2_osx",
+            EngineType.SOURCE,
+            hl2dm_comps,
+            self._check_source_component
+        )
+        if hl2dm_game:
+            games.append(hl2dm_game)
 
         return games
 
@@ -171,6 +186,20 @@ class GameDetector:
                     patch_dir_name=step.get("patch_dir_name", ""),
                     build_args=step.get("build_args", []),
                     waf_game=step.get("waf_game", "")
+                ))
+            elif step_type == "vpk-extractor":
+                parsed_steps.append(VpkExtractStepConfig(
+                    type=step_type,
+                    vpk_path=step.get("vpk_path", ""),
+                    files=step.get("files", []),
+                    output_dir=step.get("output_dir", "")
+                ))
+            elif step_type == "archive-installer":
+                parsed_steps.append(ArchiveInstallStepConfig(
+                    type=step_type,
+                    patch_dir_name=step.get("patch_dir_name", ""),
+                    output_dir=step.get("output_dir", ""),
+                    file_pattern=step.get("file_pattern", "")
                 ))
             else:
                 parsed_steps.append(InstallStepConfig(

@@ -15,6 +15,8 @@ from .models import (
     PatchStepConfig,
     BuildStepConfig,
     InstallStepConfig,
+    VpkExtractStepConfig,
+    ArchiveInstallStepConfig,
     GuideConfig,
     GuideStepConfig
 )
@@ -47,5 +49,7 @@ __all__ = [
     "PatchStepConfig",
     "BuildStepConfig",
     "InstallStepConfig",
+    "VpkExtractStepConfig",
+    "ArchiveInstallStepConfig",
     "I18n",
 ]
