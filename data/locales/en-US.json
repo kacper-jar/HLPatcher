@@ -126,5 +126,14 @@
   "guide_dod_step3_title": "Step 3: Go to Betas",
   "guide_dod_step3_desc": "Navigate to the 'Betas' tab on the left side of the Properties window.",
   "guide_dod_step4_title": "Step 4: Select Beta Branch",
-  "guide_dod_step4_desc": "Select 'previous_build' from the Beta Participation dropdown."
+  "guide_dod_step4_desc": "Select 'previous_build' from the Beta Participation dropdown.",
+  "guide_hl2mp_title": "Half-Life 2: Deathmatch",
+  "guide_hl2mp_step1_title": "Step 1: Open Steam",
+  "guide_hl2mp_step1_desc": "Launch the Steam client.",
+  "guide_hl2mp_step2_title": "Step 2: Open Properties",
+  "guide_hl2mp_step2_desc": "Right-click Half-Life 2: Deathmatch in your Steam Library and select 'Properties' from the context menu.",
+  "guide_hl2mp_step3_title": "Step 3: Go to Betas",
+  "guide_hl2mp_step3_desc": "Navigate to the 'Betas' tab on the left side of the Properties window.",
+  "guide_hl2mp_step4_title": "Step 4: Select Beta Branch",
+  "guide_hl2mp_step4_desc": "Select 'steam_legacy' from the Beta Participation dropdown."
 }

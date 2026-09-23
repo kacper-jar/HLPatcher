@@ -383,7 +383,6 @@
   {
     "name": "Half-Life 2: Deathmatch",
     "subfolder": "hl2mp",
-    "downgrade_group": "hl2",
     "engine_type": "Source",
     "estimated_time": 3,
     "estimated_space": 25,
