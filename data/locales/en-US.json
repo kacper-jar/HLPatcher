@@ -115,5 +115,7 @@
   "guide_hl2_step15_title": "Step 15: Go to Betas",
   "guide_hl2_step15_desc": "Navigate to the 'Betas' tab on the left side of the Properties window.",
   "guide_hl2_step16_title": "Step 16: Select Beta Branch",
-  "guide_hl2_step16_desc": "Select 'steam_legacy' from the Beta Participation dropdown."
+  "guide_hl2_step16_desc": "Select 'steam_legacy' from the Beta Participation dropdown.",
+  "hl2_required_title": "Half-Life 2 Required",
+  "hl2_required_text": "To proceed with patching Half-Life 2: Deathmatch, you'll need to have the base game, Half-Life 2, installed on Steam.\n\nHLPatcher requires some original files from Half-Life 2 to replace the broken shaders currently present in Half-Life 2: Deathmatch. You don't need to patch Half-Life 2 itself, simply having it installed is enough.\n\nOnce you have installed Half-Life 2 via Steam, you must click 'Back' and then 'Next' again for HLPatcher to detect it. Alternatively, click 'Back' and uncheck Half-Life 2: Deathmatch to continue without it."
 }

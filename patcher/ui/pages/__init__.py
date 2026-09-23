@@ -10,6 +10,7 @@ from .failure_page import FailurePage
 from .no_games_page import NoGamesPage
 from .all_patched_page import AllPatchedPage
 from .update_available_page import UpdateAvailablePage
+from .hl2_required_page import Hl2RequiredPage
 
 __all__ = [
     "WelcomePage",
@@ -24,4 +25,5 @@ __all__ = [
     "NoGamesPage",
     "AllPatchedPage",
     "UpdateAvailablePage",
+    "Hl2RequiredPage",
 ]

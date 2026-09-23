@@ -100,6 +100,14 @@ class App(ctk.CTk):
             self._check_downgrade_needed()
             return PageRoute.HALT
 
+        if current_key == PageRoute.SELECTION and next_key == PageRoute.OPTIONS:
+            has_hl2dm_selected = any(c.name == "Half-Life 2: Deathmatch" for c in self.context.selected_components)
+            if has_hl2dm_selected:
+                has_hl2_installed = any(g.name == "Source (Half-Life 2)" for g in self.context.games)
+                if not has_hl2_installed:
+                    self.router.push_history(current_key)
+                    return PageRoute.HL2_REQUIRED
+
         if (
                 current_key == PageRoute.WELCOME
                 and self.update_info
