@@ -387,7 +387,10 @@
     "engine_type": "Source",
     "estimated_time": 3,
     "estimated_space": 25,
-    "requires": {},
+    "requires": {
+      "hl2mp/bin/client.dylib": "911c4f1f3b33311d538519131673b69c062da5bee54abbb5d94fb4f9cc364684",
+      "hl2mp/bin/server.dylib": "a51a6c9c6c9be184d7ca33c68d876f08867b929bd04a2cd9f1d576f008695184"
+    },
     "steps": [
       {
         "type": "git-fetcher",
@@ -455,6 +458,156 @@
           "shaders/fxc/weapon_sheen_pass_ps20.vcs",
           "shaders/fxc/weapon_sheen_pass_ps20b.vcs",
           "shaders/fxc/weapon_sheen_pass_ps30.vcs",
+          "shaders/fxc/worldtwotextureblend_ps20.vcs"
+        ]
+      },
+      {
+        "type": "url-fetcher",
+        "url": "https://deac-riga.dl.sourceforge.net/project/dejavu/dejavu/2.37/dejavu-fonts-ttf-2.37.zip?viasf=1&fid=e8ec3cc0fad42cb8&e=1790256123&st=WUxdPOPPt1IzUxQS3teHlA",
+        "patch_dir_name": "dejavu-fonts"
+      },
+      {
+        "type": "archive-installer",
+        "patch_dir_name": "dejavu-fonts",
+        "output_dir": "platform/resource/linux_fonts",
+        "file_pattern": "*.ttf"
+      },
+      {
+        "type": "url-fetcher",
+        "url": "https://github.com/liberationfonts/liberation-fonts/files/7261482/liberation-fonts-ttf-2.1.5.tar.gz",
+        "patch_dir_name": "liberation-fonts"
+      },
+      {
+        "type": "archive-installer",
+        "patch_dir_name": "liberation-fonts",
+        "output_dir": "platform/resource/linux_fonts",
+        "file_pattern": "*.ttf"
+      }
+    ]
+  },
+  {
+    "name": "Day of Defeat: Source",
+    "subfolder": "dod",
+    "engine_type": "Source",
+    "estimated_time": 3,
+    "estimated_space": 25,
+    "requires": {
+      "dod/bin/client.dylib": "72f07c7962b1f007c4a65ed9388568b94f688bed013f988ac88ade47c64a6a4e",
+      "dod/bin/server.dylib": "7bf2612f3a7c395384b868b2ce633cd4dc8bc45f0283f3dc4cadbd6ff7b25dac"
+    },
+    "steps": [
+      {
+        "type": "git-fetcher",
+        "url": "https://github.com/nillerusr/source-engine",
+        "patch_dir_name": "source-engine",
+        "stable_commit": "ed8209c",
+        "force_stable": false
+      },
+      {
+        "type": "patch",
+        "patch_dir_name": "source-engine"
+      },
+      {
+        "type": "waf-builder",
+        "patch_dir_name": "source-engine",
+        "build_args": [
+          "-T",
+          "release",
+          "--prefix=",
+          "--build-games=dod"
+        ],
+        "waf_game": "dod"
+      },
+      {
+        "type": "source-installer",
+        "patch_dir_name": "source-engine"
+      },
+      {
+        "type": "vpk-extractor",
+        "vpk_path": "Half-Life 2/hl2/hl2_misc_dir.vpk",
+        "output_dir": "custom/shaderfix",
+        "files": [
+          "shaders/fxc/bloom_ps20.vcs",
+          "shaders/fxc/blurfilter_ps20.vcs",
+          "shaders/fxc/blurfilter_vs11.vcs",
+          "shaders/fxc/blurfilter_vs20.vcs",
+          "shaders/fxc/cable_ps20b.vcs",
+          "shaders/fxc/cable_vs20.vcs",
+          "shaders/fxc/debugtextureview_ps20.vcs",
+          "shaders/fxc/debugtextureview_ps20b.vcs",
+          "shaders/fxc/debugtextureview_vs20.vcs",
+          "shaders/fxc/decalmodulate_ps20b.vcs",
+          "shaders/fxc/decalmodulate_ps30.vcs",
+          "shaders/fxc/depthwrite_vs20.vcs",
+          "shaders/fxc/depthwrite_vs30.vcs",
+          "shaders/fxc/downsample_nohdr_ps20.vcs",
+          "shaders/fxc/downsample_ps20.vcs",
+          "shaders/fxc/downsample_vs11.vcs",
+          "shaders/fxc/downsample_vs20.vcs",
+          "shaders/fxc/eye_refract_ps20b.vcs",
+          "shaders/fxc/eye_refract_ps30.vcs",
+          "shaders/fxc/eye_refract_vs20.vcs",
+          "shaders/fxc/eye_refract_vs30.vcs",
+          "shaders/fxc/eyes_flashlight_ps20b.vcs",
+          "shaders/fxc/eyes_flashlight_ps30.vcs",
+          "shaders/fxc/eyes_flashlight_vs20.vcs",
+          "shaders/fxc/eyes_flashlight_vs30.vcs",
+          "shaders/fxc/eyes_ps20b.vcs",
+          "shaders/fxc/eyes_ps30.vcs",
+          "shaders/fxc/eyes_vs20.vcs",
+          "shaders/fxc/eyes_vs30.vcs",
+          "shaders/fxc/hdrcombineto16bit_ps20.vcs",
+          "shaders/fxc/hdrcombineto16bit_vs20.vcs",
+          "shaders/fxc/hdrselectrange_ps20.vcs",
+          "shaders/fxc/hdrselectrange_vs20.vcs",
+          "shaders/fxc/lightmappedgeneric_decal_ps20b.vcs",
+          "shaders/fxc/lightmappedgeneric_decal_vs20.vcs",
+          "shaders/fxc/lightmappedgeneric_ps20b.vcs",
+          "shaders/fxc/lightmappedgeneric_vs20.vcs",
+          "shaders/fxc/particlesphere_vs11.vcs",
+          "shaders/fxc/refract_ps20.vcs",
+          "shaders/fxc/refract_ps20b.vcs",
+          "shaders/fxc/refract_vs20.vcs",
+          "shaders/fxc/shatteredglass_ps20.vcs",
+          "shaders/fxc/shatteredglass_vs20.vcs",
+          "shaders/fxc/skin_ps20b.vcs",
+          "shaders/fxc/skin_ps30.vcs",
+          "shaders/fxc/skin_vs20.vcs",
+          "shaders/fxc/skin_vs30.vcs",
+          "shaders/fxc/sprite_ps20b.vcs",
+          "shaders/fxc/sprite_vs20.vcs",
+          "shaders/fxc/teeth_bump_ps20b.vcs",
+          "shaders/fxc/teeth_bump_ps30.vcs",
+          "shaders/fxc/teeth_bump_vs20.vcs",
+          "shaders/fxc/teeth_bump_vs30.vcs",
+          "shaders/fxc/teeth_flashlight_ps20b.vcs",
+          "shaders/fxc/teeth_flashlight_ps30.vcs",
+          "shaders/fxc/teeth_flashlight_vs20.vcs",
+          "shaders/fxc/teeth_flashlight_vs30.vcs",
+          "shaders/fxc/teeth_ps20b.vcs",
+          "shaders/fxc/teeth_ps30.vcs",
+          "shaders/fxc/teeth_vs20.vcs",
+          "shaders/fxc/teeth_vs30.vcs",
+          "shaders/fxc/vertexlit_and_unlit_generic_bump_ps20b.vcs",
+          "shaders/fxc/vertexlit_and_unlit_generic_bump_ps30.vcs",
+          "shaders/fxc/vertexlit_and_unlit_generic_bump_vs20.vcs",
+          "shaders/fxc/vertexlit_and_unlit_generic_bump_vs30.vcs",
+          "shaders/fxc/vertexlit_and_unlit_generic_ps20.vcs",
+          "shaders/fxc/vertexlit_and_unlit_generic_ps20b.vcs",
+          "shaders/fxc/vertexlit_and_unlit_generic_ps30.vcs",
+          "shaders/fxc/vertexlit_and_unlit_generic_vs20.vcs",
+          "shaders/fxc/vertexlit_and_unlit_generic_vs30.vcs",
+          "shaders/fxc/water_ps20.vcs",
+          "shaders/fxc/water_ps20b.vcs",
+          "shaders/fxc/water_vs20.vcs",
+          "shaders/fxc/watercheap_ps20.vcs",
+          "shaders/fxc/watercheap_ps20b.vcs",
+          "shaders/fxc/watercheap_vs20.vcs",
+          "shaders/fxc/weapon_sheen_pass_ps20.vcs",
+          "shaders/fxc/weapon_sheen_pass_ps20b.vcs",
+          "shaders/fxc/weapon_sheen_pass_ps30.vcs",
+          "shaders/fxc/windowimposter_ps20b.vcs",
+          "shaders/fxc/windowimposter_vs20.vcs",
           "shaders/fxc/worldtwotextureblend_ps20.vcs"
         ]
       },

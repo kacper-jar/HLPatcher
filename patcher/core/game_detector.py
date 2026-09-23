@@ -22,6 +22,7 @@ GOLDSRC_FOLDER_NAME = "Half-Life"
 HL2_FOLDER_NAME = "Half-Life 2"
 PORTAL_FOLDER_NAME = "Portal"
 HL2DM_FOLDER_NAME = "Half-Life 2 Deathmatch"
+DODS_FOLDER_NAME = "Day of Defeat Source"
 
 
 class GameDetector:
@@ -44,7 +45,7 @@ class GameDetector:
             games.append(goldsrc_game)
 
         hl2_comps = [c for c in self._components_config if
-                     c.get("engine_type") == "Source" and c.get("subfolder") not in ("portal", "hl2mp")]
+                     c.get("engine_type") == "Source" and c.get("subfolder") not in ("portal", "hl2mp", "dod")]
         hl2_game = self._scan_game(
             HL2_FOLDER_NAME,
             "hl2_osx",
@@ -78,6 +79,18 @@ class GameDetector:
         )
         if hl2dm_game:
             games.append(hl2dm_game)
+
+        dods_comps = [c for c in self._components_config if
+                      c.get("engine_type") == "Source" and c.get("subfolder") == "dod"]
+        dods_game = self._scan_game(
+            DODS_FOLDER_NAME,
+            "hl2_osx",
+            EngineType.SOURCE,
+            dods_comps,
+            self._check_source_component
+        )
+        if dods_game:
+            games.append(dods_game)
 
         return games
 
