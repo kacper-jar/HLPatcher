@@ -14,6 +14,7 @@ class PageRoute(Enum):
     NO_GAMES = "no_games"
     ALL_PATCHED = "all_patched"
     UPDATE_AVAILABLE = "update_available"
+    HL2_REQUIRED = "hl2_required"
 
     # Interceptor specific routes
     SCAN_AND_ROUTE = "scan_and_route"
