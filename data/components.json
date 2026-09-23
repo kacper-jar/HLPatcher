@@ -379,5 +379,107 @@
         "patch_dir_name": "source-engine"
       }
     ]
+  },
+  {
+    "name": "Half-Life 2: Deathmatch",
+    "subfolder": "hl2mp",
+    "downgrade_group": "hl2",
+    "engine_type": "Source",
+    "estimated_time": 3,
+    "estimated_space": 25,
+    "requires": {},
+    "steps": [
+      {
+        "type": "git-fetcher",
+        "url": "https://github.com/nillerusr/source-engine",
+        "patch_dir_name": "source-engine",
+        "stable_commit": "ed8209c",
+        "force_stable": false
+      },
+      {
+        "type": "patch",
+        "patch_dir_name": "source-engine"
+      },
+      {
+        "type": "waf-builder",
+        "patch_dir_name": "source-engine",
+        "build_args": [
+          "-T",
+          "release",
+          "--prefix=",
+          "--build-games=hl2mp"
+        ],
+        "waf_game": "hl2mp"
+      },
+      {
+        "type": "source-installer",
+        "patch_dir_name": "source-engine"
+      },
+      {
+        "type": "vpk-extractor",
+        "vpk_path": "Half-Life 2/hl2/hl2_misc_dir.vpk",
+        "output_dir": "custom/shaderfix",
+        "files": [
+          "shaders/fxc/bloom_ps20.vcs",
+          "shaders/fxc/blurfilter_ps20.vcs",
+          "shaders/fxc/blurfilter_vs11.vcs",
+          "shaders/fxc/blurfilter_vs20.vcs",
+          "shaders/fxc/debugtextureview_ps20.vcs",
+          "shaders/fxc/debugtextureview_ps20b.vcs",
+          "shaders/fxc/debugtextureview_vs20.vcs",
+          "shaders/fxc/downsample_nohdr_ps20.vcs",
+          "shaders/fxc/downsample_ps20.vcs",
+          "shaders/fxc/downsample_vs11.vcs",
+          "shaders/fxc/downsample_vs20.vcs",
+          "shaders/fxc/eyes_vs20.vcs",
+          "shaders/fxc/hdrcombineto16bit_ps20.vcs",
+          "shaders/fxc/hdrcombineto16bit_vs20.vcs",
+          "shaders/fxc/hdrselectrange_ps20.vcs",
+          "shaders/fxc/hdrselectrange_vs20.vcs",
+          "shaders/fxc/particlesphere_vs11.vcs",
+          "shaders/fxc/refract_ps20.vcs",
+          "shaders/fxc/refract_vs20.vcs",
+          "shaders/fxc/shatteredglass_ps20.vcs",
+          "shaders/fxc/shatteredglass_vs20.vcs",
+          "shaders/fxc/skin_ps20b.vcs",
+          "shaders/fxc/skin_ps30.vcs",
+          "shaders/fxc/vertexlit_and_unlit_generic_ps20.vcs",
+          "shaders/fxc/vertexlit_and_unlit_generic_ps20b.vcs",
+          "shaders/fxc/vertexlit_and_unlit_generic_ps30.vcs",
+          "shaders/fxc/vertexlit_and_unlit_generic_vs20.vcs",
+          "shaders/fxc/vertexlit_and_unlit_generic_vs30.vcs",
+          "shaders/fxc/water_ps20.vcs",
+          "shaders/fxc/water_vs20.vcs",
+          "shaders/fxc/watercheap_ps20.vcs",
+          "shaders/fxc/watercheap_vs20.vcs",
+          "shaders/fxc/weapon_sheen_pass_ps20.vcs",
+          "shaders/fxc/weapon_sheen_pass_ps20b.vcs",
+          "shaders/fxc/weapon_sheen_pass_ps30.vcs",
+          "shaders/fxc/worldtwotextureblend_ps20.vcs"
+        ]
+      },
+      {
+        "type": "url-fetcher",
+        "url": "https://deac-riga.dl.sourceforge.net/project/dejavu/dejavu/2.37/dejavu-fonts-ttf-2.37.zip?viasf=1&fid=e8ec3cc0fad42cb8&e=1790256123&st=WUxdPOPPt1IzUxQS3teHlA",
+        "patch_dir_name": "dejavu-fonts"
+      },
+      {
+        "type": "archive-installer",
+        "patch_dir_name": "dejavu-fonts",
+        "output_dir": "platform/resource/linux_fonts",
+        "file_pattern": "*.ttf"
+      },
+      {
+        "type": "url-fetcher",
+        "url": "https://github.com/liberationfonts/liberation-fonts/files/7261482/liberation-fonts-ttf-2.1.5.tar.gz",
+        "patch_dir_name": "liberation-fonts"
+      },
+      {
+        "type": "archive-installer",
+        "patch_dir_name": "liberation-fonts",
+        "output_dir": "platform/resource/linux_fonts",
+        "file_pattern": "*.ttf"
+      }
+    ]
   }
 ]
