@@ -117,7 +117,7 @@
   "guide_hl2_step16_title": "Step 16: Select Beta Branch",
   "guide_hl2_step16_desc": "Select 'steam_legacy' from the Beta Participation dropdown.",
   "hl2_required_title": "Half-Life 2 Required",
-  "hl2_required_text": "To proceed with patching Half-Life 2: Deathmatch, Day of Defeat: Source or Counter-Strike: Source, you'll need to have the base game, Half-Life 2, installed on Steam.\n\nHLPatcher requires some original files from Half-Life 2 to replace the broken shaders currently present in these games. You don't need to patch Half-Life 2 itself, simply having it installed is enough.\n\nOnce you have installed Half-Life 2 via Steam, you must click 'Back' and then 'Next' again for HLPatcher to detect it. Alternatively, click 'Back' and uncheck the dependent games to continue without them.",
+  "hl2_required_text": "To proceed with patching Half-Life 2: Deathmatch, Day of Defeat: Source or Counter-Strike: Source, you must also patch the base game, Half-Life 2, or it must already be patched.\n\nHLPatcher requires the downgraded, patched files from Half-Life 2 to replace the broken shaders currently present in these games.\n\nPlease click 'Back' and ensure Half-Life 2 is installed and checked for patching, or uncheck the dependent games to continue without them.",
   "guide_dod_title": "Day of Defeat: Source",
   "guide_dod_step1_title": "Step 1: Open Steam",
   "guide_dod_step1_desc": "Launch the Steam client.",

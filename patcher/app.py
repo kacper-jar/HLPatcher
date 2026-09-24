@@ -105,8 +105,16 @@ class App(ctk.CTk):
                 c.name in ("Half-Life 2: Deathmatch", "Day of Defeat: Source", "Counter-Strike: Source") for c in
                 self.context.selected_components)
             if requires_hl2:
-                has_hl2_installed = any(g.name == "Source (Half-Life 2)" for g in self.context.games)
-                if not has_hl2_installed:
+                hl2_game = next((g for g in self.context.games if g.name == "Source (Half-Life 2)"), None)
+                if not hl2_game:
+                    self.router.push_history(current_key)
+                    return PageRoute.HL2_REQUIRED
+
+                hl2_comp = next((c for c in hl2_game.components if c.name == "Half-Life 2"), None)
+                is_hl2_patched = hl2_comp is not None and not hl2_comp.needs_patch
+                is_hl2_selected = any(c.name == "Half-Life 2" for c in self.context.selected_components)
+
+                if not (is_hl2_patched or is_hl2_selected):
                     self.router.push_history(current_key)
                     return PageRoute.HL2_REQUIRED
 
