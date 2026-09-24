@@ -40,6 +40,7 @@ fi
 if [ ! -d "$VENV_DIR" ]; then
     echo "=> Creating virtual environment..."
     "$PYTHON_BIN" -m venv "$VENV_DIR" || exit 1
+    ln -s python3.14 "$VENV_DIR/bin/HLPatcher"
 fi
 
 echo "=> Installing dependencies..."
@@ -56,7 +57,7 @@ for arg in "$@"; do
 done
 
 echo "=> Starting HLPatcher..."
-HLPATCHER_DEBUG="$HLPATCHER_DEBUG" HLPATCHER_VERSION="$HLPATCHER_VERSION" "$VENV_DIR/bin/python3" -m patcher
+HLPATCHER_DEBUG="$HLPATCHER_DEBUG" HLPATCHER_VERSION="$HLPATCHER_VERSION" "$VENV_DIR/bin/HLPatcher" -m patcher
 EXIT_CODE=$?
 
 if [ $EXIT_CODE -ne 0 ]; then
