@@ -1,5 +1,6 @@
-from patcher.core import Component, FetchStepConfig, Game, PatchMode
-from patcher.core.pipeline import BaseStep, step
+from patcher.core.models import Component, FetchStepConfig, Game, PatchMode
+from patcher.core.pipeline.base import BaseStep
+from patcher.core.pipeline.registry import step
 
 
 @step("git-fetcher")

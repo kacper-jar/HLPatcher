@@ -1,5 +1,6 @@
-from patcher.core import BuildStepConfig, Component, Game
-from patcher.core.pipeline import BaseStep, step
+from patcher.core.models import BuildStepConfig, Component, Game
+from patcher.core.pipeline.base import BaseStep
+from patcher.core.pipeline.registry import step
 
 
 @step("cmake-builder")

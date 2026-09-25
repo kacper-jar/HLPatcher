@@ -3,7 +3,7 @@ import logging
 import urllib.request
 from packaging import version
 
-from patcher.core import UpdateInfo
+from patcher.core.models import UpdateInfo
 
 logger = logging.getLogger(__name__)
 

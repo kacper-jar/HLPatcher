@@ -4,7 +4,9 @@ from collections.abc import Callable
 from datetime import datetime, timezone
 from pathlib import Path
 
-from patcher.core import AppConfig, CommandExecutor, Game, PatchContext
+from patcher.core.command_executor import CommandExecutor
+from patcher.core.models import AppConfig, Game, PatchContext
+from patcher.core.pipeline import STEP_REGISTRY
 
 logger = logging.getLogger(__name__)
 
@@ -44,12 +46,6 @@ class Patcher:
         try:
             self._create_backup(selected_games)
             self._prepare_environment()
-
-            from patcher.core.pipeline import STEP_REGISTRY
-            import patcher.core.pipeline.fetchers
-            import patcher.core.pipeline.builders
-            import patcher.core.pipeline.installers
-            import patcher.core.pipeline.misc
 
             for game in selected_games:
                 for comp in game.components:

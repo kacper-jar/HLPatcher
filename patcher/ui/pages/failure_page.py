@@ -1,6 +1,6 @@
 import webbrowser
 import customtkinter as ctk
-from patcher.ui import BasePage
+from patcher.ui.base_page import BasePage
 
 
 class FailurePage(BasePage):

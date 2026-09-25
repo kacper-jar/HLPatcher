@@ -1,6 +1,7 @@
 import customtkinter as ctk
 import patcher
-from patcher.ui import BasePage, PageRoute
+from patcher.ui.base_page import BasePage
+from patcher.ui.page_route import PageRoute
 
 
 class WelcomePage(BasePage):

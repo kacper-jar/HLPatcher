@@ -1,8 +1,8 @@
 import shutil
 
-from patcher.core import Component, Game, InstallStepConfig
-from patcher.core.pipeline import step
-from patcher.core.pipeline.installers import GenericInstaller
+from patcher.core.models import Component, Game, InstallStepConfig
+from patcher.core.pipeline.installers.generic_installer import GenericInstaller
+from patcher.core.pipeline.registry import step
 
 
 @step("goldsrc-engine-installer")

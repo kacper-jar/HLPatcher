@@ -1,9 +1,9 @@
 import shutil
 from pathlib import Path
 
-from patcher.core import Component, FetchStepConfig, Game
-from patcher.core.pipeline import step
-from patcher.core.pipeline.fetchers import GitFetcher
+from patcher.core.models import Component, FetchStepConfig, Game
+from patcher.core.pipeline.fetchers.git_fetcher import GitFetcher
+from patcher.core.pipeline.registry import step
 
 
 @step("goldsrc-engine-fetcher")
