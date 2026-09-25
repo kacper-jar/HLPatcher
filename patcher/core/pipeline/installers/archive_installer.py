@@ -10,6 +10,8 @@ from patcher.core.pipeline import BaseStep, step
 
 @step("archive-installer")
 class ArchiveInstallerStep(BaseStep):
+    interruptible = False
+
     def execute(self, game: Game, comp: Component, step_config: ArchiveInstallStepConfig):
         self.patcher.log(f"Extracting archive from {step_config.patch_dir_name}")
 

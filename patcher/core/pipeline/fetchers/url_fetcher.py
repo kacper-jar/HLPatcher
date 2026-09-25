@@ -1,6 +1,4 @@
-import shutil
 import urllib.request
-from pathlib import Path
 
 from patcher.core import Component, FetchStepConfig, Game
 from patcher.core.pipeline import BaseStep, step
@@ -23,5 +21,7 @@ class UrlFetcherStep(BaseStep):
             headers={"User-Agent": "Mozilla/5.0"}
         )
 
-        with urllib.request.urlopen(req) as response, open(archive_path, "wb") as out_file:
-            shutil.copyfileobj(response, out_file)
+        with urllib.request.urlopen(req, timeout=30) as response, open(archive_path, "wb") as out_file:
+            while chunk := response.read(64 * 1024):
+                self.patcher.executor.raise_if_stopped()
+                out_file.write(chunk)

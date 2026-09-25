@@ -58,6 +58,7 @@
   "progress_patching_comp": "Patching: {component}",
   "progress_complete": "Patching complete!",
   "progress_done": "Done.",
+  "progress_stopping": "Stopping, please wait...",
   "selection_title": "Select Games to Patch",
   "selection_hint": "Check the games you want to patch.\nAlready patched games are shown but grayed out.",
   "selection_time_est": "Estimated patching time: ~{mins} minutes",

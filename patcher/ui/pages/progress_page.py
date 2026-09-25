@@ -42,10 +42,13 @@ class ProgressPage(BasePage):
         self._patching_thread = None
         self._patching_complete = False
         self._patching_error = None
+        self._stop_requested = False
+        self.patcher = None
 
     def on_enter(self):
         self._patching_complete = False
         self._patching_error = None
+        self._stop_requested = False
         self._progress_bar.set(0)
         self._step_progress_bar.set(0)
         self._status_label.configure(text=self._app.i18n.t("progress_preparing"))
@@ -58,6 +61,13 @@ class ProgressPage(BasePage):
         self._start_time = time.time()
         self._update_timer()
 
+        self.patcher = Patcher(
+            self._app.context,
+            self._app.config,
+            log_callback=None,
+            component_callback=self._on_component_start_threadsafe,
+            step_callback=self._on_step_start_threadsafe
+        )
         self._patching_thread = threading.Thread(target=self._run_patching, daemon=True)
         self._patching_thread.start()
 
@@ -70,22 +80,15 @@ class ProgressPage(BasePage):
 
     def _run_patching(self):
         try:
-            context = self._app.context
             selected_games = self._build_selected_games()
-            self.patcher = Patcher(
-                context,
-                self._app.config,
-                log_callback=None,
-                component_callback=self._on_component_start_threadsafe,
-                step_callback=self._on_step_start_threadsafe
-            )
             self._total_steps = self.patcher.get_total_steps(selected_games)
             self.patcher.run(selected_games)
             self._patching_complete = True
             self._on_patching_complete_threadsafe()
         except Exception as e:
             self._patching_error = str(e)
-            self._on_patching_error_threadsafe(self._patching_error)
+            if not self._stop_requested:
+                self._on_patching_error_threadsafe(self._patching_error)
 
     def _build_selected_games(self) -> list[Game]:
         context = self._app.context
@@ -146,8 +149,13 @@ class ProgressPage(BasePage):
         self._app.router.show_page(PageRoute.FAILURE)
 
     def stop_patching(self):
-        if hasattr(self, 'patcher') and self.patcher:
+        self._stop_requested = True
+        self._status_label.configure(text=self._app.i18n.t("progress_stopping"))
+        if self.patcher:
             self.patcher.stop()
+
+    def is_patching(self) -> bool:
+        return self._patching_thread is not None and self._patching_thread.is_alive()
 
     def get_title(self) -> str:
         return self._app.i18n.t("progress_title")

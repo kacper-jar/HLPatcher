@@ -59,6 +59,7 @@ class Patcher:
                     self._notify_component(comp.name)
 
                     for i, step_config in enumerate(comp.steps):
+                        self.executor.raise_if_stopped()
                         self._notify_step(i + 1, len(comp.steps))
                         step_type = step_config.type
                         step_class = STEP_REGISTRY.get(step_type)
@@ -66,6 +67,7 @@ class Patcher:
                             raise ValueError(f"Unknown step type: {step_type}")
 
                         step = step_class(self)
+                        self.executor.interruptible = step.interruptible
                         step.execute(game, comp, step_config)
 
             self._cleanup()
@@ -85,6 +87,7 @@ class Patcher:
         self.log("Creating backup...")
         date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         for game in games_to_backup:
+            self.executor.raise_if_stopped()
             backup_dest = Path.home() / "Documents" / f"{game.name} backup ({date_str})"
             self.log(f"Backing up {game.path} to {backup_dest}")
             shutil.copytree(game.path, backup_dest, dirs_exist_ok=True)
