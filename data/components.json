@@ -462,7 +462,7 @@
       },
       {
         "type": "url-fetcher",
-        "url": "https://deac-riga.dl.sourceforge.net/project/dejavu/dejavu/2.37/dejavu-fonts-ttf-2.37.zip?viasf=1&fid=e8ec3cc0fad42cb8&e=1790256123&st=WUxdPOPPt1IzUxQS3teHlA",
+        "url": "https://github.com/dejavu-fonts/dejavu-fonts/releases/download/version_2_37/dejavu-fonts-ttf-2.37.zip",
         "patch_dir_name": "dejavu-fonts"
       },
       {
@@ -612,7 +612,7 @@
       },
       {
         "type": "url-fetcher",
-        "url": "https://deac-riga.dl.sourceforge.net/project/dejavu/dejavu/2.37/dejavu-fonts-ttf-2.37.zip?viasf=1&fid=e8ec3cc0fad42cb8&e=1790256123&st=WUxdPOPPt1IzUxQS3teHlA",
+        "url": "https://github.com/dejavu-fonts/dejavu-fonts/releases/download/version_2_37/dejavu-fonts-ttf-2.37.zip",
         "patch_dir_name": "dejavu-fonts"
       },
       {
@@ -762,7 +762,7 @@
       },
       {
         "type": "url-fetcher",
-        "url": "https://deac-riga.dl.sourceforge.net/project/dejavu/dejavu/2.37/dejavu-fonts-ttf-2.37.zip?viasf=1&fid=e8ec3cc0fad42cb8&e=1790256123&st=WUxdPOPPt1IzUxQS3teHlA",
+        "url": "https://github.com/dejavu-fonts/dejavu-fonts/releases/download/version_2_37/dejavu-fonts-ttf-2.37.zip",
         "patch_dir_name": "dejavu-fonts"
       },
       {
