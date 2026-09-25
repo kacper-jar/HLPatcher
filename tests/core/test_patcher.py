@@ -165,6 +165,10 @@ def test_goldsrc_engine_installer(mock_patch_context, mocker):
     comp = Component("Test", "", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH)
     game = Game("Test", mock_patch_context.working_dir, EngineType.GOLDSRC, [comp])
     step_config = BuildStepConfig("goldsrc-engine-installer", patch_dir_name="target_dir")
+    build_output = mock_patch_context.working_dir / "target_dir" / "output"
+    build_output.mkdir(parents=True)
+    (build_output / "xash3d").touch()
+    (game.path / "xash3d").touch()
 
     mock_copytree = mocker.patch("shutil.copytree")
     installer.execute(game, comp, step_config)
