@@ -122,8 +122,23 @@ class GameDetector:
             return None
 
         if not (game_path / executable_name).is_file():
-            logger.info(f"{executable_name} not found in {game_path}")
-            return None
+            fallback_found = False
+            if engine_type == EngineType.SOURCE:
+                for comp_def in component_defs:
+                    subfolder = comp_def.get("subfolder", "")
+                    if subfolder and (game_path / subfolder / "gameinfo.txt").is_file():
+                        fallback_found = True
+                        break
+            elif engine_type == EngineType.GOLDSRC:
+                for comp_def in component_defs:
+                    subfolder = comp_def.get("subfolder", "")
+                    if subfolder and (game_path / subfolder / "liblist.gam").is_file():
+                        fallback_found = True
+                        break
+
+            if not fallback_found:
+                logger.info(f"{executable_name} and fallback markers not found in {game_path}")
+                return None
 
         logger.info(f"Found {engine_type.value} installation at {game_path}")
         components = []
