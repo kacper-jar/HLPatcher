@@ -3,7 +3,6 @@
 HLPATCHER_VERSION="3.2.1"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
-VENV_DIR="$SCRIPT_DIR/.venv"
 
 echo "HLPatcher Bootstrap ($HLPATCHER_VERSION)"
 
@@ -37,27 +36,27 @@ if [ ! -x "$PYTHON_BIN" ]; then
     exit 1
 fi
 
-if [ ! -d "$VENV_DIR" ]; then
-    echo "=> Creating virtual environment..."
-    "$PYTHON_BIN" -m venv "$VENV_DIR" || exit 1
-    ln -s python3.14 "$VENV_DIR/bin/HLPatcher"
+HLPATCHER_BIN="$PYTHON_DIR/python/install/bin/HLPatcher"
+if [ ! -x "$HLPATCHER_BIN" ]; then
+    echo "=> Creating HLPatcher link to standalone Python..."
+    ln -f "$PYTHON_DIR/python/install/bin/python3.14" "$HLPATCHER_BIN"
 fi
 
 echo "=> Installing dependencies..."
-"$VENV_DIR/bin/pip" install --upgrade pip
-"$VENV_DIR/bin/pip" install -r "$SCRIPT_DIR/requirements.txt" || exit 1
+"$PYTHON_BIN" -m pip install --upgrade pip
+"$PYTHON_BIN" -m pip install -r "$SCRIPT_DIR/requirements.txt" || exit 1
 
 HLPATCHER_DEBUG="0"
 for arg in "$@"; do
     if [ "$arg" = "debug" ]; then
         echo "Debug mode enabled."
-        "$VENV_DIR/bin/pip" install -r "$SCRIPT_DIR/requirements-dev.txt" || exit 1
+        "$PYTHON_BIN" -m pip install -r "$SCRIPT_DIR/requirements-dev.txt" || exit 1
         HLPATCHER_DEBUG="1"
     fi
 done
 
 echo "=> Starting HLPatcher..."
-HLPATCHER_DEBUG="$HLPATCHER_DEBUG" HLPATCHER_VERSION="$HLPATCHER_VERSION" "$VENV_DIR/bin/HLPatcher" -m patcher
+HLPATCHER_DEBUG="$HLPATCHER_DEBUG" HLPATCHER_VERSION="$HLPATCHER_VERSION" "$HLPATCHER_BIN" -m patcher
 EXIT_CODE=$?
 
 if [ $EXIT_CODE -ne 0 ]; then
