@@ -1,4 +1,5 @@
 import subprocess
+from pathlib import Path
 
 from patcher.core import Component, Game, PatchStepConfig
 from patcher.core.pipeline import BaseStep, step
@@ -30,10 +31,23 @@ class PatchStep(BaseStep):
             return
 
         for patch_file in patch_files:
+            if self._is_already_applied(patch_file, target_dir):
+                self.patcher.log(f"Patch {patch_file.name} is already applied, skipping")
+                continue
+
             self.patcher.log(f"Applying patch: {patch_file.name}")
             try:
-                self.patcher.executor.run(["patch", "-p1", "--forward", "-i", str(patch_file)], cwd=target_dir)
-            except subprocess.CalledProcessError:
-                self.patcher.log(f"Warning: Patch {patch_file.name} failed to apply cleanly or was already applied.")
+                self.patcher.executor.run(["patch", "-p1", "--forward", "--batch", "-i", str(patch_file)],
+                                          cwd=target_dir)
+            except subprocess.CalledProcessError as e:
+                raise RuntimeError(f"Patch {patch_file.name} failed to apply to {target_dir_name}") from e
 
         self.patcher.applied_containers.add(applied_key)
+
+    def _is_already_applied(self, patch_file: Path, target_dir: Path) -> bool:
+        try:
+            self.patcher.executor.run(["patch", "-p1", "--reverse", "--dry-run", "--force", "-i", str(patch_file)],
+                                      cwd=target_dir, capture=True)
+        except subprocess.CalledProcessError:
+            return False
+        return True
