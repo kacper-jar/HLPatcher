@@ -15,6 +15,8 @@ def read_cstring(f) -> str:
 
 @step("vpk-extractor")
 class VpkExtractorStep(BaseStep):
+    interruptible = False
+
     def execute(self, game: Game, comp: Component, step_config: VpkExtractStepConfig):
         self.patcher.log(f"Extracting VPK files for {game.name}...")
 

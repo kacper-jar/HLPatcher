@@ -23,12 +23,14 @@ class App(ctk.CTk):
     def __init__(self, config: AppConfig):
         super().__init__()
         self.config = config
+        self._quitting = False
 
         self.title("HLPatcher")
         self.geometry("420x620")
         self.minsize(420, 620)
         self.resizable(False, False)
         self.protocol("WM_DELETE_WINDOW", self._on_quit)
+        self.createcommand("::tk::mac::Quit", self._on_quit)
 
         self.lift()
         self.attributes("-topmost", True)
@@ -128,11 +130,26 @@ class App(ctk.CTk):
         return None
 
     def _on_quit(self):
+        if self._quitting:
+            return
+        self._quitting = True
+
         if getattr(self, "router", None) and self.router.current_page_key == PageRoute.PROGRESS:
             page = self.router.get_current_page()
             if hasattr(page, "stop_patching"):
                 page.stop_patching()
+                self._destroy_when_stopped(page)
+                return
 
+        self._cleanup_and_destroy()
+
+    def _destroy_when_stopped(self, page):
+        if page.is_patching():
+            self.after(100, self._destroy_when_stopped, page)
+            return
+        self._cleanup_and_destroy()
+
+    def _cleanup_and_destroy(self):
         if not self.config.debug and self.context.working_dir.exists():
             shutil.rmtree(self.context.working_dir, ignore_errors=True)
         self.destroy()

@@ -5,6 +5,8 @@ from patcher.core.patcher import Patcher
 
 
 class BaseStep(ABC):
+    interruptible = True
+
     def __init__(self, patcher: Patcher):
         self.patcher = patcher
 

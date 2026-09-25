@@ -7,6 +7,8 @@ from patcher.core.pipeline import BaseStep, step
 
 @step("source-installer")
 class SourceInstaller(BaseStep):
+    interruptible = False
+
     def execute(self, game: Game, comp: Component, step_config: InstallStepConfig):
         subfolder = comp.subfolder
         self.patcher.log(f"Installing to {game.name}...")
