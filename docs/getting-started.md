@@ -1,3 +1,7 @@
+---
+description: Download HLPatcher, install the Xcode Command Line Tools and patch Half-Life and other Valve games to run natively on your Apple Silicon Mac.
+---
+
 This page walks you through getting HLPatcher downloaded and running on your Mac for the first time.
 
 ## Step 1: Download HLPatcher

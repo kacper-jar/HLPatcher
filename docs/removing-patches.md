@@ -1,3 +1,7 @@
+---
+description: Undo HLPatcher's changes by restoring a backup, verifying game files in Steam or reinstalling the game.
+---
+
 # Removing Patches
 
 If you need to remove the HLPatcher modifications and restore your original game installations, you have three options.

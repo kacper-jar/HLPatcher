@@ -1,0 +1,10 @@
+# HLPatcher
+
+> Free, open-source patcher that makes Half-Life and other Valve games run natively on Apple Silicon Macs (M1 and newer).
+
+## Docs
+
+- [Home](https://hlpatcher.kzl21.ovh/): What HLPatcher is, supported games and credits
+- [Getting Started](https://hlpatcher.kzl21.ovh/getting-started/): Download HLPatcher and patch your games
+- [Removing Patches](https://hlpatcher.kzl21.ovh/removing-patches/): Restore your original game files
+- [Contributing](https://hlpatcher.kzl21.ovh/contributing/): Development setup, testing and pull requests
