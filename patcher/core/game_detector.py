@@ -77,7 +77,8 @@ class GameDetector:
             "hl2_osx",
             EngineType.SOURCE,
             hl2dm_comps,
-            self._check_source_component
+            self._check_source_component,
+            fallback_marker="gameinfo.txt"
         )
         if hl2dm_game:
             games.append(hl2dm_game)
@@ -89,7 +90,8 @@ class GameDetector:
             "hl2_osx",
             EngineType.SOURCE,
             dods_comps,
-            self._check_source_component
+            self._check_source_component,
+            fallback_marker="gameinfo.txt"
         )
         if dods_game:
             games.append(dods_game)
@@ -101,7 +103,8 @@ class GameDetector:
             "hl2_osx",
             EngineType.SOURCE,
             css_comps,
-            self._check_source_component
+            self._check_source_component,
+            fallback_marker="gameinfo.txt"
         )
         if css_game:
             games.append(css_game)
@@ -114,7 +117,8 @@ class GameDetector:
             executable_name: str,
             engine_type: EngineType,
             component_defs: list[dict],
-            check_component_fn: Callable[[Path, dict], Component | None]
+            check_component_fn: Callable[[Path, dict], Component | None],
+            fallback_marker: str | None = None
     ) -> Game | None:
         game_path = self._steam_library_path / folder_name
         if not game_path.is_dir():
@@ -122,22 +126,19 @@ class GameDetector:
             return None
 
         if not (game_path / executable_name).is_file():
+            if not fallback_marker:
+                logger.info(f"{executable_name} not found in {game_path}")
+                return None
+
             fallback_found = False
-            if engine_type == EngineType.SOURCE:
-                for comp_def in component_defs:
-                    subfolder = comp_def.get("subfolder", "")
-                    if subfolder and (game_path / subfolder / "gameinfo.txt").is_file():
-                        fallback_found = True
-                        break
-            elif engine_type == EngineType.GOLDSRC:
-                for comp_def in component_defs:
-                    subfolder = comp_def.get("subfolder", "")
-                    if subfolder and (game_path / subfolder / "liblist.gam").is_file():
-                        fallback_found = True
-                        break
+            for comp_def in component_defs:
+                subfolder = comp_def.get("subfolder", "")
+                if subfolder and (game_path / subfolder / fallback_marker).is_file():
+                    fallback_found = True
+                    break
 
             if not fallback_found:
-                logger.info(f"{executable_name} and fallback markers not found in {game_path}")
+                logger.info(f"{executable_name} and {fallback_marker} not found in {game_path}")
                 return None
 
         logger.info(f"Found {engine_type.value} installation at {game_path}")
