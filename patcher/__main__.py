@@ -2,6 +2,7 @@ import logging
 import os
 import certifi
 import patcher
+from patcher.app import App
 from patcher.core import AppConfig
 
 os.environ["SSL_CERT_FILE"] = certifi.where()
@@ -17,5 +18,5 @@ logging.basicConfig(
     datefmt="%H:%M:%S",
 )
 
-app = patcher.App(config)
+app = App(config)
 app.mainloop()

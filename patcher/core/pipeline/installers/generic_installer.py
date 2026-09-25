@@ -1,7 +1,8 @@
 import shutil
 
-from patcher.core import Component, Game, InstallStepConfig
-from patcher.core.pipeline import BaseStep, step
+from patcher.core.models import Component, Game, InstallStepConfig
+from patcher.core.pipeline.base import BaseStep
+from patcher.core.pipeline.registry import step
 
 
 @step("generic-installer")

@@ -4,6 +4,7 @@ import threading
 from pathlib import Path
 import customtkinter as ctk
 
+import patcher
 from patcher.core import (
     AppConfig,
     EngineType,
@@ -86,8 +87,6 @@ class App(ctk.CTk):
 
     def _start_update_check(self):
         def check():
-            import patcher
-
             updater = Updater()
             self.update_info = updater.check_for_update(patcher.__version__)
 

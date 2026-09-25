@@ -1,5 +1,6 @@
 import customtkinter as ctk
-from patcher.ui import BasePage, PageRoute
+from patcher.ui.base_page import BasePage
+from patcher.ui.page_route import PageRoute
 
 
 class AllPatchedPage(BasePage):

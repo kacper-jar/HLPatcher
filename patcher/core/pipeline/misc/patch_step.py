@@ -1,8 +1,9 @@
 import subprocess
 from pathlib import Path
 
-from patcher.core import Component, Game, PatchStepConfig
-from patcher.core.pipeline import BaseStep, step
+from patcher.core.models import Component, Game, PatchStepConfig
+from patcher.core.pipeline.base import BaseStep
+from patcher.core.pipeline.registry import step
 
 
 @step("patch")

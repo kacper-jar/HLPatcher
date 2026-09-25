@@ -1,6 +1,8 @@
 import hashlib
 import customtkinter as ctk
-from patcher.ui import BasePage, PageRoute
+from patcher.ui.base_page import BasePage
+from patcher.ui.guide_window import BaseGuideWindow
+from patcher.ui.page_route import PageRoute
 
 
 class DowngradePage(BasePage):
@@ -90,8 +92,6 @@ class DowngradePage(BasePage):
             self._check_job = None
 
     def _open_downgrade_guide(self, group_key):
-        from patcher.ui import BaseGuideWindow
-
         config = self._app.guide_registry.get_guide(group_key)
         if config:
             guide = BaseGuideWindow(self, self._app, title=self._app.i18n.t(config.title))

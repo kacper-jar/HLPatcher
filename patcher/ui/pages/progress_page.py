@@ -1,7 +1,8 @@
 import customtkinter as ctk
 import time
 import threading
-from patcher.ui import BasePage, PageRoute
+from patcher.ui.base_page import BasePage
+from patcher.ui.page_route import PageRoute
 from patcher.core import EngineType, Game, Patcher
 
 

@@ -1,7 +1,8 @@
 import re
 from collections.abc import Callable
 
-from patcher.ui import BasePage, PageRoute
+from patcher.ui.base_page import BasePage
+from patcher.ui.page_route import PageRoute
 
 
 def _camel_to_snake(name: str) -> str:

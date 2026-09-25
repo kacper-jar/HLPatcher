@@ -1,8 +1,10 @@
 import shutil
 from pathlib import Path
 
-from patcher.core import SOURCE_LINK_FIXES, Component, Game, InstallStepConfig
-from patcher.core.pipeline import BaseStep, step
+from patcher.core.constants import SOURCE_LINK_FIXES
+from patcher.core.models import Component, Game, InstallStepConfig
+from patcher.core.pipeline.base import BaseStep
+from patcher.core.pipeline.registry import step
 
 
 @step("source-installer")

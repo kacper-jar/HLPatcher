@@ -2,8 +2,9 @@ import struct
 from pathlib import Path
 import zlib
 
-from patcher.core import Component, Game, VpkExtractStepConfig
-from patcher.core.pipeline import BaseStep, step
+from patcher.core.models import Component, Game, VpkExtractStepConfig
+from patcher.core.pipeline.base import BaseStep
+from patcher.core.pipeline.registry import step
 
 
 def read_cstring(f) -> str:

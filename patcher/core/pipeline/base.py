@@ -1,7 +1,10 @@
 from abc import ABC, abstractmethod
+from typing import TYPE_CHECKING
 
 from patcher.core.models import Component, Game
-from patcher.core.patcher import Patcher
+
+if TYPE_CHECKING:
+    from patcher.core.patcher import Patcher
 
 
 class BaseStep(ABC):

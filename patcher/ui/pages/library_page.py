@@ -1,7 +1,8 @@
 import customtkinter as ctk
 from pathlib import Path
 from tkinter import filedialog
-from patcher.ui import BasePage, PageRoute
+from patcher.ui.base_page import BasePage
+from patcher.ui.page_route import PageRoute
 
 DEFAULT_STEAM_PATH = Path.home() / "Library" / "Application Support" / "Steam" / "steamapps" / "common"
 

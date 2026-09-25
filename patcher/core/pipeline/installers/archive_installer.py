@@ -4,8 +4,9 @@ import zipfile
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from patcher.core import ArchiveInstallStepConfig, Component, Game
-from patcher.core.pipeline import BaseStep, step
+from patcher.core.models import ArchiveInstallStepConfig, Component, Game
+from patcher.core.pipeline.base import BaseStep
+from patcher.core.pipeline.registry import step
 
 
 @step("archive-installer")
