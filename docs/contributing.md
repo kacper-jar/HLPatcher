@@ -1,7 +1,11 @@
+---
+description: Set up HLPatcher for development, run the tests, test patches against real game files and open a pull request.
+---
+
 # Contributing
 
 Thank you for your interest in contributing to **HLPatcher**! We appreciate your help in making classic Valve games
-accessible on modern ARM Macs. This guide will help you get started with setting up your development environment,
+accessible on Apple Silicon Macs. This guide will help you get started with setting up your development environment,
 making changes and submitting a pull request.
 
 ## Getting Started
@@ -52,6 +56,7 @@ Here is a quick overview of the project's structure to help you navigate the cod
     - `components.json`: Game component definitions used by the patcher.
     - `locales.json`: Language mappings.
 - `docs/`: Documentation source files (MkDocs + Material theme).
+- `overrides/`: Material theme overrides - homepage title and link preview tags.
 - `patcher/`: Main application source code.
     - `patcher.core`: Core logic - game detection, patching, models, i18n, update checker, and pipeline.
     - `patcher.ui`: CustomTkinter-based GUI - pages, navigation, router, and base components.
