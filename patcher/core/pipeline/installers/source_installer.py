@@ -2,21 +2,25 @@ import shutil
 from pathlib import Path
 
 from patcher.core.constants import SOURCE_LINK_FIXES
-from patcher.core.models import Component, Game, InstallStepConfig
+from patcher.core.models import Component, Game, SourceInstallStepConfig
 from patcher.core.pipeline.base import BaseStep
 from patcher.core.pipeline.registry import step
 
 
-@step("source-installer", config=InstallStepConfig)
+@step("source-installer", config=SourceInstallStepConfig)
 class SourceInstaller(BaseStep):
     interruptible = False
 
-    def execute(self, game: Game, comp: Component, step_config: InstallStepConfig):
+    def execute(self, game: Game, comp: Component, step_config: SourceInstallStepConfig):
         subfolder = comp.subfolder
         self.context.log(f"Installing to {game.name}...")
 
         source_dir = self.context.working_dir / step_config.patch_dir_name
         output_dir = source_dir / "output"
+
+        steam_launcher = output_dir / "steam_launcher"
+        if step_config.steam_executable and not steam_launcher.is_file():
+            raise FileNotFoundError(f"Steam launcher not found: {steam_launcher}")
 
         bin_src = output_dir / "bin"
         if bin_src.is_dir():
@@ -43,6 +47,13 @@ class SourceInstaller(BaseStep):
                 hl2_osx.unlink()
             shutil.copy2(hl2_launcher, hl2_osx)
             hl2_osx.chmod(0o755)
+
+        if step_config.steam_executable:
+            self.context.log(f"Installing Steam launcher as {step_config.steam_executable}...")
+            steam_exe = game.path / step_config.steam_executable
+            steam_exe.unlink(missing_ok=True)
+            shutil.copy2(steam_launcher, steam_exe)
+            steam_exe.chmod(0o755)
 
         self._fix_source_links(game.path, step_config.patch_dir_name)
         self._fix_source_game_links(game.path, subfolder, step_config.patch_dir_name)

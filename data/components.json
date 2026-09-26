@@ -446,7 +446,8 @@
       },
       {
         "type": "source-installer",
-        "patch_dir_name": "source-engine"
+        "patch_dir_name": "source-engine",
+        "steam_executable": "hl2mp.exe"
       },
       {
         "type": "vpk-extractor",
@@ -554,7 +555,8 @@
       },
       {
         "type": "source-installer",
-        "patch_dir_name": "source-engine"
+        "patch_dir_name": "source-engine",
+        "steam_executable": "dod.exe"
       },
       {
         "type": "vpk-extractor",
@@ -708,7 +710,8 @@
       },
       {
         "type": "source-installer",
-        "patch_dir_name": "source-engine"
+        "patch_dir_name": "source-engine",
+        "steam_executable": "cstrike.exe"
       },
       {
         "type": "vpk-extractor",

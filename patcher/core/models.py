@@ -72,6 +72,11 @@ class ArchiveInstallStepConfig(InstallStepConfig):
 
 
 @dataclass
+class SourceInstallStepConfig(InstallStepConfig):
+    steam_executable: str = ""
+
+
+@dataclass
 class Component:
     name: str
     subfolder: str
