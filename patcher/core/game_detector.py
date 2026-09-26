@@ -129,6 +129,7 @@ class GameDetector:
             steps=self._parse_steps(comp_def.get("steps", [])),
             downgrade_requires=comp_def.get("downgrade_requires", {}),
             depends_on=comp_def.get("depends_on", []),
+            auto_select=comp_def.get("auto_select", False),
             estimated_patch_time=comp_def.get("estimated_time", 0),
             estimated_free_space_required=comp_def.get("estimated_space", 0),
         )
@@ -152,6 +153,7 @@ class GameDetector:
             steps=self._parse_steps(comp_def.get("steps", [])),
             downgrade_requires=comp_def.get("downgrade_requires", {}),
             depends_on=comp_def.get("depends_on", []),
+            auto_select=comp_def.get("auto_select", False),
             estimated_patch_time=comp_def.get("estimated_time", 0),
             estimated_free_space_required=comp_def.get("estimated_space", 0),
         )

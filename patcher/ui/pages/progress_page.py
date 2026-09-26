@@ -3,7 +3,7 @@ import time
 import threading
 from patcher.ui.base_page import BasePage
 from patcher.ui.page_route import PageRoute
-from patcher.core import EngineType, Game, Patcher
+from patcher.core import Patcher, Planner
 
 
 class ProgressPage(BasePage):
@@ -81,7 +81,8 @@ class ProgressPage(BasePage):
 
     def _run_patching(self):
         try:
-            selected_games = self._build_selected_games()
+            context = self._app.context
+            selected_games = Planner(context.games).plan(context.selected_components)
             self._total_steps = self.patcher.get_total_steps(selected_games)
             self.patcher.run(selected_games)
             self._patching_complete = True
@@ -90,28 +91,6 @@ class ProgressPage(BasePage):
             self._patching_error = str(e)
             if not self._stop_requested:
                 self._on_patching_error_threadsafe(self._patching_error)
-
-    def _build_selected_games(self) -> list[Game]:
-        context = self._app.context
-        selected_components = context.selected_components
-        game_map: dict[str, Game] = {}
-
-        for game in context.games:
-            selected_for_game = [c for c in game.components if c in selected_components]
-            if selected_for_game:
-                if game.engine_type == EngineType.GOLDSRC:
-                    engine_comp = next((c for c in game.components if c.name == "GoldSrc Engine"), None)
-                    if engine_comp and engine_comp.needs_patch and engine_comp not in selected_for_game:
-                        selected_for_game.insert(0, engine_comp)
-
-                game_map[game.name] = Game(
-                    name=game.name,
-                    path=game.path,
-                    engine_type=game.engine_type,
-                    components=selected_for_game,
-                )
-
-        return list(game_map.values())
 
     def _on_component_start_threadsafe(self, component_name: str):
         self.after(0, self._on_component_start, component_name)
