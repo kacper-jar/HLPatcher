@@ -61,7 +61,7 @@ def test_create_backup_skips_unpatched(mock_patch_context, mocker):
 
 def test_git_fetcher(mock_patch_context, mock_run_command):
     patcher = Patcher(mock_patch_context, AppConfig())
-    fetcher = GitFetcher(patcher)
+    fetcher = GitFetcher(patcher.create_step_context())
     comp = Component("Test", "", EngineType.SOURCE, PatchStatus.NEEDS_PATCH)
     game = Game("Test", mock_patch_context.working_dir, EngineType.SOURCE, [comp])
     step_config = FetchStepConfig("git-fetcher", patch_dir_name="target_dir", url="http://repo", branch="branch",
@@ -76,7 +76,7 @@ def test_git_fetcher(mock_patch_context, mock_run_command):
 def test_git_fetcher_stable(mock_patch_context, mock_run_command):
     mock_patch_context.patch_mode = PatchMode.STABLE
     patcher = Patcher(mock_patch_context, AppConfig())
-    fetcher = GitFetcher(patcher)
+    fetcher = GitFetcher(patcher.create_step_context())
     comp = Component("Test", "", EngineType.SOURCE, PatchStatus.NEEDS_PATCH)
     game = Game("Test", mock_patch_context.working_dir, EngineType.SOURCE, [comp])
     step_config = FetchStepConfig("git-fetcher", patch_dir_name="target_dir", url="http://repo", branch="branch",
@@ -91,7 +91,7 @@ def test_git_fetcher_stable(mock_patch_context, mock_run_command):
 
 def test_goldsrc_engine_fetcher(mock_patch_context, mock_run_command, mocker):
     patcher = Patcher(mock_patch_context, AppConfig())
-    fetcher = GoldSrcEngineFetcher(patcher)
+    fetcher = GoldSrcEngineFetcher(patcher.create_step_context())
     comp = Component("Test", "", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH)
     game = Game("Test", mock_patch_context.working_dir, EngineType.GOLDSRC, [comp])
     step_config = FetchStepConfig("goldsrc-engine-fetcher", patch_dir_name="target_dir", url="http://repo",
@@ -106,7 +106,7 @@ def test_goldsrc_engine_fetcher(mock_patch_context, mock_run_command, mocker):
 def test_goldsrc_engine_fetcher_stable(mock_patch_context, mock_run_command, mocker):
     mock_patch_context.patch_mode = PatchMode.STABLE
     patcher = Patcher(mock_patch_context, AppConfig())
-    fetcher = GoldSrcEngineFetcher(patcher)
+    fetcher = GoldSrcEngineFetcher(patcher.create_step_context())
     comp = Component("Test", "", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH)
     game = Game("Test", mock_patch_context.working_dir, EngineType.GOLDSRC, [comp])
     step_config = FetchStepConfig("goldsrc-engine-fetcher", patch_dir_name="target_dir", url="http://repo",
@@ -120,7 +120,7 @@ def test_goldsrc_engine_fetcher_stable(mock_patch_context, mock_run_command, moc
 
 def test_waf_builder(mock_patch_context, mock_run_command):
     patcher = Patcher(mock_patch_context, AppConfig())
-    builder = WafBuilder(patcher)
+    builder = WafBuilder(patcher.create_step_context())
     comp = Component("Test", "", EngineType.SOURCE, PatchStatus.NEEDS_PATCH)
     game = Game("Test", mock_patch_context.working_dir, EngineType.SOURCE, [comp])
     step_config = BuildStepConfig("waf-builder", patch_dir_name="target_dir", build_args=["-8"])
@@ -133,7 +133,7 @@ def test_waf_builder(mock_patch_context, mock_run_command):
 
 def test_cmake_builder(mock_patch_context, mock_run_command):
     patcher = Patcher(mock_patch_context, AppConfig())
-    builder = CMakeBuilder(patcher)
+    builder = CMakeBuilder(patcher.create_step_context())
     comp = Component("Test", "", EngineType.SOURCE, PatchStatus.NEEDS_PATCH)
     game = Game("Test", mock_patch_context.working_dir, EngineType.SOURCE, [comp])
     step_config = BuildStepConfig("cmake-builder", patch_dir_name="target_dir")
@@ -147,7 +147,7 @@ def test_cmake_builder(mock_patch_context, mock_run_command):
 
 def test_generic_installer(mock_patch_context, mocker):
     patcher = Patcher(mock_patch_context, AppConfig())
-    installer = GenericInstaller(patcher)
+    installer = GenericInstaller(patcher.create_step_context())
     comp = Component("Test", "", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH)
     game = Game("Test", Path("/fake"), EngineType.GOLDSRC, [comp])
     step_config = BuildStepConfig("generic-installer", patch_dir_name="target_dir")
@@ -161,7 +161,7 @@ def test_generic_installer(mock_patch_context, mocker):
 
 def test_goldsrc_engine_installer(mock_patch_context, mocker):
     patcher = Patcher(mock_patch_context, AppConfig())
-    installer = GoldSrcEngineInstaller(patcher)
+    installer = GoldSrcEngineInstaller(patcher.create_step_context())
     comp = Component("Test", "", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH)
     game = Game("Test", mock_patch_context.working_dir, EngineType.GOLDSRC, [comp])
     step_config = BuildStepConfig("goldsrc-engine-installer", patch_dir_name="target_dir")
@@ -179,7 +179,7 @@ def test_goldsrc_engine_installer(mock_patch_context, mocker):
 
 def test_source_installer(mock_patch_context, mocker, mock_run_command):
     patcher = Patcher(mock_patch_context, AppConfig())
-    installer = SourceInstaller(patcher)
+    installer = SourceInstaller(patcher.create_step_context())
     comp = Component("Test", "hl2", EngineType.SOURCE, PatchStatus.NEEDS_PATCH)
     game = Game("Test", mock_patch_context.working_dir, EngineType.SOURCE, [comp])
     step_config = BuildStepConfig("source-installer", patch_dir_name="source-engine")

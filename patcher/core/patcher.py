@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from patcher.core.command_executor import CommandExecutor
-from patcher.core.models import AppConfig, Game, PatchContext
+from patcher.core.models import AppConfig, Game, PatchContext, StepContext
 from patcher.core.pipeline import STEP_REGISTRY
 
 logger = logging.getLogger(__name__)
@@ -21,7 +21,6 @@ class Patcher:
         self._component_callback = component_callback
         self._step_callback = step_callback
         self.executor = CommandExecutor(self._context.working_dir, self._log_callback)
-        self.applied_containers: set[tuple[str, str]] = set()
 
     def stop(self):
         self.executor.stop()
@@ -42,11 +41,22 @@ class Patcher:
     def get_total_steps(self, selected_games: list[Game]) -> int:
         return sum(1 for g in selected_games for c in g.components if c.needs_patch)
 
+    def create_step_context(self) -> StepContext:
+        return StepContext(
+            working_dir=self._context.working_dir,
+            script_dir=self._context.script_dir,
+            steam_library_path=self._context.steam_library_path,
+            patch_mode=self._context.patch_mode,
+            executor=self.executor,
+            log=self.log,
+        )
+
     def run(self, selected_games: list[Game]):
         try:
             self._create_backup(selected_games)
             self._prepare_environment()
 
+            step_context = self.create_step_context()
             for game in selected_games:
                 for comp in game.components:
                     if not comp.needs_patch:
@@ -62,7 +72,7 @@ class Patcher:
                         if not step_class:
                             raise ValueError(f"Unknown step type: {step_type}")
 
-                        step = step_class(self)
+                        step = step_class(step_context)
                         self.executor.interruptible = step.interruptible
                         step.execute(game, comp, step_config)
 
