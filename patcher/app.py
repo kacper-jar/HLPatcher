@@ -104,7 +104,6 @@ class App(ctk.CTk):
 
         if current_key == PageRoute.SELECTION and next_key == PageRoute.OPTIONS:
             if Planner(self.context.games).find_missing_dependencies(self.context.selected_components):
-                self.router.push_history(current_key)
                 return PageRoute.HL2_REQUIRED
 
         if (
@@ -159,7 +158,6 @@ class App(ctk.CTk):
             self.router.show_page(PageRoute.ALL_PATCHED)
             return
 
-        self.router.push_history(self.router.current_page_key)
         self.router.show_page(PageRoute.SELECTION)
 
     def _check_downgrade_needed(self):
@@ -167,7 +165,6 @@ class App(ctk.CTk):
             bool(c.downgrade_requires)
             for c in self.context.selected_components
         )
-        self.router.push_history(self.router.current_page_key)
         if needs_downgrade:
             self.router.show_page(PageRoute.DOWNGRADE)
         else:
