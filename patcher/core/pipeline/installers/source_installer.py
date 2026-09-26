@@ -13,9 +13,9 @@ class SourceInstaller(BaseStep):
 
     def execute(self, game: Game, comp: Component, step_config: InstallStepConfig):
         subfolder = comp.subfolder
-        self.patcher.log(f"Installing to {game.name}...")
+        self.context.log(f"Installing to {game.name}...")
 
-        source_dir = self.patcher._context.working_dir / step_config.patch_dir_name
+        source_dir = self.context.working_dir / step_config.patch_dir_name
         output_dir = source_dir / "output"
 
         bin_src = output_dir / "bin"
@@ -48,9 +48,9 @@ class SourceInstaller(BaseStep):
         self._fix_source_game_links(game.path, subfolder, step_config.patch_dir_name)
 
     def _fix_source_links(self, game_path: Path, patch_dir_name: str):
-        self.patcher.log("Fixing Source Engine links...")
+        self.context.log("Fixing Source Engine links...")
         bin_dir = game_path / "bin"
-        working_dir = self.patcher._context.working_dir
+        working_dir = self.context.working_dir
         build_prefix = str(working_dir / patch_dir_name / "build")
         thirdparty_prefix = str(working_dir / patch_dir_name / "thirdparty" / "install" / "lib")
 
@@ -68,15 +68,15 @@ class SourceInstaller(BaseStep):
                 cmd.extend(["-change", old_path, new_path])
             cmd.append(lib_name)
 
-            self.patcher.executor.run(cmd, cwd=bin_dir)
+            self.context.executor.run(cmd, cwd=bin_dir)
 
     def _fix_source_game_links(self, game_path: Path, game_name: str, patch_dir_name: str):
-        self.patcher.log(f"Fixing source game links for {game_name}...")
+        self.context.log(f"Fixing source game links for {game_name}...")
         bin_dir = game_path / game_name / "bin"
         if not bin_dir.exists():
             return
 
-        working_dir = self.patcher._context.working_dir
+        working_dir = self.context.working_dir
         build_prefix = str(working_dir / patch_dir_name / "build")
         thirdparty_prefix = str(working_dir / patch_dir_name / "thirdparty" / "install" / "lib")
 
@@ -102,4 +102,4 @@ class SourceInstaller(BaseStep):
                 cmd.extend(["-change", old_path, new_path])
             cmd.append(lib_name)
 
-            self.patcher.executor.run(cmd, cwd=bin_dir)
+            self.context.executor.run(cmd, cwd=bin_dir)

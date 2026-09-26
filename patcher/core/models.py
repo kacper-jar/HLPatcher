@@ -1,6 +1,9 @@
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
+
+from patcher.core.command_executor import CommandExecutor
 
 
 class EngineType(Enum):
@@ -126,6 +129,17 @@ class PatchContext:
     create_backup: bool = False
     games: list[Game] = field(default_factory=list)
     selected_components: list[Component] = field(default_factory=list)
+
+
+@dataclass
+class StepContext:
+    working_dir: Path
+    script_dir: Path
+    steam_library_path: Path
+    patch_mode: PatchMode
+    executor: CommandExecutor
+    log: Callable[[str], None]
+    applied_patch_containers: set[tuple[str, str]] = field(default_factory=set)
 
 
 @dataclass

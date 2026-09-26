@@ -14,9 +14,9 @@ class ArchiveInstallerStep(BaseStep):
     interruptible = False
 
     def execute(self, game: Game, comp: Component, step_config: ArchiveInstallStepConfig):
-        self.patcher.log(f"Extracting archive from {step_config.patch_dir_name}")
+        self.context.log(f"Extracting archive from {step_config.patch_dir_name}")
 
-        patch_dir = self.patcher._context.working_dir / step_config.patch_dir_name
+        patch_dir = self.context.working_dir / step_config.patch_dir_name
         archive_path = patch_dir / "archive.tmp"
 
         if not archive_path.exists():
@@ -36,7 +36,7 @@ class ArchiveInstallerStep(BaseStep):
                 with tarfile.open(archive_path, "r") as tf:
                     tf.extractall(extract_dir)
             else:
-                self.patcher.log("Unknown archive type, attempting zip and tar...")
+                self.context.log("Unknown archive type, attempting zip and tar...")
                 try:
                     with zipfile.ZipFile(archive_path, "r") as zf:
                         zf.extractall(extract_dir)
@@ -51,9 +51,9 @@ class ArchiveInstallerStep(BaseStep):
             matched_files = list(extract_dir.rglob(pattern))
 
             if not matched_files:
-                self.patcher.log(f"Warning: No files matched pattern '{pattern}' in the extracted archive.")
+                self.context.log(f"Warning: No files matched pattern '{pattern}' in the extracted archive.")
 
             for file_path in matched_files:
                 if file_path.is_file():
-                    self.patcher.log(f"Copying {file_path.name} to {output_base}")
+                    self.context.log(f"Copying {file_path.name} to {output_base}")
                     shutil.copy2(file_path, output_base / file_path.name)

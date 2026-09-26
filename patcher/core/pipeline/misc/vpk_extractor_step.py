@@ -19,9 +19,9 @@ class VpkExtractorStep(BaseStep):
     interruptible = False
 
     def execute(self, game: Game, comp: Component, step_config: VpkExtractStepConfig):
-        self.patcher.log(f"Extracting VPK files for {game.name}...")
+        self.context.log(f"Extracting VPK files for {game.name}...")
 
-        full_vpk_path = self.patcher._context.steam_library_path / step_config.vpk_path
+        full_vpk_path = self.context.steam_library_path / step_config.vpk_path
         if not full_vpk_path.exists():
             raise FileNotFoundError(f"VPK not found: {full_vpk_path}")
 
@@ -30,7 +30,7 @@ class VpkExtractorStep(BaseStep):
 
         for file_path in step_config.files:
             if file_path not in entries:
-                self.patcher.log(f"Warning: {file_path} not found in VPK.")
+                self.context.log(f"Warning: {file_path} not found in VPK.")
                 continue
 
             entry = entries[file_path]
