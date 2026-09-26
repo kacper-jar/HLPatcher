@@ -1,11 +1,12 @@
 [
   {
+    "id": "goldsrc-engine",
     "name": "GoldSrc Engine",
     "subfolder": "",
     "game": "half-life",
     "estimated_time": 1,
     "estimated_space": 350,
-    "requires": {},
+    "downgrade_requires": {},
     "steps": [
       {
         "type": "goldsrc-engine-fetcher",
@@ -30,12 +31,13 @@
     ]
   },
   {
+    "id": "half-life",
     "name": "Half-Life",
     "subfolder": "valve",
     "game": "half-life",
     "estimated_time": 1,
     "estimated_space": 60,
-    "requires": {},
+    "downgrade_requires": {},
     "steps": [
       {
         "type": "git-fetcher",
@@ -61,12 +63,13 @@
     ]
   },
   {
+    "id": "opposing-force",
     "name": "Half-Life: Opposing Force",
     "subfolder": "gearbox",
     "game": "half-life",
     "estimated_time": 1,
     "estimated_space": 60,
-    "requires": {},
+    "downgrade_requires": {},
     "steps": [
       {
         "type": "git-fetcher",
@@ -92,12 +95,13 @@
     ]
   },
   {
+    "id": "blue-shift",
     "name": "Half-Life: Blue Shift",
     "subfolder": "bshift",
     "game": "half-life",
     "estimated_time": 1,
     "estimated_space": 60,
-    "requires": {},
+    "downgrade_requires": {},
     "steps": [
       {
         "type": "git-fetcher",
@@ -123,12 +127,13 @@
     ]
   },
   {
+    "id": "deathmatch-classic",
     "name": "Deathmatch Classic",
     "subfolder": "dmc",
     "game": "half-life",
     "estimated_time": 1,
     "estimated_space": 60,
-    "requires": {},
+    "downgrade_requires": {},
     "steps": [
       {
         "type": "git-fetcher",
@@ -154,12 +159,13 @@
     ]
   },
   {
+    "id": "counter-strike",
     "name": "Counter-Strike",
     "subfolder": "cstrike",
     "game": "half-life",
     "estimated_time": 2,
     "estimated_space": 350,
-    "requires": {},
+    "downgrade_requires": {},
     "steps": [
       {
         "type": "git-fetcher",
@@ -184,13 +190,14 @@
     ]
   },
   {
+    "id": "half-life-2",
     "name": "Half-Life 2",
     "subfolder": "hl2",
     "downgrade_group": "hl2",
     "game": "half-life-2",
     "estimated_time": 3,
     "estimated_space": 25,
-    "requires": {
+    "downgrade_requires": {
       "hl2/bin/client.dylib": "4061b231e406ec7c7b35efee59c306fcf136c06ca4371216102215b9ef58ad35",
       "hl2/bin/server.dylib": "c28d38ba7fd9b66164bf454d0bd2b08872c74678bf7b9d5e42ed30dbc0e29aa7"
     },
@@ -224,13 +231,14 @@
     ]
   },
   {
+    "id": "lost-coast",
     "name": "Half-Life 2: Lost Coast",
     "subfolder": "lostcoast",
     "downgrade_group": "hl2",
     "game": "half-life-2",
     "estimated_time": 3,
     "estimated_space": 25,
-    "requires": {
+    "downgrade_requires": {
       "lostcoast/bin/client.dylib": "caeec4bdea829dd9658db9348e20f032d6b4c2275a07637b72e47fbaf0ef7aa8",
       "lostcoast/bin/server.dylib": "8645ca9e54c9ed2caf31590a9561c167d71fcd40d170e1d91b66acfc03c98174"
     },
@@ -264,13 +272,14 @@
     ]
   },
   {
+    "id": "episodic",
     "name": "Half-Life 2: Episodic (Episodes 1 & 2)",
     "subfolder": "episodic",
     "downgrade_group": "hl2",
     "game": "half-life-2",
     "estimated_time": 3,
     "estimated_space": 25,
-    "requires": {
+    "downgrade_requires": {
       "episodic/bin/client.dylib": "894dbe1838279d7d5d81e13df27d83a705b83839d44470cd2826a763168be0c5",
       "episodic/bin/server.dylib": "b87392dea7cd0955791c393c66e40af8869f42e1b08a9df31bf4c9f2d5cf5db1"
     },
@@ -304,13 +313,14 @@
     ]
   },
   {
+    "id": "half-life-source",
     "name": "Half-Life: Source",
     "subfolder": "hl1",
     "downgrade_group": "hl2",
     "game": "half-life-2",
     "estimated_time": 3,
     "estimated_space": 25,
-    "requires": {},
+    "downgrade_requires": {},
     "steps": [
       {
         "type": "git-fetcher",
@@ -341,12 +351,13 @@
     ]
   },
   {
+    "id": "portal",
     "name": "Portal",
     "subfolder": "portal",
     "game": "portal",
     "estimated_time": 3,
     "estimated_space": 25,
-    "requires": {
+    "downgrade_requires": {
       "portal/bin/client.dylib": "4ae4640240b75781eb816f991c2974ab6ac82edb40e188077e7bcd5a07273c9c",
       "portal/bin/server.dylib": "040ed94eb91edf619e057f35ef939f7616bc855dec5a2b43bb77e2409fea8d96",
       "portal/steam.inf": "4e154b119ed0eaa63a560a46b926f5961b8c67b45248622b54d538044de22ff7"
@@ -381,12 +392,16 @@
     ]
   },
   {
+    "id": "half-life-2-deathmatch",
     "name": "Half-Life 2: Deathmatch",
     "subfolder": "hl2mp",
     "game": "half-life-2-deathmatch",
+    "depends_on": [
+      "half-life-2"
+    ],
     "estimated_time": 3,
     "estimated_space": 25,
-    "requires": {
+    "downgrade_requires": {
       "hl2mp/bin/client.dylib": "911c4f1f3b33311d538519131673b69c062da5bee54abbb5d94fb4f9cc364684",
       "hl2mp/bin/server.dylib": "a51a6c9c6c9be184d7ca33c68d876f08867b929bd04a2cd9f1d576f008695184"
     },
@@ -485,12 +500,16 @@
     ]
   },
   {
+    "id": "day-of-defeat-source",
     "name": "Day of Defeat: Source",
     "subfolder": "dod",
     "game": "day-of-defeat-source",
+    "depends_on": [
+      "half-life-2"
+    ],
     "estimated_time": 3,
     "estimated_space": 25,
-    "requires": {
+    "downgrade_requires": {
       "dod/bin/client.dylib": "72f07c7962b1f007c4a65ed9388568b94f688bed013f988ac88ade47c64a6a4e",
       "dod/bin/server.dylib": "7bf2612f3a7c395384b868b2ce633cd4dc8bc45f0283f3dc4cadbd6ff7b25dac"
     },
@@ -635,12 +654,16 @@
     ]
   },
   {
+    "id": "counter-strike-source",
     "name": "Counter-Strike: Source",
     "subfolder": "cstrike",
     "game": "counter-strike-source",
+    "depends_on": [
+      "half-life-2"
+    ],
     "estimated_time": 3,
     "estimated_space": 25,
-    "requires": {
+    "downgrade_requires": {
       "cstrike/bin/client.dylib": "443c9f610bde2f5cc9d3e9dd1019e9f309741edf13489be9f6033ebffff70962",
       "cstrike/bin/server.dylib": "44e3b5f9ab00a068595e30835c85e6b7f955d1e4fae1da31bc37f2eab6f51dbf"
     },

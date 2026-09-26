@@ -12,6 +12,7 @@ from patcher.core import (
     GuideRegistry,
     I18n,
     PatchContext,
+    Planner,
     UpdateInfo,
     Updater,
 )
@@ -102,22 +103,9 @@ class App(ctk.CTk):
             return PageRoute.HALT
 
         if current_key == PageRoute.SELECTION and next_key == PageRoute.OPTIONS:
-            requires_hl2 = any(
-                c.name in ("Half-Life 2: Deathmatch", "Day of Defeat: Source", "Counter-Strike: Source") for c in
-                self.context.selected_components)
-            if requires_hl2:
-                hl2_game = next((g for g in self.context.games if g.name == "Source (Half-Life 2)"), None)
-                if not hl2_game:
-                    self.router.push_history(current_key)
-                    return PageRoute.HL2_REQUIRED
-
-                hl2_comp = next((c for c in hl2_game.components if c.name == "Half-Life 2"), None)
-                is_hl2_patched = hl2_comp is not None and not hl2_comp.needs_patch
-                is_hl2_selected = any(c.name == "Half-Life 2" for c in self.context.selected_components)
-
-                if not (is_hl2_patched or is_hl2_selected):
-                    self.router.push_history(current_key)
-                    return PageRoute.HL2_REQUIRED
+            if Planner(self.context.games).find_missing_dependencies(self.context.selected_components):
+                self.router.push_history(current_key)
+                return PageRoute.HL2_REQUIRED
 
         if (
                 current_key == PageRoute.WELCOME
@@ -176,7 +164,7 @@ class App(ctk.CTk):
 
     def _check_downgrade_needed(self):
         needs_downgrade = any(
-            bool(c.requires)
+            bool(c.downgrade_requires)
             for c in self.context.selected_components
         )
         self.router.push_history(self.router.current_page_key)

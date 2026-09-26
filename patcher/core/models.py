@@ -75,10 +75,12 @@ class Component:
     engine_type: EngineType
     status: PatchStatus
     downgrade_group: str = ""
-    requires: dict[str, str] = field(default_factory=dict)
+    downgrade_requires: dict[str, str] = field(default_factory=dict)
     steps: list[StepConfig] = field(default_factory=list)
     estimated_patch_time: int = 0
     estimated_free_space_required: int = 0
+    id: str = ""
+    depends_on: list[str] = field(default_factory=list)
 
     @property
     def needs_patch(self) -> bool:
