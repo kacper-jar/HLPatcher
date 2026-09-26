@@ -17,6 +17,8 @@ It lets users enjoy the game again without the hassle of manual binary update.
 
 [Get Started](getting-started.md){ .md-button .md-button--primary }
 
+<p class="download-count"></p>
+
 ## Supported Games
 
 <div class="grid cards" markdown>
