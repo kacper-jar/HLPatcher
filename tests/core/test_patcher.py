@@ -102,7 +102,7 @@ def test_goldsrc_engine_fetcher(mock_patch_context, mock_run_command, mocker):
 
     fetcher.execute(game, comp, step_config)
 
-    assert len(mock_run_command.commands) == 5
+    assert len(mock_run_command.commands) == 4
 
 
 def test_goldsrc_engine_fetcher_stable(mock_patch_context, mock_run_command, mocker):
@@ -117,7 +117,7 @@ def test_goldsrc_engine_fetcher_stable(mock_patch_context, mock_run_command, moc
 
     fetcher.execute(game, comp, step_config)
 
-    assert len(mock_run_command.commands) == 7
+    assert len(mock_run_command.commands) == 6
 
 
 def test_waf_builder(mock_patch_context, mock_run_command):

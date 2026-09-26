@@ -1,4 +1,5 @@
 import shutil
+import tempfile
 from pathlib import Path
 
 from patcher.core.models import Component, FetchStepConfig, Game
@@ -25,20 +26,9 @@ class GoldSrcEngineFetcher(GitFetcher):
             "https://github.com/libsdl-org/SDL/releases/download/release-2.32.10/SDL2-2.32.10.dmg",
         ])
 
-        info_result = self.context.executor.run(["hdiutil", "info"], capture=True)
-        for line in info_result.stdout.replace("\\n", "\n").splitlines():
-            if "/Volumes/SDL2" in line:
-                stale_mount = line.split("\t")[-1].strip()
-                self.context.executor.run(["hdiutil", "detach", stale_mount])
-
-        result = self.context.executor.run(["hdiutil", "attach", str(sdl_dmg), "-nobrowse"], capture=True)
-        mount_point = None
-        for line in result.stdout.replace("\\n", "\n").splitlines():
-            if "/Volumes/" in line:
-                mount_point = line.split("\t")[-1].strip()
-                break
-
-        if mount_point:
+        with tempfile.TemporaryDirectory(prefix="HLPatcher-SDL2-", ignore_cleanup_errors=True) as mount_point:
+            self.context.executor.run(["hdiutil", "attach", str(sdl_dmg), "-nobrowse", "-readonly",
+                                       "-mountpoint", mount_point])
             try:
                 sdl_dest = xash_dir / "3rdparty" / "SDL2.framework"
                 shutil.copytree(Path(mount_point) / "SDL2.framework", sdl_dest, dirs_exist_ok=True)
