@@ -14,7 +14,7 @@ def read_cstring(f) -> str:
     return out.decode("latin-1")
 
 
-@step("vpk-extractor")
+@step("vpk-extractor", config=VpkExtractStepConfig)
 class VpkExtractorStep(BaseStep):
     interruptible = False
 

@@ -3,7 +3,7 @@ from patcher.core.pipeline.base import BaseStep
 from patcher.core.pipeline.registry import step
 
 
-@step("cmake-builder")
+@step("cmake-builder", config=BuildStepConfig)
 class CMakeBuilder(BaseStep):
     def execute(self, game: Game, comp: Component, step_config: BuildStepConfig):
         target_dir_name = step_config.patch_dir_name

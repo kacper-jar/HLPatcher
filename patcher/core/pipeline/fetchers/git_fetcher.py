@@ -3,7 +3,7 @@ from patcher.core.pipeline.base import BaseStep
 from patcher.core.pipeline.registry import step
 
 
-@step("git-fetcher")
+@step("git-fetcher", config=FetchStepConfig)
 class GitFetcher(BaseStep):
     def execute(self, game: Game, comp: Component, step_config: FetchStepConfig):
         target_dir_name = step_config.patch_dir_name

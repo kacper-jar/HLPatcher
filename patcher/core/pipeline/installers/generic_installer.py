@@ -5,7 +5,7 @@ from patcher.core.pipeline.base import BaseStep
 from patcher.core.pipeline.registry import step
 
 
-@step("generic-installer")
+@step("generic-installer", config=InstallStepConfig)
 class GenericInstaller(BaseStep):
     interruptible = False
 

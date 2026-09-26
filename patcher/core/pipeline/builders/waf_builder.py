@@ -3,7 +3,7 @@ from patcher.core.pipeline.base import BaseStep
 from patcher.core.pipeline.registry import step
 
 
-@step("waf-builder")
+@step("waf-builder", config=BuildStepConfig)
 class WafBuilder(BaseStep):
     def execute(self, game: Game, comp: Component, step_config: BuildStepConfig):
         target_dir_name = step_config.patch_dir_name

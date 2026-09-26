@@ -9,7 +9,7 @@ from patcher.core.pipeline.base import BaseStep
 from patcher.core.pipeline.registry import step
 
 
-@step("archive-installer")
+@step("archive-installer", config=ArchiveInstallStepConfig)
 class ArchiveInstallerStep(BaseStep):
     interruptible = False
 

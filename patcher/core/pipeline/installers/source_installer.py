@@ -7,7 +7,7 @@ from patcher.core.pipeline.base import BaseStep
 from patcher.core.pipeline.registry import step
 
 
-@step("source-installer")
+@step("source-installer", config=InstallStepConfig)
 class SourceInstaller(BaseStep):
     interruptible = False
 
