@@ -79,7 +79,7 @@ class LimitationsPage(BasePage):
 
     def get_next_button_text(self) -> str:
         needs_downgrade = any(
-            bool(c.requires)
+            bool(c.downgrade_requires)
             for c in self._app.context.selected_components
         )
         return self._app.i18n.t("btn_next") if needs_downgrade else self._app.i18n.t("btn_patch")

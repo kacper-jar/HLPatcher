@@ -26,7 +26,7 @@ class DowngradePage(BasePage):
         components_to_downgrade = []
         for game in context.games:
             for component in game.components:
-                if component in context.selected_components and component.requires:
+                if component in context.selected_components and component.downgrade_requires:
                     components_to_downgrade.append((game, component))
 
         groups = {}
@@ -118,8 +118,8 @@ class DowngradePage(BasePage):
 
             for component in components:
                 comp_match = True
-                if component in context.selected_components and component.requires:
-                    for filename, expected_hash in component.requires.items():
+                if component in context.selected_components and component.downgrade_requires:
+                    for filename, expected_hash in component.downgrade_requires.items():
                         file_path = game.path / filename
                         if not file_path.is_file():
                             comp_match = False

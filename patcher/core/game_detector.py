@@ -24,11 +24,23 @@ class GameDetector:
         self._steam_library_path = steam_library_path
         self._games_config = load_games_config()
         self._components_config = load_components_config()
+        self._validate_config()
 
+    def _validate_config(self):
         game_ids = {g.id for g in self._games_config}
         unknown = [c["name"] for c in self._components_config if c.get("game") not in game_ids]
         if unknown:
             raise ValueError(f"Components with an unknown game: {', '.join(unknown)}")
+
+        component_ids = [c["id"] for c in self._components_config]
+        duplicates = sorted({i for i in component_ids if component_ids.count(i) > 1})
+        if duplicates:
+            raise ValueError(f"Duplicate component ids: {', '.join(duplicates)}")
+
+        broken = [c["name"] for c in self._components_config
+                  if any(dep not in component_ids for dep in c.get("depends_on", []))]
+        if broken:
+            raise ValueError(f"Components depending on unknown components: {', '.join(broken)}")
 
     def scan(self) -> list[Game]:
         games = []
@@ -108,13 +120,15 @@ class GameDetector:
 
         logger.info(f"{comp_def['name']} - {status.value}")
         return Component(
+            id=comp_def["id"],
             name=comp_def["name"],
             subfolder=subfolder,
             engine_type=EngineType.GOLDSRC,
             status=status,
             downgrade_group=comp_def.get("downgrade_group", ""),
             steps=self._parse_steps(comp_def.get("steps", [])),
-            requires=comp_def.get("requires", {}),
+            downgrade_requires=comp_def.get("downgrade_requires", {}),
+            depends_on=comp_def.get("depends_on", []),
             estimated_patch_time=comp_def.get("estimated_time", 0),
             estimated_free_space_required=comp_def.get("estimated_space", 0),
         )
@@ -129,13 +143,15 @@ class GameDetector:
         status = self._detect_source_mod_status(component_path)
         logger.info(f"{comp_def['name']} - {status.value}")
         return Component(
+            id=comp_def["id"],
             name=comp_def["name"],
             subfolder=subfolder,
             engine_type=EngineType.SOURCE,
             status=status,
             downgrade_group=comp_def.get("downgrade_group", ""),
             steps=self._parse_steps(comp_def.get("steps", [])),
-            requires=comp_def.get("requires", {}),
+            downgrade_requires=comp_def.get("downgrade_requires", {}),
+            depends_on=comp_def.get("depends_on", []),
             estimated_patch_time=comp_def.get("estimated_time", 0),
             estimated_free_space_required=comp_def.get("estimated_space", 0),
         )
