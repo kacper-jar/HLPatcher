@@ -85,4 +85,4 @@ class LimitationsPage(BasePage):
         return self._app.i18n.t("btn_next") if needs_downgrade else self._app.i18n.t("btn_patch")
 
     def _open_issues_site(self):
-        webbrowser.open("https://github.com/kzl21/HLPatcher/issues")
+        webbrowser.open("https://github.com/kacper-jar/HLPatcher/issues")
