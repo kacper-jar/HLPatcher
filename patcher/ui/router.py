@@ -1,13 +1,38 @@
-import re
 from collections.abc import Callable
 
 from patcher.ui.base_page import BasePage
 from patcher.ui.page_route import PageRoute
+from patcher.ui.pages import (
+    AllPatchedPage,
+    DowngradePage,
+    FailurePage,
+    Hl2RequiredPage,
+    LibraryPage,
+    LimitationsPage,
+    NoGamesPage,
+    OptionsPage,
+    ProgressPage,
+    SelectionPage,
+    SuccessPage,
+    UpdateAvailablePage,
+    WelcomePage,
+)
 
-
-def _camel_to_snake(name: str) -> str:
-    name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
+PAGES: dict[PageRoute, type[BasePage]] = {
+    PageRoute.WELCOME: WelcomePage,
+    PageRoute.LIBRARY: LibraryPage,
+    PageRoute.SELECTION: SelectionPage,
+    PageRoute.OPTIONS: OptionsPage,
+    PageRoute.LIMITATIONS: LimitationsPage,
+    PageRoute.DOWNGRADE: DowngradePage,
+    PageRoute.PROGRESS: ProgressPage,
+    PageRoute.SUCCESS: SuccessPage,
+    PageRoute.FAILURE: FailurePage,
+    PageRoute.NO_GAMES: NoGamesPage,
+    PageRoute.ALL_PATCHED: AllPatchedPage,
+    PageRoute.UPDATE_AVAILABLE: UpdateAvailablePage,
+    PageRoute.HL2_REQUIRED: Hl2RequiredPage,
+}
 
 
 class Router:
@@ -17,42 +42,26 @@ class Router:
         self.header = header
         self.footer = footer
 
-        self._pages: dict[PageRoute, type] = {}
         self._page_instances: dict[PageRoute, BasePage] = {}
+        self._left_page: BasePage | None = None
         self.current_page_key: PageRoute | None = None
-        self._history: list[PageRoute] = []
 
         self.route_interceptor: Callable[[PageRoute, PageRoute], PageRoute | None] | None = None
 
-        self._register_pages()
-
-    def _register_pages(self):
-        for cls in BasePage.__subclasses__():
-            if cls.__name__ == "BasePage":
-                continue
-            key_str = _camel_to_snake(cls.__name__.replace('Page', ''))
-            try:
-                key = PageRoute(key_str)
-                self._pages[key] = cls
-            except ValueError:
-                pass
-
     def show_page(self, page_key: PageRoute):
-        if self.current_page_key and self.current_page_key in self._page_instances:
-            current = self._page_instances[self.current_page_key]
-            current.on_leave()
+        current = self.get_current_page()
+        if current:
+            if current is not self._left_page:
+                current.on_leave()
             current.pack_forget()
+        self._left_page = None
 
         if page_key not in self._page_instances:
-            if page_key not in self._pages:
+            if page_key not in PAGES:
                 raise ValueError(f"Page '{page_key}' not registered.")
-            page_class = self._pages[page_key]
-            self._page_instances[page_key] = page_class(self.content_frame, self.app)
+            self._page_instances[page_key] = PAGES[page_key](self.content_frame, self.app)
 
         page = self._page_instances[page_key]
-        page.pack(fill="both", expand=True)
-        page.on_enter()
-
         self.header.set_title(page.get_title())
         self.footer.set_back_visible(page.show_back_button())
         self.footer.set_next_visible(page.show_next_button())
@@ -62,6 +71,9 @@ class Router:
 
         custom_footer = page.get_custom_footer_widget(self.footer.custom_container)
         self.footer.set_custom_content(custom_footer)
+
+        page.pack(fill="both", expand=True)
+        page.on_enter()
 
         self.current_page_key = page_key
 
@@ -80,8 +92,6 @@ class Router:
 
         back_key = page.get_back_page_key()
         if back_key:
-            if self._history:
-                self._history.pop()
             self.show_page(back_key)
 
     def go_next(self):
@@ -93,6 +103,7 @@ class Router:
             return
 
         page.on_leave()
+        self._left_page = page
         next_key = page.get_next_page_key()
 
         if self.route_interceptor and next_key:
@@ -103,7 +114,6 @@ class Router:
                 next_key = override_key
 
         if next_key:
-            self._history.append(self.current_page_key)
             self.show_page(next_key)
 
     def get_current_page(self) -> BasePage | None:
@@ -111,6 +121,3 @@ class Router:
 
     def get_page_instance(self, page_key: PageRoute) -> BasePage | None:
         return self._page_instances.get(page_key)
-
-    def push_history(self, page_key: PageRoute):
-        self._history.append(page_key)

@@ -17,7 +17,6 @@ def mock_app(mocker):
 
 def test_app_initial_state(mock_app):
     assert mock_app.router.current_page_key == PageRoute.WELCOME
-    assert len(mock_app.router._history) == 0
 
 
 def test_app_navigation_next_back(mock_app, mocker):
@@ -26,14 +25,12 @@ def test_app_navigation_next_back(mock_app, mocker):
 
     mock_app.router.go_next()
     assert mock_app.router.current_page_key == PageRoute.LIBRARY
-    assert mock_app.router._history == [PageRoute.WELCOME]
 
     mocker.patch("patcher.ui.LibraryPage.can_go_back", return_value=True)
     mocker.patch("patcher.ui.LibraryPage.get_back_page_key", return_value=PageRoute.WELCOME)
 
     mock_app.router.go_back()
     assert mock_app.router.current_page_key == PageRoute.WELCOME
-    assert mock_app.router._history == []
 
 
 def test_scan_and_route_no_games(mock_app, mocker):
