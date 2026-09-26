@@ -86,6 +86,15 @@ class Component:
 
 
 @dataclass
+class GameConfig:
+    id: str
+    folder: str
+    executable: str
+    engine_type: EngineType
+    fallback_marker: str = ""
+
+
+@dataclass
 class Game:
     name: str
     path: Path

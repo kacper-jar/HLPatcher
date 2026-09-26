@@ -2,7 +2,7 @@
   {
     "name": "GoldSrc Engine",
     "subfolder": "",
-    "engine_type": "GoldSrc",
+    "game": "half-life",
     "estimated_time": 1,
     "estimated_space": 350,
     "requires": {},
@@ -32,7 +32,7 @@
   {
     "name": "Half-Life",
     "subfolder": "valve",
-    "engine_type": "GoldSrc",
+    "game": "half-life",
     "estimated_time": 1,
     "estimated_space": 60,
     "requires": {},
@@ -63,7 +63,7 @@
   {
     "name": "Half-Life: Opposing Force",
     "subfolder": "gearbox",
-    "engine_type": "GoldSrc",
+    "game": "half-life",
     "estimated_time": 1,
     "estimated_space": 60,
     "requires": {},
@@ -94,7 +94,7 @@
   {
     "name": "Half-Life: Blue Shift",
     "subfolder": "bshift",
-    "engine_type": "GoldSrc",
+    "game": "half-life",
     "estimated_time": 1,
     "estimated_space": 60,
     "requires": {},
@@ -125,7 +125,7 @@
   {
     "name": "Deathmatch Classic",
     "subfolder": "dmc",
-    "engine_type": "GoldSrc",
+    "game": "half-life",
     "estimated_time": 1,
     "estimated_space": 60,
     "requires": {},
@@ -156,7 +156,7 @@
   {
     "name": "Counter-Strike",
     "subfolder": "cstrike",
-    "engine_type": "GoldSrc",
+    "game": "half-life",
     "estimated_time": 2,
     "estimated_space": 350,
     "requires": {},
@@ -187,7 +187,7 @@
     "name": "Half-Life 2",
     "subfolder": "hl2",
     "downgrade_group": "hl2",
-    "engine_type": "Source",
+    "game": "half-life-2",
     "estimated_time": 3,
     "estimated_space": 25,
     "requires": {
@@ -227,7 +227,7 @@
     "name": "Half-Life 2: Lost Coast",
     "subfolder": "lostcoast",
     "downgrade_group": "hl2",
-    "engine_type": "Source",
+    "game": "half-life-2",
     "estimated_time": 3,
     "estimated_space": 25,
     "requires": {
@@ -267,7 +267,7 @@
     "name": "Half-Life 2: Episodic (Episodes 1 & 2)",
     "subfolder": "episodic",
     "downgrade_group": "hl2",
-    "engine_type": "Source",
+    "game": "half-life-2",
     "estimated_time": 3,
     "estimated_space": 25,
     "requires": {
@@ -307,7 +307,7 @@
     "name": "Half-Life: Source",
     "subfolder": "hl1",
     "downgrade_group": "hl2",
-    "engine_type": "Source",
+    "game": "half-life-2",
     "estimated_time": 3,
     "estimated_space": 25,
     "requires": {},
@@ -343,7 +343,7 @@
   {
     "name": "Portal",
     "subfolder": "portal",
-    "engine_type": "Source",
+    "game": "portal",
     "estimated_time": 3,
     "estimated_space": 25,
     "requires": {
@@ -383,7 +383,7 @@
   {
     "name": "Half-Life 2: Deathmatch",
     "subfolder": "hl2mp",
-    "engine_type": "Source",
+    "game": "half-life-2-deathmatch",
     "estimated_time": 3,
     "estimated_space": 25,
     "requires": {
@@ -487,7 +487,7 @@
   {
     "name": "Day of Defeat: Source",
     "subfolder": "dod",
-    "engine_type": "Source",
+    "game": "day-of-defeat-source",
     "estimated_time": 3,
     "estimated_space": 25,
     "requires": {
@@ -637,7 +637,7 @@
   {
     "name": "Counter-Strike: Source",
     "subfolder": "cstrike",
-    "engine_type": "Source",
+    "game": "counter-strike-source",
     "estimated_time": 3,
     "estimated_space": 25,
     "requires": {
