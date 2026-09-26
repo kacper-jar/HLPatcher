@@ -3,18 +3,8 @@ from collections.abc import Callable
 from pathlib import Path
 
 from patcher.core.config_loader import load_components_config, load_games_config
-from patcher.core.models import (
-    BuildStepConfig,
-    Component,
-    EngineType,
-    FetchStepConfig,
-    Game,
-    InstallStepConfig,
-    PatchStatus,
-    PatchStepConfig,
-    ArchiveInstallStepConfig,
-    VpkExtractStepConfig,
-)
+from patcher.core.models import Component, EngineType, Game, PatchStatus, StepConfig
+from patcher.core.pipeline import parse_step_config
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +15,7 @@ class GameDetector:
         self._games_config = load_games_config()
         self._components_config = load_components_config()
         self._validate_config()
+        self._steps_by_component = {c["id"]: self._parse_steps(c) for c in self._components_config}
 
     def _validate_config(self):
         game_ids = {g.id for g in self._games_config}
@@ -126,7 +117,7 @@ class GameDetector:
             engine_type=EngineType.GOLDSRC,
             status=status,
             downgrade_group=comp_def.get("downgrade_group", ""),
-            steps=self._parse_steps(comp_def.get("steps", [])),
+            steps=list(self._steps_by_component[comp_def["id"]]),
             downgrade_requires=comp_def.get("downgrade_requires", {}),
             depends_on=comp_def.get("depends_on", []),
             auto_select=comp_def.get("auto_select", False),
@@ -150,7 +141,7 @@ class GameDetector:
             engine_type=EngineType.SOURCE,
             status=status,
             downgrade_group=comp_def.get("downgrade_group", ""),
-            steps=self._parse_steps(comp_def.get("steps", [])),
+            steps=list(self._steps_by_component[comp_def["id"]]),
             downgrade_requires=comp_def.get("downgrade_requires", {}),
             depends_on=comp_def.get("depends_on", []),
             auto_select=comp_def.get("auto_select", False),
@@ -158,51 +149,11 @@ class GameDetector:
             estimated_free_space_required=comp_def.get("estimated_space", 0),
         )
 
-    def _parse_steps(self, steps_def: list[dict]) -> list:
-        parsed_steps = []
-        for step in steps_def:
-            step_type = step.get("type", "")
-            if step_type.endswith("-fetcher"):
-                parsed_steps.append(FetchStepConfig(
-                    type=step_type,
-                    url=step.get("url", ""),
-                    patch_dir_name=step.get("patch_dir_name", ""),
-                    branch=step.get("branch", ""),
-                    stable_commit=step.get("stable_commit", ""),
-                    force_stable=step.get("force_stable", False)
-                ))
-            elif step_type == "patch":
-                parsed_steps.append(PatchStepConfig(
-                    type=step_type,
-                    patch_dir_name=step.get("patch_dir_name", "")
-                ))
-            elif step_type.endswith("-builder"):
-                parsed_steps.append(BuildStepConfig(
-                    type=step_type,
-                    patch_dir_name=step.get("patch_dir_name", ""),
-                    build_args=step.get("build_args", []),
-                    waf_game=step.get("waf_game", "")
-                ))
-            elif step_type == "vpk-extractor":
-                parsed_steps.append(VpkExtractStepConfig(
-                    type=step_type,
-                    vpk_path=step.get("vpk_path", ""),
-                    files=step.get("files", []),
-                    output_dir=step.get("output_dir", "")
-                ))
-            elif step_type == "archive-installer":
-                parsed_steps.append(ArchiveInstallStepConfig(
-                    type=step_type,
-                    patch_dir_name=step.get("patch_dir_name", ""),
-                    output_dir=step.get("output_dir", ""),
-                    file_pattern=step.get("file_pattern", "")
-                ))
-            else:
-                parsed_steps.append(InstallStepConfig(
-                    type=step_type,
-                    patch_dir_name=step.get("patch_dir_name", "")
-                ))
-        return parsed_steps
+    def _parse_steps(self, comp_def: dict) -> list[StepConfig]:
+        try:
+            return [parse_step_config(step_def) for step_def in comp_def.get("steps", [])]
+        except (TypeError, ValueError) as e:
+            raise ValueError(f"Invalid step in {comp_def['name']}: {e}") from e
 
     def _detect_goldsrc_engine_status(self, game_path: Path) -> PatchStatus:
         required_files = [

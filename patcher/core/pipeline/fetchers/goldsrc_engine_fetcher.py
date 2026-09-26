@@ -6,7 +6,7 @@ from patcher.core.pipeline.fetchers.git_fetcher import GitFetcher
 from patcher.core.pipeline.registry import step
 
 
-@step("goldsrc-engine-fetcher")
+@step("goldsrc-engine-fetcher", config=FetchStepConfig)
 class GoldSrcEngineFetcher(GitFetcher):
     def execute(self, game: Game, comp: Component, step_config: FetchStepConfig):
         target_dir_name = step_config.patch_dir_name

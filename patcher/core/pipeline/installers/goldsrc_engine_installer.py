@@ -5,7 +5,7 @@ from patcher.core.pipeline.installers.generic_installer import GenericInstaller
 from patcher.core.pipeline.registry import step
 
 
-@step("goldsrc-engine-installer")
+@step("goldsrc-engine-installer", config=InstallStepConfig)
 class GoldSrcEngineInstaller(GenericInstaller):
     def execute(self, game: Game, comp: Component, step_config: InstallStepConfig):
         xash_dir = self.context.working_dir / step_config.patch_dir_name

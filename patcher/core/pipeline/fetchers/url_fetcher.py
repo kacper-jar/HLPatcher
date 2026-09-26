@@ -5,7 +5,7 @@ from patcher.core.pipeline.base import BaseStep
 from patcher.core.pipeline.registry import step
 
 
-@step("url-fetcher")
+@step("url-fetcher", config=FetchStepConfig)
 class UrlFetcherStep(BaseStep):
     def execute(self, game: Game, comp: Component, step_config: FetchStepConfig):
         self.context.log(f"Downloading from {step_config.url}")

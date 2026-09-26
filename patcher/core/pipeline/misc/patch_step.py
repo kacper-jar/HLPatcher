@@ -6,7 +6,7 @@ from patcher.core.pipeline.base import BaseStep
 from patcher.core.pipeline.registry import step
 
 
-@step("patch")
+@step("patch", config=PatchStepConfig)
 class PatchStep(BaseStep):
     def execute(self, game: Game, comp: Component, step_config: PatchStepConfig):
         target_dir_name = step_config.patch_dir_name
