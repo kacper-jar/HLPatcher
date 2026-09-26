@@ -1,7 +1,9 @@
 from pathlib import Path
 
+import pytest
+
 from patcher.core.models import AppConfig, Component, EngineType, Game, PatchMode, PatchStatus, FetchStepConfig, \
-    BuildStepConfig
+    BuildStepConfig, SourceInstallStepConfig
 from patcher.core import Patcher
 from patcher.core.pipeline.fetchers import GitFetcher, GoldSrcEngineFetcher
 from patcher.core.pipeline.builders import WafBuilder, CMakeBuilder
@@ -182,7 +184,7 @@ def test_source_installer(mock_patch_context, mocker, mock_run_command):
     installer = SourceInstaller(patcher.create_step_context())
     comp = Component("Test", "hl2", EngineType.SOURCE, PatchStatus.NEEDS_PATCH)
     game = Game("Test", mock_patch_context.working_dir, EngineType.SOURCE, [comp])
-    step_config = BuildStepConfig("source-installer", patch_dir_name="source-engine")
+    step_config = SourceInstallStepConfig("source-installer", patch_dir_name="source-engine")
 
     bin_dir = mock_patch_context.working_dir / "bin"
     bin_dir.mkdir(parents=True, exist_ok=True)
@@ -199,3 +201,43 @@ def test_source_installer(mock_patch_context, mocker, mock_run_command):
 
     assert mock_copytree.call_count >= 1
     assert len(mock_run_command.commands) >= 1
+
+
+def test_source_installer_steam_launcher(mock_patch_context, mock_run_command):
+    patcher = Patcher(mock_patch_context, AppConfig())
+    installer = SourceInstaller(patcher.create_step_context())
+    comp = Component("Test", "dod", EngineType.SOURCE, PatchStatus.NEEDS_PATCH)
+    game_path = mock_patch_context.working_dir / "Day of Defeat Source"
+    game_path.mkdir()
+    game = Game("Test", game_path, EngineType.SOURCE, [comp])
+    step_config = SourceInstallStepConfig("source-installer", patch_dir_name="source-engine",
+                                          steam_executable="dod.exe")
+
+    output_dir = mock_patch_context.working_dir / "source-engine" / "output"
+    output_dir.mkdir(parents=True)
+    (output_dir / "steam_launcher").write_bytes(b"launcher")
+    (game_path / "old_launcher").write_bytes(b"old")
+    (game_path / "dod.exe").symlink_to("old_launcher")
+
+    installer.execute(game, comp, step_config)
+
+    steam_exe = game_path / "dod.exe"
+    assert not steam_exe.is_symlink()
+    assert steam_exe.read_bytes() == b"launcher"
+    assert steam_exe.stat().st_mode & 0o777 == 0o755
+    assert (game_path / "old_launcher").read_bytes() == b"old"
+
+
+def test_source_installer_missing_steam_launcher(mock_patch_context, mock_run_command):
+    patcher = Patcher(mock_patch_context, AppConfig())
+    installer = SourceInstaller(patcher.create_step_context())
+    comp = Component("Test", "dod", EngineType.SOURCE, PatchStatus.NEEDS_PATCH)
+    game = Game("Test", mock_patch_context.working_dir, EngineType.SOURCE, [comp])
+    step_config = SourceInstallStepConfig("source-installer", patch_dir_name="source-engine",
+                                          steam_executable="dod.exe")
+    (mock_patch_context.working_dir / "source-engine" / "output").mkdir(parents=True)
+
+    with pytest.raises(FileNotFoundError, match="Steam launcher not found"):
+        installer.execute(game, comp, step_config)
+
+    assert not (game.path / "bin").exists()

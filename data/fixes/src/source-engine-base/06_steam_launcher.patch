@@ -1,0 +1,67 @@
+--- a/launcher_main/steam_launcher.c	1970-01-01 01:00:00
++++ b/launcher_main/steam_launcher.c	2026-09-26 21:03:40
+@@ -0,0 +1,37 @@
++#include <libgen.h>
++#include <limits.h>
++#include <mach-o/dyld.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <unistd.h>
++
++#ifndef GAME_DIR
++#error "GAME_DIR must be defined"
++#endif
++
++int main( int argc, char **argv )
++{
++	char exe[PATH_MAX], real[PATH_MAX], script[PATH_MAX];
++	uint32_t size = sizeof( exe );
++
++	if ( _NSGetExecutablePath( exe, &size ) != 0 || !realpath( exe, real ) )
++	{
++		fprintf( stderr, "steam_launcher: cannot locate own executable\n" );
++		return 1;
++	}
++	snprintf( script, sizeof( script ), "%s/hl2.sh", dirname( real ) );
++
++	// hl2.sh -game GAME_DIR <steam args...> NULL
++	char **args = calloc( argc + 3, sizeof( *args ) );
++	if ( !args )
++		return 1;
++	args[0] = script;
++	args[1] = "-game";
++	args[2] = GAME_DIR;
++	for ( int i = 1; i < argc; i++ )
++		args[i + 2] = argv[i];
++
++	execv( script, args );
++	perror( "steam_launcher: execv hl2.sh" );
++	return 1;
++}
+--- a/launcher_main/wscript	2026-09-26 21:03:40
++++ b/launcher_main/wscript	2026-09-26 21:03:40
+@@ -12,7 +12,7 @@
+ 	return
+ 
+ def configure(conf):
+-	return
++	conf.env.GAMES = conf.options.GAMES
+ 
+ def build(bld):
+ 	if bld.env.DEST_OS == 'android':
+@@ -42,4 +42,15 @@
+ 		subsystem = bld.env.MSVC_SUBSYSTEM,
+ 		idx      = bld.get_taskgen_count()
+ 	)
++
++	if bld.env.DEST_OS == 'darwin':
++		bld(
++			source   = ['steam_launcher.c'],
++			target   = 'steam_launcher',
++			name     = 'steam_launcher',
++			features = 'c cprogram',
++			defines  = ['GAME_DIR="%s"' % bld.env.GAMES],
++			install_path = install_path,
++			idx      = bld.get_taskgen_count()
++		)
+ 

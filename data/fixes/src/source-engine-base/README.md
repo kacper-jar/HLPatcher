@@ -21,3 +21,8 @@ mode on devices with a camera notch.
 
 Code from [this unmerged PR](https://github.com/nillerusr/source-engine/pull/456) by [Sethur](https://github.com/Sethur)
 (Tris).
+
+# 06_steam_launcher.patch
+
+Adds `steam_launcher` target to `launcher_main` that executes `hl2.sh -game <game>` for the game set with 
+`--build-games`.
