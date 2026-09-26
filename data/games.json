@@ -1,0 +1,41 @@
+[
+  {
+    "id": "half-life",
+    "folder": "Half-Life",
+    "executable": "hl_osx",
+    "engine_type": "GoldSrc"
+  },
+  {
+    "id": "half-life-2",
+    "folder": "Half-Life 2",
+    "executable": "hl2_osx",
+    "engine_type": "Source"
+  },
+  {
+    "id": "portal",
+    "folder": "Portal",
+    "executable": "hl2_osx",
+    "engine_type": "Source"
+  },
+  {
+    "id": "half-life-2-deathmatch",
+    "folder": "Half-Life 2 Deathmatch",
+    "executable": "hl2_osx",
+    "engine_type": "Source",
+    "fallback_marker": "gameinfo.txt"
+  },
+  {
+    "id": "day-of-defeat-source",
+    "folder": "Day of Defeat Source",
+    "executable": "hl2_osx",
+    "engine_type": "Source",
+    "fallback_marker": "gameinfo.txt"
+  },
+  {
+    "id": "counter-strike-source",
+    "folder": "Counter-Strike Source",
+    "executable": "hl2_osx",
+    "engine_type": "Source",
+    "fallback_marker": "gameinfo.txt"
+  }
+]

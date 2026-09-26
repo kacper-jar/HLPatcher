@@ -2,7 +2,7 @@ import logging
 from collections.abc import Callable
 from pathlib import Path
 
-from patcher.core.config_loader import load_components_config
+from patcher.core.config_loader import load_components_config, load_games_config
 from patcher.core.models import (
     BuildStepConfig,
     Component,
@@ -18,97 +18,32 @@ from patcher.core.models import (
 
 logger = logging.getLogger(__name__)
 
-GOLDSRC_FOLDER_NAME = "Half-Life"
-HL2_FOLDER_NAME = "Half-Life 2"
-PORTAL_FOLDER_NAME = "Portal"
-HL2DM_FOLDER_NAME = "Half-Life 2 Deathmatch"
-DODS_FOLDER_NAME = "Day of Defeat Source"
-CSS_FOLDER_NAME = "Counter-Strike Source"
-
 
 class GameDetector:
     def __init__(self, steam_library_path: Path):
         self._steam_library_path = steam_library_path
+        self._games_config = load_games_config()
         self._components_config = load_components_config()
+
+        game_ids = {g.id for g in self._games_config}
+        unknown = [c["name"] for c in self._components_config if c.get("game") not in game_ids]
+        if unknown:
+            raise ValueError(f"Components with an unknown game: {', '.join(unknown)}")
 
     def scan(self) -> list[Game]:
         games = []
-
-        goldsrc_comps = [c for c in self._components_config if c.get("engine_type") == "GoldSrc"]
-        goldsrc_game = self._scan_game(
-            GOLDSRC_FOLDER_NAME,
-            "hl_osx",
-            EngineType.GOLDSRC,
-            goldsrc_comps,
-            self._check_goldsrc_component
-        )
-        if goldsrc_game:
-            games.append(goldsrc_game)
-
-        hl2_comps = [c for c in self._components_config if
-                     c.get("engine_type") == "Source" and c.get("subfolder") not in ("portal", "hl2mp", "dod",
-                                                                                     "cstrike")]
-        hl2_game = self._scan_game(
-            HL2_FOLDER_NAME,
-            "hl2_osx",
-            EngineType.SOURCE,
-            hl2_comps,
-            self._check_source_component
-        )
-        if hl2_game:
-            games.append(hl2_game)
-
-        portal_comps = [c for c in self._components_config if
-                        c.get("engine_type") == "Source" and c.get("subfolder") == "portal"]
-        portal_game = self._scan_game(
-            PORTAL_FOLDER_NAME,
-            "hl2_osx",
-            EngineType.SOURCE,
-            portal_comps,
-            self._check_source_component
-        )
-        if portal_game:
-            games.append(portal_game)
-
-        hl2dm_comps = [c for c in self._components_config if
-                       c.get("engine_type") == "Source" and c.get("subfolder") == "hl2mp"]
-        hl2dm_game = self._scan_game(
-            HL2DM_FOLDER_NAME,
-            "hl2_osx",
-            EngineType.SOURCE,
-            hl2dm_comps,
-            self._check_source_component,
-            fallback_marker="gameinfo.txt"
-        )
-        if hl2dm_game:
-            games.append(hl2dm_game)
-
-        dods_comps = [c for c in self._components_config if
-                      c.get("engine_type") == "Source" and c.get("subfolder") == "dod"]
-        dods_game = self._scan_game(
-            DODS_FOLDER_NAME,
-            "hl2_osx",
-            EngineType.SOURCE,
-            dods_comps,
-            self._check_source_component,
-            fallback_marker="gameinfo.txt"
-        )
-        if dods_game:
-            games.append(dods_game)
-
-        css_comps = [c for c in self._components_config if
-                     c.get("engine_type") == "Source" and c.get("subfolder") == "cstrike"]
-        css_game = self._scan_game(
-            CSS_FOLDER_NAME,
-            "hl2_osx",
-            EngineType.SOURCE,
-            css_comps,
-            self._check_source_component,
-            fallback_marker="gameinfo.txt"
-        )
-        if css_game:
-            games.append(css_game)
-
+        for game_config in self._games_config:
+            engine_type = game_config.engine_type
+            game = self._scan_game(
+                game_config.folder,
+                game_config.executable,
+                engine_type,
+                [c for c in self._components_config if c["game"] == game_config.id],
+                self._check_goldsrc_component if engine_type == EngineType.GOLDSRC else self._check_source_component,
+                fallback_marker=game_config.fallback_marker,
+            )
+            if game:
+                games.append(game)
         return games
 
     def _scan_game(

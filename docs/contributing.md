@@ -54,6 +54,7 @@ Here is a quick overview of the project's structure to help you navigate the cod
     - `guides/`: Game downgrade guides shown to the user (JSON format).
     - `locales/`: Translation files for each supported language.
     - `components.json`: Game component definitions used by the patcher.
+    - `games.json`: Supported game installs (Steam folder, launcher, engine) used for game detection.
     - `locales.json`: Language mappings.
 - `docs/`: Documentation source files (MkDocs + Material theme).
 - `overrides/`: Material theme overrides - homepage title and link preview tags.
