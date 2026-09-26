@@ -4,6 +4,7 @@
     "name": "GoldSrc Engine",
     "subfolder": "",
     "game": "half-life",
+    "auto_select": true,
     "estimated_time": 1,
     "estimated_space": 350,
     "downgrade_requires": {},
@@ -35,6 +36,9 @@
     "name": "Half-Life",
     "subfolder": "valve",
     "game": "half-life",
+    "depends_on": [
+      "goldsrc-engine"
+    ],
     "estimated_time": 1,
     "estimated_space": 60,
     "downgrade_requires": {},
@@ -67,6 +71,9 @@
     "name": "Half-Life: Opposing Force",
     "subfolder": "gearbox",
     "game": "half-life",
+    "depends_on": [
+      "goldsrc-engine"
+    ],
     "estimated_time": 1,
     "estimated_space": 60,
     "downgrade_requires": {},
@@ -99,6 +106,9 @@
     "name": "Half-Life: Blue Shift",
     "subfolder": "bshift",
     "game": "half-life",
+    "depends_on": [
+      "goldsrc-engine"
+    ],
     "estimated_time": 1,
     "estimated_space": 60,
     "downgrade_requires": {},
@@ -131,6 +141,9 @@
     "name": "Deathmatch Classic",
     "subfolder": "dmc",
     "game": "half-life",
+    "depends_on": [
+      "goldsrc-engine"
+    ],
     "estimated_time": 1,
     "estimated_space": 60,
     "downgrade_requires": {},
@@ -163,6 +176,9 @@
     "name": "Counter-Strike",
     "subfolder": "cstrike",
     "game": "half-life",
+    "depends_on": [
+      "goldsrc-engine"
+    ],
     "estimated_time": 2,
     "estimated_space": 350,
     "downgrade_requires": {},

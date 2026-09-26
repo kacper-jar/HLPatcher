@@ -81,6 +81,7 @@ class Component:
     estimated_free_space_required: int = 0
     id: str = ""
     depends_on: list[str] = field(default_factory=list)
+    auto_select: bool = False
 
     @property
     def needs_patch(self) -> bool:

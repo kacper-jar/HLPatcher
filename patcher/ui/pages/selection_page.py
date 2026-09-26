@@ -1,7 +1,7 @@
 import customtkinter as ctk
 from patcher.ui.base_page import BasePage
 from patcher.ui.page_route import PageRoute
-from patcher.core import EngineType
+from patcher.core import Component, Planner
 
 
 class SelectionPage(BasePage):
@@ -47,6 +47,7 @@ class SelectionPage(BasePage):
         self._parent_children.clear()
 
         games = self._app.context.games
+        self._planner = Planner(games)
         for game in games:
             self._create_game_group(game)
 
@@ -74,7 +75,7 @@ class SelectionPage(BasePage):
 
         has_unpatchable = True
         for component in game.components:
-            if component.name == "GoldSrc Engine":
+            if component.auto_select:
                 continue
 
             child_key = f"child_{game.name}_{component.name}"
@@ -133,52 +134,24 @@ class SelectionPage(BasePage):
         self._update_estimations()
 
     def _update_estimations(self):
-        total_mins = 0
-        total_mb = 0
-        goldsrc_any_selected = False
-        source_any_selected = False
-
-        for game in self._app.context.games:
-            for component in game.components:
-                child_key = f"child_{game.name}_{component.name}"
-                if child_key in self._checkbox_vars and self._checkbox_vars[child_key].get():
-                    total_mins += component.estimated_patch_time
-                    total_mb += component.estimated_free_space_required
-                    if game.engine_type == EngineType.GOLDSRC:
-                        goldsrc_any_selected = True
-                    if game.engine_type == EngineType.SOURCE:
-                        source_any_selected = True
-
-        if goldsrc_any_selected:
-            for game in self._app.context.games:
-                if game.engine_type == EngineType.GOLDSRC:
-                    engine_comp = next((c for c in game.components if c.name == "GoldSrc Engine"), None)
-                    if engine_comp and engine_comp.needs_patch:
-                        total_mins += engine_comp.estimated_patch_time
-                        total_mb += engine_comp.estimated_free_space_required
-                    break
-
-        if source_any_selected:
-            total_mins += 9
-            total_mb += 1500
-
-        if goldsrc_any_selected or source_any_selected:
-            total_mb += 150
-
+        total_mins, total_mb = self._planner.estimate(self._selected_components())
         self._time_label.configure(text=self._app.i18n.t("selection_time_est", mins=total_mins))
         self._space_label.configure(text=self._app.i18n.t("selection_space_est", mb=total_mb))
 
-    def can_go_next(self) -> bool:
-        return any(v.get() for k, v in self._checkbox_vars.items() if k.startswith("child_"))
-
-    def on_leave(self):
+    def _selected_components(self) -> list[Component]:
         selected = []
         for game in self._app.context.games:
             for component in game.components:
                 child_key = f"child_{game.name}_{component.name}"
                 if child_key in self._checkbox_vars and self._checkbox_vars[child_key].get():
                     selected.append(component)
-        self._app.context.selected_components = selected
+        return selected
+
+    def can_go_next(self) -> bool:
+        return any(v.get() for k, v in self._checkbox_vars.items() if k.startswith("child_"))
+
+    def on_leave(self):
+        self._app.context.selected_components = self._selected_components()
 
     def get_title(self) -> str:
         return self._app.i18n.t("selection_title")
