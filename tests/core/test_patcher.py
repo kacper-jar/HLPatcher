@@ -1,243 +1,258 @@
-from pathlib import Path
+import logging
+import subprocess
+from dataclasses import replace
+from datetime import datetime, timezone
 
 import pytest
 
-from patcher.core.models import AppConfig, Component, EngineType, Game, PatchMode, PatchStatus, FetchStepConfig, \
-    BuildStepConfig, SourceInstallStepConfig
-from patcher.core import Patcher
-from patcher.core.pipeline.fetchers import GitFetcher, GoldSrcEngineFetcher
-from patcher.core.pipeline.builders import WafBuilder, CMakeBuilder
-from patcher.core.pipeline.installers import GenericInstaller, GoldSrcEngineInstaller, SourceInstaller
+from patcher.core import AppConfig, EngineType, Game, PatchMode, PatchStatus, Patcher, StepConfig
+from patcher.core.pipeline import STEP_REGISTRY, BaseStep, step
+
+HLSDK_URL = "https://github.com/FWGS/hlsdk-portable"
 
 
-def test_get_total_steps(mock_patch_context):
-    patcher = Patcher(mock_patch_context, AppConfig())
-
-    comp1 = Component("GoldSrc Engine", "", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH)
-    comp2 = Component("Half-Life", "valve", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH)
-    game1 = Game("GoldSrc", Path("/fake"), EngineType.GOLDSRC, [comp1, comp2])
-
-    comp3 = Component("Half-Life 2", "hl2", EngineType.SOURCE, PatchStatus.NEEDS_PATCH)
-    comp4 = Component("Portal", "portal", EngineType.SOURCE, PatchStatus.NEEDS_PATCH)
-    game2 = Game("HL2", Path("/fake2"), EngineType.SOURCE, [comp3, comp4])
-
-    steps = patcher.get_total_steps([game1, game2])
-    assert steps == 4
+def steps(*step_types):
+    return [StepConfig(step_type) for step_type in step_types]
 
 
-def test_create_backup(mock_patch_context, mocker):
-    mock_patch_context.create_backup = True
-    patcher = Patcher(mock_patch_context, AppConfig())
-
-    mock_copytree = mocker.patch("shutil.copytree")
-
-    comp = Component("GoldSrc Engine", "", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH)
-    game = Game("GoldSrc", Path("/fake/GoldSrc"), EngineType.GOLDSRC, [comp])
-    patcher._create_backup([game])
-
-    mock_copytree.assert_called_once()
-    args, _ = mock_copytree.call_args
-    assert args[0] == Path("/fake/GoldSrc")
-    assert "Documents" in str(args[1])
+def ran(events):
+    return [event[1:] for event in events if event[0] == "run"]
 
 
-def test_create_backup_skips_unpatched(mock_patch_context, mocker):
-    mock_patch_context.create_backup = True
-    patcher = Patcher(mock_patch_context, AppConfig())
-
-    mock_copytree = mocker.patch("shutil.copytree")
-
-    comp = Component("GoldSrc Engine", "", EngineType.GOLDSRC, PatchStatus.ALREADY_PATCHED)
-    game1 = Game("GoldSrc", Path("/fake/GoldSrc"), EngineType.GOLDSRC, [comp])
-
-    comp_needs_patch = Component("Portal", "portal", EngineType.SOURCE, PatchStatus.NEEDS_PATCH)
-    game2 = Game("Portal", Path("/fake/Portal"), EngineType.SOURCE, [comp_needs_patch])
-
-    patcher._create_backup([game1, game2])
-
-    mock_copytree.assert_called_once()
-    args, _ = mock_copytree.call_args
-    assert args[0] == Path("/fake/Portal")
-    assert "Documents" in str(args[1])
+@pytest.fixture
+def events():
+    return []
 
 
-def test_git_fetcher(mock_patch_context, mock_run_command):
-    patcher = Patcher(mock_patch_context, AppConfig())
-    fetcher = GitFetcher(patcher.create_step_context())
-    comp = Component("Test", "", EngineType.SOURCE, PatchStatus.NEEDS_PATCH)
-    game = Game("Test", mock_patch_context.working_dir, EngineType.SOURCE, [comp])
-    step_config = FetchStepConfig("git-fetcher", patch_dir_name="target_dir", url="http://repo", branch="branch",
-                                  stable_commit="commit")
-    fetcher.execute(game, comp, step_config)
-
-    assert len(mock_run_command.commands) >= 1
-    assert mock_run_command.commands[0][0][0] == "git"
-    assert mock_run_command.commands[0][0][1] == "clone"
+@pytest.fixture
+def actions():
+    return {}
 
 
-def test_git_fetcher_stable(mock_patch_context, mock_run_command):
+@pytest.fixture(autouse=True)
+def fake_steps(mocker, events, actions):
+    mocker.patch.dict(STEP_REGISTRY)
+    for type_name, can_interrupt in [("fetch", True), ("build", True), ("install", False)]:
+        @step(type_name, config=StepConfig)
+        class FakeStep(BaseStep):
+            interruptible = can_interrupt
+
+            def execute(self, game, comp, step_config):
+                events.append(("run", comp.name, step_config.type))
+                if step_config.type in actions:
+                    actions[step_config.type](self.context, game, comp)
+
+
+@pytest.fixture
+def make_patcher(mock_patch_context, mock_run_command, events):
+    def factory(debug=False):
+        return Patcher(mock_patch_context, AppConfig(debug=debug),
+                       component_callback=lambda name: events.append(("component", name)),
+                       step_callback=lambda current, total: events.append(("step", current, total)))
+
+    return factory
+
+
+@pytest.fixture
+def games(mock_steam_library, make_component):
+    return [
+        Game("Half-Life", mock_steam_library / "Half-Life", EngineType.GOLDSRC, [
+            make_component("GoldSrc Engine", "", EngineType.GOLDSRC, steps=steps("fetch", "build", "install")),
+            make_component("Half-Life", "valve", EngineType.GOLDSRC, PatchStatus.ALREADY_PATCHED, steps=steps("fetch")),
+            make_component("Opposing Force", "gearbox", EngineType.GOLDSRC, steps=steps("fetch", "install")),
+        ]),
+        Game("Portal", mock_steam_library / "Portal", EngineType.SOURCE, [
+            make_component("Portal", "portal", EngineType.SOURCE, PatchStatus.ALREADY_PATCHED, steps=steps("install")),
+        ]),
+        Game("Half-Life 2", mock_steam_library / "Half-Life 2", EngineType.SOURCE, [
+            make_component("Half-Life 2", "hl2", EngineType.SOURCE, steps=steps("build", "install")),
+        ]),
+    ]
+
+
+def test_runs_every_step_of_the_components_that_need_patching_in_order(games, make_patcher, events):
+    make_patcher().run(games)
+
+    assert events == [
+        ("component", "GoldSrc Engine"),
+        ("step", 1, 3), ("run", "GoldSrc Engine", "fetch"),
+        ("step", 2, 3), ("run", "GoldSrc Engine", "build"),
+        ("step", 3, 3), ("run", "GoldSrc Engine", "install"),
+        ("component", "Opposing Force"),
+        ("step", 1, 2), ("run", "Opposing Force", "fetch"),
+        ("step", 2, 2), ("run", "Opposing Force", "install"),
+        ("component", "Half-Life 2"),
+        ("step", 1, 2), ("run", "Half-Life 2", "build"),
+        ("step", 2, 2), ("run", "Half-Life 2", "install"),
+    ]
+
+
+def test_total_steps_matches_the_components_announced_during_the_run(games, make_patcher, events):
+    patcher = make_patcher()
+
+    total = patcher.get_total_steps(games)
+    patcher.run(games)
+
+    assert total == [event[0] for event in events].count("component") == 3
+
+
+def test_all_steps_of_a_run_share_one_context(mock_patch_context, games, actions, mock_run_command):
     mock_patch_context.patch_mode = PatchMode.STABLE
+    contexts = []
+    actions["install"] = lambda context, game, comp: contexts.append(context)
     patcher = Patcher(mock_patch_context, AppConfig())
-    fetcher = GitFetcher(patcher.create_step_context())
-    comp = Component("Test", "", EngineType.SOURCE, PatchStatus.NEEDS_PATCH)
-    game = Game("Test", mock_patch_context.working_dir, EngineType.SOURCE, [comp])
-    step_config = FetchStepConfig("git-fetcher", patch_dir_name="target_dir", url="http://repo", branch="branch",
-                                  stable_commit="1234567")
-    fetcher.execute(game, comp, step_config)
 
-    assert len(mock_run_command.commands) == 3
-    assert mock_run_command.commands[1][0][0] == "git"
-    assert mock_run_command.commands[1][0][1] == "checkout"
-    assert mock_run_command.commands[1][0][2] == "1234567"
+    patcher.run(games)
 
-
-def test_goldsrc_engine_fetcher(mock_patch_context, mock_run_command, mocker):
-    patcher = Patcher(mock_patch_context, AppConfig())
-    fetcher = GoldSrcEngineFetcher(patcher.create_step_context())
-    comp = Component("Test", "", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH)
-    game = Game("Test", mock_patch_context.working_dir, EngineType.GOLDSRC, [comp])
-    step_config = FetchStepConfig("goldsrc-engine-fetcher", patch_dir_name="target_dir", url="http://repo",
-                                  branch="branch", stable_commit="commit")
-    mocker.patch("shutil.copytree")
-
-    fetcher.execute(game, comp, step_config)
-
-    assert len(mock_run_command.commands) == 4
+    context = contexts[0]
+    assert len(contexts) == 3
+    assert all(other is context for other in contexts)
+    assert context.executor is patcher.executor
+    assert (context.working_dir, context.script_dir, context.steam_library_path, context.patch_mode) == (
+        mock_patch_context.working_dir, mock_patch_context.script_dir, mock_patch_context.steam_library_path,
+        PatchMode.STABLE,
+    )
 
 
-def test_goldsrc_engine_fetcher_stable(mock_patch_context, mock_run_command, mocker):
-    mock_patch_context.patch_mode = PatchMode.STABLE
-    patcher = Patcher(mock_patch_context, AppConfig())
-    fetcher = GoldSrcEngineFetcher(patcher.create_step_context())
-    comp = Component("Test", "", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH)
-    game = Game("Test", mock_patch_context.working_dir, EngineType.GOLDSRC, [comp])
-    step_config = FetchStepConfig("goldsrc-engine-fetcher", patch_dir_name="target_dir", url="http://repo",
-                                  branch="branch", stable_commit="1234567")
-    mocker.patch("shutil.copytree")
+def test_step_messages_reach_the_log(games, make_patcher, actions, caplog):
+    actions["fetch"] = lambda context, game, comp: context.log(f"Cloning {comp.name}...")
 
-    fetcher.execute(game, comp, step_config)
+    with caplog.at_level(logging.INFO):
+        make_patcher().run(games)
 
-    assert len(mock_run_command.commands) == 6
+    assert "Cloning Opposing Force..." in caplog.messages
 
 
-def test_waf_builder(mock_patch_context, mock_run_command):
-    patcher = Patcher(mock_patch_context, AppConfig())
-    builder = WafBuilder(patcher.create_step_context())
-    comp = Component("Test", "", EngineType.SOURCE, PatchStatus.NEEDS_PATCH)
-    game = Game("Test", mock_patch_context.working_dir, EngineType.SOURCE, [comp])
-    step_config = BuildStepConfig("waf-builder", patch_dir_name="target_dir", build_args=["-8"])
-    builder.execute(game, comp, step_config)
+def test_starts_from_an_empty_working_dir_with_a_venv_for_the_build_tools(mock_patch_context, make_patcher,
+                                                                          mock_run_command):
+    working_dir = mock_patch_context.working_dir
+    (working_dir / "hlsdk-portable-hlfixed").mkdir()
 
-    assert len(mock_run_command.commands) == 1
-    assert mock_run_command.commands[0][0][0] == "./waf"
-    assert mock_run_command.commands[0][0][1] == "configure"
+    make_patcher(debug=True).run([])
 
-
-def test_cmake_builder(mock_patch_context, mock_run_command):
-    patcher = Patcher(mock_patch_context, AppConfig())
-    builder = CMakeBuilder(patcher.create_step_context())
-    comp = Component("Test", "", EngineType.SOURCE, PatchStatus.NEEDS_PATCH)
-    game = Game("Test", mock_patch_context.working_dir, EngineType.SOURCE, [comp])
-    step_config = BuildStepConfig("cmake-builder", patch_dir_name="target_dir")
-    builder.execute(game, comp, step_config)
-
-    assert len(mock_run_command.commands) == 4
-    assert mock_run_command.commands[0][0][1] == "build_deps.py"
-    assert mock_run_command.commands[1][0][1] == "-m"
-    assert mock_run_command.commands[1][0][2] == "cmake"
+    assert list(working_dir.iterdir()) == []
+    assert mock_run_command.commands == [
+        (["python3", "-m", "venv", str(working_dir / "venv")], None),
+        ([str(working_dir / "venv" / "bin" / "pip"), "install", "cmake", "ninja", "meson"], None),
+    ]
 
 
-def test_generic_installer(mock_patch_context, mocker):
-    patcher = Patcher(mock_patch_context, AppConfig())
-    installer = GenericInstaller(patcher.create_step_context())
-    comp = Component("Test", "", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH)
-    game = Game("Test", Path("/fake"), EngineType.GOLDSRC, [comp])
-    step_config = BuildStepConfig("generic-installer", patch_dir_name="target_dir")
+@pytest.mark.parametrize("debug", [False, True], ids=["normal", "debug"])
+def test_removes_the_working_dir_afterwards_unless_debugging(mock_patch_context, games, make_patcher, debug):
+    make_patcher(debug=debug).run(games)
 
-    mock_copytree = mocker.patch("shutil.copytree")
-    installer.execute(game, comp, step_config)
-
-    mock_copytree.assert_called_once()
-    assert "target_dir/output" in str(mock_copytree.call_args[0][0])
+    assert mock_patch_context.working_dir.exists() is debug
 
 
-def test_goldsrc_engine_installer(mock_patch_context, mocker):
-    patcher = Patcher(mock_patch_context, AppConfig())
-    installer = GoldSrcEngineInstaller(patcher.create_step_context())
-    comp = Component("Test", "", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH)
-    game = Game("Test", mock_patch_context.working_dir, EngineType.GOLDSRC, [comp])
-    step_config = BuildStepConfig("goldsrc-engine-installer", patch_dir_name="target_dir")
-    build_output = mock_patch_context.working_dir / "target_dir" / "output"
-    build_output.mkdir(parents=True)
-    (build_output / "xash3d").touch()
-    (game.path / "xash3d").touch()
+def test_a_failing_step_ends_the_run(games, make_patcher, actions, events):
+    def fail(context, game, comp):
+        raise subprocess.CalledProcessError(1, ["./waf", "build"])
 
-    mock_copytree = mocker.patch("shutil.copytree")
-    installer.execute(game, comp, step_config)
+    actions["build"] = fail
 
-    assert mock_copytree.call_count == 2
-    assert "SDL2.framework" in str(mock_copytree.call_args_list[1][0][0])
+    with pytest.raises(subprocess.CalledProcessError):
+        make_patcher().run(games)
+
+    assert ran(events) == [("GoldSrc Engine", "fetch"), ("GoldSrc Engine", "build")]
 
 
-def test_source_installer(mock_patch_context, mocker, mock_run_command):
-    patcher = Patcher(mock_patch_context, AppConfig())
-    installer = SourceInstaller(patcher.create_step_context())
-    comp = Component("Test", "hl2", EngineType.SOURCE, PatchStatus.NEEDS_PATCH)
-    game = Game("Test", mock_patch_context.working_dir, EngineType.SOURCE, [comp])
-    step_config = SourceInstallStepConfig("source-installer", patch_dir_name="source-engine")
+def test_rejects_a_step_type_that_is_not_registered(mock_steam_library, make_component, make_patcher):
+    game = Game("Half-Life", mock_steam_library / "Half-Life", EngineType.GOLDSRC, [
+        make_component("Half-Life", "valve", EngineType.GOLDSRC, steps=steps("svn-fetcher")),
+    ])
 
-    bin_dir = mock_patch_context.working_dir / "bin"
-    bin_dir.mkdir(parents=True, exist_ok=True)
-    (bin_dir / "libtier0.dylib").touch()
-
-    output_dir = mock_patch_context.working_dir / "source-engine" / "output"
-    (output_dir / "bin").mkdir(parents=True, exist_ok=True)
-    (output_dir / "hl2").mkdir(parents=True, exist_ok=True)
-
-    mock_copytree = mocker.patch("shutil.copytree")
-    mocker.patch("shutil.copy2")
-
-    installer.execute(game, comp, step_config)
-
-    assert mock_copytree.call_count >= 1
-    assert len(mock_run_command.commands) >= 1
+    with pytest.raises(ValueError, match="Unknown step type: svn-fetcher"):
+        make_patcher().run([game])
 
 
-def test_source_installer_steam_launcher(mock_patch_context, mock_run_command):
-    patcher = Patcher(mock_patch_context, AppConfig())
-    installer = SourceInstaller(patcher.create_step_context())
-    comp = Component("Test", "dod", EngineType.SOURCE, PatchStatus.NEEDS_PATCH)
-    game_path = mock_patch_context.working_dir / "Day of Defeat Source"
-    game_path.mkdir()
-    game = Game("Test", game_path, EngineType.SOURCE, [comp])
-    step_config = SourceInstallStepConfig("source-installer", patch_dir_name="source-engine",
-                                          steam_executable="dod.exe")
+def stop_then_run(patcher, component, cmd):
+    def action(context, game, comp):
+        if comp.name == component:
+            patcher.stop()
+            context.executor.run(cmd)
 
-    output_dir = mock_patch_context.working_dir / "source-engine" / "output"
-    output_dir.mkdir(parents=True)
-    (output_dir / "steam_launcher").write_bytes(b"launcher")
-    (game_path / "old_launcher").write_bytes(b"old")
-    (game_path / "dod.exe").symlink_to("old_launcher")
-
-    installer.execute(game, comp, step_config)
-
-    steam_exe = game_path / "dod.exe"
-    assert not steam_exe.is_symlink()
-    assert steam_exe.read_bytes() == b"launcher"
-    assert steam_exe.stat().st_mode & 0o777 == 0o755
-    assert (game_path / "old_launcher").read_bytes() == b"old"
+    return action
 
 
-def test_source_installer_missing_steam_launcher(mock_patch_context, mock_run_command):
-    patcher = Patcher(mock_patch_context, AppConfig())
-    installer = SourceInstaller(patcher.create_step_context())
-    comp = Component("Test", "dod", EngineType.SOURCE, PatchStatus.NEEDS_PATCH)
-    game = Game("Test", mock_patch_context.working_dir, EngineType.SOURCE, [comp])
-    step_config = SourceInstallStepConfig("source-installer", patch_dir_name="source-engine",
-                                          steam_executable="dod.exe")
-    (mock_patch_context.working_dir / "source-engine" / "output").mkdir(parents=True)
+def test_stop_lets_a_non_interruptible_step_finish_and_starts_no_other(games, make_patcher, actions, events,
+                                                                       mock_run_command):
+    patcher = make_patcher()
+    relink = ["install_name_tool", "-change", "@rpath/libSDL2.dylib", "@loader_path/libSDL2.dylib", "xash3d"]
+    actions["install"] = stop_then_run(patcher, "GoldSrc Engine", relink)
 
-    with pytest.raises(FileNotFoundError, match="Steam launcher not found"):
-        installer.execute(game, comp, step_config)
+    with pytest.raises(RuntimeError, match="Execution stopped by user"):
+        patcher.run(games)
 
-    assert not (game.path / "bin").exists()
+    assert mock_run_command.commands[-1] == (relink, None)
+    assert ran(events)[-1] == ("GoldSrc Engine", "install")
+
+
+def test_stop_cuts_off_an_interruptible_step_even_after_a_non_interruptible_one(games, make_patcher, actions, events,
+                                                                                mock_run_command):
+    patcher = make_patcher()
+    clone = ["git", "clone", HLSDK_URL]
+    actions["fetch"] = stop_then_run(patcher, "Opposing Force", clone)
+
+    with pytest.raises(RuntimeError, match="Execution stopped by user"):
+        patcher.run(games)
+
+    assert clone not in [cmd for cmd, _ in mock_run_command.commands]
+    assert ran(events)[-1] == ("Opposing Force", "fetch")
+
+
+@pytest.fixture
+def documents(mocker, tmp_path):
+    mocker.patch("pathlib.Path.home", return_value=tmp_path / "home")
+    clock = mocker.patch("patcher.core.patcher.datetime")
+    clock.now.return_value = datetime(2026, 9, 27, 18, 30, tzinfo=timezone.utc)
+    return tmp_path / "home" / "Documents"
+
+
+@pytest.fixture
+def patched_launcher(games, actions):
+    launcher = games[0].path / "hl_osx"
+    launcher.write_bytes(b"valve launcher")
+    actions["install"] = lambda context, game, comp: (game.path / "hl_osx").write_bytes(b"xash3d launcher")
+    return launcher
+
+
+def test_backs_up_the_games_being_patched_before_any_step_runs(mock_patch_context, games, make_patcher, documents,
+                                                               patched_launcher):
+    mock_patch_context.create_backup = True
+
+    make_patcher().run(games)
+
+    assert sorted(backup.name for backup in documents.iterdir()) == [
+        "Half-Life 2 backup (2026-09-27)", "Half-Life backup (2026-09-27)",
+    ]
+    assert (documents / "Half-Life backup (2026-09-27)" / "hl_osx").read_bytes() == b"valve launcher"
+    assert patched_launcher.read_bytes() == b"xash3d launcher"
+
+
+@pytest.mark.parametrize(("create_backup", "names"), [
+    (False, ["Half-Life", "Portal", "Half-Life 2"]),
+    (True, ["Portal"]),
+], ids=["turned-off", "nothing-to-patch"])
+def test_makes_no_backup_when_turned_off_or_nothing_needs_patching(mock_patch_context, games, make_patcher, documents,
+                                                                   caplog, create_backup, names):
+    mock_patch_context.create_backup = create_backup
+
+    with caplog.at_level(logging.INFO):
+        make_patcher().run([game for game in games if game.name in names])
+
+    assert not documents.exists()
+    assert "Creating backup..." not in caplog.messages
+
+
+@pytest.mark.xfail(raises=AssertionError, strict=True,
+                   reason="A backup is named by date only, so a later run that day copies patched files over it")
+def test_patching_another_component_the_same_day_keeps_the_first_backup(mock_patch_context, games, make_component,
+                                                                        make_patcher, documents, patched_launcher):
+    mock_patch_context.create_backup = True
+    half_life = games[0]
+    make_patcher().run([half_life])
+
+    blue_shift = make_component("Blue Shift", "bshift", EngineType.GOLDSRC, steps=steps("fetch"))
+    make_patcher().run([replace(half_life, components=[blue_shift])])
+
+    assert (documents / "Half-Life backup (2026-09-27)" / "hl_osx").read_bytes() == b"valve launcher"
