@@ -120,10 +120,6 @@ class Game:
     def all_patched(self) -> bool:
         return all(not c.needs_patch for c in self.components)
 
-    @property
-    def has_source_components(self) -> bool:
-        return any(c.engine_type == EngineType.SOURCE for c in self.components)
-
 
 @dataclass
 class PatchContext:

@@ -45,10 +45,6 @@ class BaseGuideWindow(ctk.CTkToplevel):
         )
         self.close_button.grid(row=0, column=0, padx=10, pady=10)
 
-    def set_title(self, title: str):
-        self.title(title)
-        self.title_label.configure(text=title)
-
     def add_step(self, title_key: str, desc_key: str, command: str = "", button_url: str = "",
                  button_text_key: str = ""):
         card = ctk.CTkFrame(self.content_frame, fg_color="gray20", corner_radius=8)
