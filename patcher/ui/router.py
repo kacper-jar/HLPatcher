@@ -118,6 +118,3 @@ class Router:
 
     def get_current_page(self) -> BasePage | None:
         return self._page_instances.get(self.current_page_key)
-
-    def get_page_instance(self, page_key: PageRoute) -> BasePage | None:
-        return self._page_instances.get(page_key)

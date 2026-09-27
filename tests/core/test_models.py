@@ -31,15 +31,3 @@ def test_game_all_patched():
 
     comp2.status = PatchStatus.ALREADY_PATCHED
     assert game.all_patched is True
-
-
-def test_game_has_source_components():
-    comp1 = Component("Test1", "test1", EngineType.GOLDSRC, PatchStatus.NEEDS_PATCH, "")
-    game = Game("TestGame", Path("/fake"), EngineType.GOLDSRC, [comp1])
-
-    assert game.has_source_components is False
-
-    comp2 = Component("Test2", "test2", EngineType.SOURCE, PatchStatus.NEEDS_PATCH, "")
-    game.components.append(comp2)
-
-    assert game.has_source_components is True

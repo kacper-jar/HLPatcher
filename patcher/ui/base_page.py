@@ -60,9 +60,6 @@ class PageHeader(ctk.CTkFrame):
     def set_title(self, title: str):
         self._title_label.configure(text=title)
 
-    def retranslate(self, title: str):
-        self.set_title(title)
-
 
 class NavigationFooter(ctk.CTkFrame):
     def __init__(self, parent, on_quit, on_back, on_next, **kwargs):
