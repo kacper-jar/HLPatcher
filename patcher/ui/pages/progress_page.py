@@ -68,7 +68,6 @@ class ProgressPage(BasePage):
         self.patcher = Patcher(
             self._app.context,
             self._app.config,
-            log_callback=None,
             component_callback=self._on_component_start_threadsafe,
             step_callback=self._on_step_start_threadsafe
         )

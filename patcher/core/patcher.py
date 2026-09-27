@@ -12,23 +12,20 @@ logger = logging.getLogger(__name__)
 
 
 class Patcher:
-    def __init__(self, context: PatchContext, config: AppConfig, log_callback: Callable[[str], None] | None = None,
+    def __init__(self, context: PatchContext, config: AppConfig,
                  component_callback: Callable[[str], None] | None = None,
                  step_callback: Callable[[int, int], None] | None = None):
         self._context = context
         self._config = config
-        self._log_callback = log_callback
         self._component_callback = component_callback
         self._step_callback = step_callback
-        self.executor = CommandExecutor(self._context.working_dir, self._log_callback)
+        self.executor = CommandExecutor(self._context.working_dir)
 
     def stop(self):
         self.executor.stop()
 
     def log(self, message: str):
         logger.info(message)
-        if self._log_callback:
-            self._log_callback(message)
 
     def _notify_component(self, name: str):
         if self._component_callback:
