@@ -52,34 +52,30 @@ class Patcher:
         )
 
     def run(self, selected_games: list[Game]):
-        try:
-            self._create_backup(selected_games)
-            self._prepare_environment()
+        self._create_backup(selected_games)
+        self._prepare_environment()
 
-            step_context = self.create_step_context()
-            for game in selected_games:
-                for comp in game.components:
-                    if not comp.needs_patch:
-                        continue
+        step_context = self.create_step_context()
+        for game in selected_games:
+            for comp in game.components:
+                if not comp.needs_patch:
+                    continue
 
-                    self._notify_component(comp.name)
+                self._notify_component(comp.name)
 
-                    for i, step_config in enumerate(comp.steps):
-                        self.executor.raise_if_stopped()
-                        self._notify_step(i + 1, len(comp.steps))
-                        step_type = step_config.type
-                        step_class = STEP_REGISTRY.get(step_type)
-                        if not step_class:
-                            raise ValueError(f"Unknown step type: {step_type}")
+                for i, step_config in enumerate(comp.steps):
+                    self.executor.raise_if_stopped()
+                    self._notify_step(i + 1, len(comp.steps))
+                    step_type = step_config.type
+                    step_class = STEP_REGISTRY.get(step_type)
+                    if not step_class:
+                        raise ValueError(f"Unknown step type: {step_type}")
 
-                        step = step_class(step_context)
-                        self.executor.interruptible = step.interruptible
-                        step.execute(game, comp, step_config)
+                    step = step_class(step_context)
+                    self.executor.interruptible = step.interruptible
+                    step.execute(game, comp, step_config)
 
-            self._cleanup()
-        except Exception as e:
-            logger.error(f"Patching failed: {e}")
-            raise
+        self._cleanup()
 
     def _create_backup(self, selected_games: list[Game]):
         if not self._context.create_backup:

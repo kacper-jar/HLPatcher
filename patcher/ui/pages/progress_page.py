@@ -1,9 +1,12 @@
 import customtkinter as ctk
+import logging
 import time
 import threading
 from patcher.ui.base_page import BasePage
 from patcher.ui.page_route import PageRoute
 from patcher.core import Patcher, Planner
+
+logger = logging.getLogger(__name__)
 
 
 class ProgressPage(BasePage):
@@ -89,7 +92,10 @@ class ProgressPage(BasePage):
             self._on_patching_complete_threadsafe()
         except Exception as e:
             self._patching_error = str(e)
-            if not self._stop_requested:
+            if self._stop_requested:
+                logger.info("Patching stopped by user")
+            else:
+                logger.exception("Patching failed")
                 self._on_patching_error_threadsafe(self._patching_error)
 
     def _on_component_start_threadsafe(self, component_name: str):
