@@ -58,7 +58,7 @@ class FailurePage(BasePage):
         webbrowser.open("https://github.com/kacper-jar/HLPatcher/issues/new?template=bug_patcher.md")
 
     def on_enter(self):
-        error_message = getattr(self._app, "patching_error", self._app.i18n.t("failure_unknown"))
+        error_message = self._app.patching_error or self._app.i18n.t("failure_unknown")
         self._error_label.configure(text=error_message)
 
     def get_title(self) -> str:

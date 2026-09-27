@@ -66,8 +66,8 @@ class App(ctk.CTk):
         self.footer = NavigationFooter(
             self,
             on_quit=self._on_quit,
-            on_back=lambda: getattr(self, 'router', None) and self.router.go_back(),
-            on_next=lambda: getattr(self, 'router', None) and self.router.go_next(),
+            on_back=lambda: self.router.go_back(),
+            on_next=lambda: self.router.go_next(),
         )
         self.footer.retranslate(self.i18n)
         self.footer.pack(fill="x")
@@ -77,9 +77,6 @@ class App(ctk.CTk):
         self.router.show_page(PageRoute.WELCOME)
 
     def _on_language_changed(self, lang_code: str):
-        if not getattr(self, "router", None) or not self.router.current_page_key:
-            return
-
         self.footer.retranslate(self.i18n)
 
         current = self.router.current_page_key
@@ -120,12 +117,11 @@ class App(ctk.CTk):
             return
         self._quitting = True
 
-        if getattr(self, "router", None) and self.router.current_page_key == PageRoute.PROGRESS:
+        if self.router.current_page_key == PageRoute.PROGRESS:
             page = self.router.get_current_page()
-            if hasattr(page, "stop_patching"):
-                page.stop_patching()
-                self._destroy_when_stopped(page)
-                return
+            page.stop_patching()
+            self._destroy_when_stopped(page)
+            return
 
         self._cleanup_and_destroy()
 
