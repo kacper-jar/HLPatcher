@@ -81,8 +81,7 @@ class DowngradePage(BasePage):
                 'orig_hover': card_btn.cget("hover_color")
             }
 
-        if hasattr(self._app, "footer") and self._app.footer:
-            self._app.footer.set_next_enabled(False)
+        self._app.footer.set_next_enabled(False)
 
         self._check_job = self.after(100, self._check_downgrades)
 
@@ -103,8 +102,6 @@ class DowngradePage(BasePage):
                     button_url=step.step_button_url,
                     button_text_key=step.step_button_text
                 )
-        else:
-            pass
 
     def _check_downgrades(self):
         all_match = True
@@ -158,20 +155,18 @@ class DowngradePage(BasePage):
                     state="normal"
                 )
 
-        if hasattr(self, "_status_label") and self._status_label.winfo_exists():
-            if remaining_count > 0:
-                self._status_label.configure(
-                    text=self._app.i18n.t("downgrade_status_remaining", count=remaining_count),
-                    text_color="#e74c3c"
-                )
-            else:
-                self._status_label.configure(
-                    text=self._app.i18n.t("downgrade_status_all"),
-                    text_color="#2ecc71"
-                )
+        if remaining_count > 0:
+            self._status_label.configure(
+                text=self._app.i18n.t("downgrade_status_remaining", count=remaining_count),
+                text_color="#e74c3c"
+            )
+        else:
+            self._status_label.configure(
+                text=self._app.i18n.t("downgrade_status_all"),
+                text_color="#2ecc71"
+            )
 
-        if hasattr(self._app, "footer") and self._app.footer:
-            self._app.footer.set_next_enabled(all_match)
+        self._app.footer.set_next_enabled(all_match)
 
         self._check_job = self.after(1000, self._check_downgrades)
 
