@@ -88,8 +88,15 @@ class Patcher:
         for game in games_to_backup:
             self.executor.raise_if_stopped()
             backup_dest = Path.home() / "Documents" / f"{game.name} backup ({date_str})"
+            if backup_dest.exists():
+                self.log(f"Keeping the existing backup at {backup_dest}")
+                continue
+
+            incomplete_dest = backup_dest.with_name(f"{backup_dest.name} (incomplete)")
+            shutil.rmtree(incomplete_dest, ignore_errors=True)
             self.log(f"Backing up {game.path} to {backup_dest}")
-            shutil.copytree(game.path, backup_dest, dirs_exist_ok=True)
+            shutil.copytree(game.path, incomplete_dest)
+            incomplete_dest.rename(backup_dest)
         self.log("Backup complete")
 
     def _prepare_environment(self):
