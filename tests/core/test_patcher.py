@@ -1,7 +1,9 @@
 import logging
+import shutil
 import subprocess
 from dataclasses import replace
 from datetime import datetime, timezone
+from pathlib import Path
 
 import pytest
 
@@ -244,8 +246,6 @@ def test_makes_no_backup_when_turned_off_or_nothing_needs_patching(mock_patch_co
     assert "Creating backup..." not in caplog.messages
 
 
-@pytest.mark.xfail(raises=AssertionError, strict=True,
-                   reason="A backup is named by date only, so a later run that day copies patched files over it")
 def test_patching_another_component_the_same_day_keeps_the_first_backup(mock_patch_context, games, make_component,
                                                                         make_patcher, documents, patched_launcher):
     mock_patch_context.create_backup = True
@@ -255,4 +255,25 @@ def test_patching_another_component_the_same_day_keeps_the_first_backup(mock_pat
     blue_shift = make_component("Blue Shift", "bshift", EngineType.GOLDSRC, steps=steps("fetch"))
     make_patcher().run([replace(half_life, components=[blue_shift])])
 
+    assert (documents / "Half-Life backup (2026-09-27)" / "hl_osx").read_bytes() == b"valve launcher"
+
+
+def test_a_backup_cut_short_is_made_again_on_the_next_run(mock_patch_context, games, make_patcher, documents,
+                                                          patched_launcher, mocker):
+    mock_patch_context.create_backup = True
+    copytree = shutil.copytree
+
+    def run_out_of_space(source, destination, **kwargs):
+        copytree(source, destination, **kwargs)
+        (Path(destination) / "hl_osx").write_bytes(b"half copied")
+        raise OSError(28, "No space left on device")
+
+    mocker.patch("shutil.copytree", side_effect=run_out_of_space)
+    with pytest.raises(OSError, match="No space left on device"):
+        make_patcher().run([games[0]])
+
+    mocker.patch("shutil.copytree", side_effect=copytree)
+    make_patcher().run([games[0]])
+
+    assert sorted(backup.name for backup in documents.iterdir()) == ["Half-Life backup (2026-09-27)"]
     assert (documents / "Half-Life backup (2026-09-27)" / "hl_osx").read_bytes() == b"valve launcher"
