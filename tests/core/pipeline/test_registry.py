@@ -31,9 +31,9 @@ STEPS = {
 
 DEFINITIONS = [
     {"type": "git-fetcher", "url": HLSDK_URL, "patch_dir_name": "hlsdk-portable-hlfixed", "branch": "hlfixed",
-     "stable_commit": "5bc5bec", "force_stable": False},
+     "stable_commit": "5bc5beca6bd4642ebf9681e132a9756ae68ef653", "force_stable": False},
     {"type": "goldsrc-engine-fetcher", "url": "https://github.com/FWGS/xash3d-fwgs", "patch_dir_name": "xash3d-fwgs",
-     "stable_commit": "8b5732b", "force_stable": False},
+     "stable_commit": "8b5732b3296731fa891ead83ad4bcfbfe64353d4", "force_stable": False},
     {"type": "url-fetcher", "patch_dir_name": "dejavu-fonts",
      "url": "https://github.com/dejavu-fonts/dejavu-fonts/releases/download/version_2_37/dejavu-fonts-ttf-2.37.zip"},
     {"type": "cmake-builder", "patch_dir_name": "cs16-client", "build_args": []},

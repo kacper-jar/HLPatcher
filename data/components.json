@@ -13,7 +13,7 @@
         "type": "goldsrc-engine-fetcher",
         "url": "https://github.com/FWGS/xash3d-fwgs",
         "patch_dir_name": "xash3d-fwgs",
-        "stable_commit": "8b5732b",
+        "stable_commit": "8b5732b3296731fa891ead83ad4bcfbfe64353d4",
         "force_stable": false
       },
       {
@@ -48,7 +48,7 @@
         "url": "https://github.com/FWGS/hlsdk-portable",
         "patch_dir_name": "hlsdk-portable-hlfixed",
         "branch": "hlfixed",
-        "stable_commit": "5bc5bec",
+        "stable_commit": "5bc5beca6bd4642ebf9681e132a9756ae68ef653",
         "force_stable": false
       },
       {
@@ -83,7 +83,7 @@
         "url": "https://github.com/FWGS/hlsdk-portable",
         "patch_dir_name": "hlsdk-portable-opforfixed",
         "branch": "opforfixed",
-        "stable_commit": "fe33d6e",
+        "stable_commit": "fe33d6e942be30588aa6f65749d8cb086126b4b7",
         "force_stable": false
       },
       {
@@ -118,7 +118,7 @@
         "url": "https://github.com/FWGS/hlsdk-portable",
         "patch_dir_name": "hlsdk-portable-bshift",
         "branch": "bshift",
-        "stable_commit": "fe7cd20",
+        "stable_commit": "fe7cd20c6fa6fd00474264fb3d542cfda97b88fc",
         "force_stable": false
       },
       {
@@ -153,7 +153,7 @@
         "url": "https://github.com/FWGS/hlsdk-portable",
         "patch_dir_name": "hlsdk-portable-dmc",
         "branch": "dmc",
-        "stable_commit": "913c221",
+        "stable_commit": "913c221d513ae4a32d9f3ea448c81f00628a25af",
         "force_stable": false
       },
       {
@@ -187,7 +187,7 @@
         "type": "git-fetcher",
         "url": "https://github.com/Velaron/cs16-client",
         "patch_dir_name": "cs16-client",
-        "stable_commit": "9c891b8",
+        "stable_commit": "9c891b8ebeb5ff0b84e00af769c2f5e35a0280be",
         "force_stable": false
       },
       {
@@ -222,7 +222,7 @@
         "type": "git-fetcher",
         "url": "https://github.com/nillerusr/source-engine",
         "patch_dir_name": "source-engine",
-        "stable_commit": "ed8209c",
+        "stable_commit": "ed8209cc35c61fbd8ddff8480962a01c981eef2f",
         "force_stable": false
       },
       {
@@ -263,7 +263,7 @@
         "type": "git-fetcher",
         "url": "https://github.com/nillerusr/source-engine",
         "patch_dir_name": "source-engine",
-        "stable_commit": "ed8209c",
+        "stable_commit": "ed8209cc35c61fbd8ddff8480962a01c981eef2f",
         "force_stable": false
       },
       {
@@ -304,7 +304,7 @@
         "type": "git-fetcher",
         "url": "https://github.com/nillerusr/source-engine",
         "patch_dir_name": "source-engine",
-        "stable_commit": "ed8209c",
+        "stable_commit": "ed8209cc35c61fbd8ddff8480962a01c981eef2f",
         "force_stable": false
       },
       {
@@ -342,7 +342,7 @@
         "type": "git-fetcher",
         "url": "https://github.com/nillerusr/source-engine",
         "patch_dir_name": "source-engine",
-        "stable_commit": "ed8209c",
+        "stable_commit": "ed8209cc35c61fbd8ddff8480962a01c981eef2f",
         "force_stable": false
       },
       {
@@ -383,7 +383,7 @@
         "type": "git-fetcher",
         "url": "https://github.com/nillerusr/source-engine",
         "patch_dir_name": "source-engine",
-        "stable_commit": "ed8209c",
+        "stable_commit": "ed8209cc35c61fbd8ddff8480962a01c981eef2f",
         "force_stable": false
       },
       {
@@ -426,7 +426,7 @@
         "type": "git-fetcher",
         "url": "https://github.com/nillerusr/source-engine",
         "patch_dir_name": "source-engine",
-        "stable_commit": "ed8209c",
+        "stable_commit": "ed8209cc35c61fbd8ddff8480962a01c981eef2f",
         "force_stable": false
       },
       {
@@ -535,7 +535,7 @@
         "type": "git-fetcher",
         "url": "https://github.com/nillerusr/source-engine",
         "patch_dir_name": "source-engine",
-        "stable_commit": "ed8209c",
+        "stable_commit": "ed8209cc35c61fbd8ddff8480962a01c981eef2f",
         "force_stable": false
       },
       {
@@ -690,7 +690,7 @@
         "type": "git-fetcher",
         "url": "https://github.com/nillerusr/source-engine",
         "patch_dir_name": "source-engine",
-        "stable_commit": "ed8209c",
+        "stable_commit": "ed8209cc35c61fbd8ddff8480962a01c981eef2f",
         "force_stable": false
       },
       {

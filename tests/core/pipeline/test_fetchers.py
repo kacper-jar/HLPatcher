@@ -13,17 +13,19 @@ from patcher.core.pipeline.fetchers import GitFetcher, GoldSrcEngineFetcher, Url
 HLSDK_URL = "https://github.com/FWGS/hlsdk-portable"
 XASH_URL = "https://github.com/FWGS/xash3d-fwgs"
 SDL_URL = "https://github.com/libsdl-org/SDL/releases/download/release-2.32.10/SDL2-2.32.10.dmg"
+HLSDK_STABLE = "5bc5beca6bd4642ebf9681e132a9756ae68ef653"
+XASH_STABLE = "8b5732b3296731fa891ead83ad4bcfbfe64353d4"
 
 
 def hlsdk_config(**fields):
     fields = {"url": HLSDK_URL, "patch_dir_name": "hlsdk-portable-hlfixed", "branch": "hlfixed",
-              "stable_commit": "5bc5bec", **fields}
+              "stable_commit": HLSDK_STABLE, **fields}
     return FetchStepConfig("git-fetcher", **fields)
 
 
 def xash_config():
     return FetchStepConfig("goldsrc-engine-fetcher", url=XASH_URL, patch_dir_name="xash3d-fwgs",
-                           stable_commit="8b5732b")
+                           stable_commit=XASH_STABLE)
 
 
 def url_config(url):
@@ -59,34 +61,34 @@ def test_git_fetcher_clones_the_default_branch_when_none_is_set(fetch, hlsdk_dir
     ]
 
 
-@pytest.mark.parametrize("commit", ["5bc5bec", "5bc5bec3d2a1f0e9c8b7a6d5e4f3a2b1c0d9e8f7"], ids=["short", "full"])
-def test_git_fetcher_checks_out_the_stable_commit_in_stable_mode(step_context, fetch, hlsdk_dir, mock_run_command,
-                                                                 commit):
+def test_git_fetcher_fetches_only_the_stable_commit_in_stable_mode(step_context, fetch, hlsdk_dir, mock_run_command):
     step_context.patch_mode = PatchMode.STABLE
 
-    fetch(GitFetcher, hlsdk_config(stable_commit=commit))
+    fetch(GitFetcher, hlsdk_config())
 
     assert mock_run_command.commands == [
-        (["git", "clone", "--recursive", HLSDK_URL, hlsdk_dir], None),
-        (["git", "checkout", commit], hlsdk_dir),
-        (["git", "submodule", "update", "--init", "--recursive"], hlsdk_dir),
+        (["git", "init", "--quiet", hlsdk_dir], None),
+        (["git", "remote", "add", "origin", HLSDK_URL], hlsdk_dir),
+        (["git", "fetch", "--depth", "1", "origin", HLSDK_STABLE], hlsdk_dir),
+        (["git", "checkout", "--quiet", "FETCH_HEAD"], hlsdk_dir),
+        (["git", "submodule", "update", "--init", "--recursive", "--depth", "1"], hlsdk_dir),
     ]
 
 
 def test_git_fetcher_uses_the_stable_commit_when_forced(fetch, hlsdk_dir, mock_run_command):
     fetch(GitFetcher, hlsdk_config(force_stable=True))
 
-    assert (["git", "checkout", "5bc5bec"], hlsdk_dir) in mock_run_command.commands
+    assert (["git", "fetch", "--depth", "1", "origin", HLSDK_STABLE], hlsdk_dir) in mock_run_command.commands
 
 
-@pytest.mark.xfail(raises=AssertionError, strict=True,
-                   reason="A commit is recognised only by its length, so a 12-character SHA is cloned as a branch")
-def test_git_fetcher_checks_out_a_stable_commit_of_any_length(step_context, fetch, hlsdk_dir, mock_run_command):
+@pytest.mark.parametrize("commit", ["5bc5bec", "5bc5beca6bd4", ""], ids=["7-characters", "12-characters", "missing"])
+def test_git_fetcher_refuses_a_stable_commit_that_is_not_a_full_hash(step_context, fetch, mock_run_command, commit):
     step_context.patch_mode = PatchMode.STABLE
 
-    fetch(GitFetcher, hlsdk_config(stable_commit="5bc5bec3d2a1"))
+    with pytest.raises(ValueError, match="not a full 40-character commit hash"):
+        fetch(GitFetcher, hlsdk_config(stable_commit=commit))
 
-    assert (["git", "checkout", "5bc5bec3d2a1"], hlsdk_dir) in mock_run_command.commands
+    assert mock_run_command.commands == []
 
 
 def test_git_fetcher_skips_an_existing_checkout(step_context, fetch, mock_run_command):

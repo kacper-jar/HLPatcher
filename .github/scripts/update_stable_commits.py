@@ -22,8 +22,7 @@ def get_latest_commit(url, branch):
 
     lines = output.split('\n')
     first_line = lines[0]
-    hash_full = first_line.split()[0]
-    return hash_full[:7]
+    return first_line.split()[0]
 
 
 def main():
