@@ -100,9 +100,10 @@ def test_every_component_fetches_a_folder_before_working_on_it(components):
     assert problems == []
 
 
-def test_stable_commits_are_hashes_the_git_fetcher_recognises(steps):
-    assert [(comp_id, step["stable_commit"]) for comp_id, step in steps
-            if "stable_commit" in step and not re.fullmatch(r"[0-9a-f]{7}|[0-9a-f]{40}", step["stable_commit"])] == []
+def test_every_git_fetch_pins_a_full_stable_commit(steps):
+    assert [(comp_id, step.get("stable_commit")) for comp_id, step in steps
+            if step["type"] in ("git-fetcher", "goldsrc-engine-fetcher")
+            and not re.fullmatch(r"[0-9a-f]{40}", step.get("stable_commit", ""))] == []
 
 
 def test_downloads_use_https(steps):

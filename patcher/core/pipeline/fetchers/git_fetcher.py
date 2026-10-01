@@ -1,6 +1,11 @@
+import re
+from pathlib import Path
+
 from patcher.core.models import Component, FetchStepConfig, Game, PatchMode
 from patcher.core.pipeline.base import BaseStep
 from patcher.core.pipeline.registry import step
+
+FULL_COMMIT = re.compile(r"[0-9a-f]{40}")
 
 
 @step("git-fetcher", config=FetchStepConfig)
@@ -14,27 +19,26 @@ class GitFetcher(BaseStep):
             self.context.log(f"Directory {target_dir_name} already exists. Skipping fetch.")
             return
 
-        ref_to_checkout = step_config.branch
         if step_config.force_stable or self.context.patch_mode == PatchMode.STABLE:
-            ref_to_checkout = step_config.stable_commit
+            self._fetch_commit(step_config.url, step_config.stable_commit, target_dir)
+        else:
+            self._clone_branch(step_config.url, step_config.branch, target_dir)
 
-        cmd = ["git", "clone", "--recursive"]
+    def _clone_branch(self, url: str, branch: str, target_dir: Path):
+        cmd = ["git", "clone", "--recursive", "--shallow-submodules", "--depth", "1"]
+        if branch:
+            cmd.extend(["-b", branch])
+        self.context.executor.run([*cmd, url, str(target_dir)])
 
-        is_hash = False
-        if ref_to_checkout and len(ref_to_checkout) in (7, 40) and all(
-                c in "0123456789abcdefABCDEF" for c in ref_to_checkout):
-            is_hash = True
+    def _fetch_commit(self, url: str, commit: str, target_dir: Path):
+        if not FULL_COMMIT.fullmatch(commit):
+            raise ValueError(f"Stable commit {commit!r} for {url} is not a full 40-character commit hash")
 
-        if not is_hash:
-            cmd.extend(["--shallow-submodules", "--depth", "1"])
-            if ref_to_checkout:
-                cmd.extend(["-b", ref_to_checkout])
-
-        cmd.extend([step_config.url, str(target_dir)])
-        self.context.executor.run(cmd)
-
-        if ref_to_checkout and is_hash:
-            self.context.log(f"Checking out {ref_to_checkout}...")
-            self.context.executor.run(["git", "checkout", ref_to_checkout], cwd=target_dir)
-            self.context.log("Updating submodules...")
-            self.context.executor.run(["git", "submodule", "update", "--init", "--recursive"], cwd=target_dir)
+        self.context.log(f"Fetching commit {commit}...")
+        run = self.context.executor.run
+        run(["git", "init", "--quiet", str(target_dir)])
+        run(["git", "remote", "add", "origin", url], cwd=target_dir)
+        run(["git", "fetch", "--depth", "1", "origin", commit], cwd=target_dir)
+        run(["git", "checkout", "--quiet", "FETCH_HEAD"], cwd=target_dir)
+        self.context.log("Updating submodules...")
+        run(["git", "submodule", "update", "--init", "--recursive", "--depth", "1"], cwd=target_dir)
