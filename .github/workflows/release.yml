@@ -21,7 +21,7 @@ jobs:
 
       - name: Create ZIP archive
         run: |
-          zip -r "HLPatcher-${{ github.ref_name }}.zip" . -x "*.git*" ".github*" ".idea*" "*/*.DS_Store*" ".DS_Store" "HLPatcher-*.zip"
+          zip -r "HLPatcher-${{ github.ref_name }}.zip" patcher.sh patcher data requirements.txt requirements-dev.txt README.md LICENSE
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
