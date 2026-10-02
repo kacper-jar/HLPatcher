@@ -2,6 +2,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
+from typing import NamedTuple
 
 from patcher.core.command_executor import CommandExecutor
 
@@ -148,6 +149,14 @@ class UpdateInfo:
     latest_version: str
     update_available: bool
     release_url: str
+
+
+class VpkEntry(NamedTuple):
+    crc: int
+    archive_index: int
+    offset: int
+    length: int
+    preload: bytes
 
 
 @dataclass
