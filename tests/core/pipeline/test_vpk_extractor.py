@@ -52,6 +52,37 @@ def corrupt_signature(dir_vpk):
     dir_vpk.write_bytes(data)
 
 
+def corrupt_version(dir_vpk):
+    data = bytearray(dir_vpk.read_bytes())
+    data[4:8] = struct.pack("<I", 3)
+    dir_vpk.write_bytes(data)
+
+
+def entry_end(data):
+    return data.index(b"bloom_ps20\0") + len(b"bloom_ps20\0") + 18
+
+
+def corrupt_terminator(dir_vpk):
+    data = bytearray(dir_vpk.read_bytes())
+    data[entry_end(data) - 2:entry_end(data)] = b"\0\0"
+    dir_vpk.write_bytes(data)
+
+
+def cut_inside_an_entry(dir_vpk):
+    data = dir_vpk.read_bytes()
+    dir_vpk.write_bytes(data[:entry_end(data) - 6])
+
+
+def cut_after_an_entry(dir_vpk):
+    data = dir_vpk.read_bytes()
+    dir_vpk.write_bytes(data[:entry_end(data)])
+
+
+def cut_the_archive(dir_vpk):
+    archive = dir_vpk.with_name("hl2_misc_000.vpk")
+    archive.write_bytes(archive.read_bytes()[:4])
+
+
 def corrupt_archive_data(dir_vpk):
     archive = dir_vpk.with_name("hl2_misc_000.vpk")
     data = bytearray(archive.read_bytes())
@@ -61,6 +92,11 @@ def corrupt_archive_data(dir_vpk):
 
 CORRUPTIONS = [
     pytest.param(corrupt_signature, "Invalid VPK signature", id="signature"),
+    pytest.param(corrupt_version, "Unsupported VPK version 3", id="version"),
+    pytest.param(corrupt_terminator, "Corrupt VPK index", id="entry-terminator"),
+    pytest.param(cut_inside_an_entry, "Truncated VPK file", id="index-cut-inside-entry"),
+    pytest.param(cut_after_an_entry, "Truncated VPK index", id="index-cut-after-entry"),
+    pytest.param(cut_the_archive, "Truncated VPK file", id="archive-cut"),
     pytest.param(corrupt_archive_data, "CRC32 mismatch", id="crc"),
 ]
 
@@ -146,17 +182,6 @@ def test_missing_vpk_raises(extract):
 
 @pytest.mark.parametrize(("corrupt", "message"), CORRUPTIONS)
 def test_rejects_a_corrupted_vpk(dir_vpk, extract, corrupt, message):
-    write_vpk(dir_vpk, {"shaders/fxc/bloom_ps20.vcs": (b"bloom shader", 0, 0)})
-    corrupt(dir_vpk)
-
-    with pytest.raises((AssertionError, ValueError), match=message):
-        extract(["shaders/fxc/bloom_ps20.vcs"])
-
-
-@pytest.mark.xfail(raises=AssertionError, strict=True,
-                   reason="The parser validates with assert, which python -O removes")
-@pytest.mark.parametrize(("corrupt", "message"), CORRUPTIONS)
-def test_corrupted_vpk_raises_value_error(dir_vpk, extract, corrupt, message):
     write_vpk(dir_vpk, {"shaders/fxc/bloom_ps20.vcs": (b"bloom shader", 0, 0)})
     corrupt(dir_vpk)
 
