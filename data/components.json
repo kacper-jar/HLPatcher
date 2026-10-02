@@ -118,7 +118,7 @@
         "url": "https://github.com/FWGS/hlsdk-portable",
         "patch_dir_name": "hlsdk-portable-bshift",
         "branch": "bshift",
-        "stable_commit": "fe7cd20c6fa6fd00474264fb3d542cfda97b88fc",
+        "stable_commit": "1cd7ae9a4e327f59994ea1fadd1e04814e1e0207",
         "force_stable": false
       },
       {
