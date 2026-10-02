@@ -153,13 +153,14 @@ def test_a_missing_placeholder_value_leaves_the_text_unformatted(polish):
     assert polish.t("progress_time_format", mins=3) == POLISH["progress_time_format"]
 
 
-@pytest.mark.xfail(raises=(ValueError, IndexError), strict=True,
-                   reason="t() catches only KeyError, so a malformed placeholder raises")
 @pytest.mark.parametrize("broken", [
     "Upłynęło czasu: {mins:02d}:{secs:02d",
     "Upłynęło czasu: {mins:02d}:secs:02d}",
     "Upłynęło czasu: {0:02d}:{1:02d}",
-], ids=["unclosed", "stray-closing-brace", "positional"])
+    "Upłynęło czasu: {mins.minutes}",
+    "Upłynęło czasu: {mins[0]}",
+    "Upłynęło czasu: {mins:02s}:{secs:02s}",
+], ids=["unclosed", "stray-closing-brace", "positional", "attribute", "indexing", "wrong-format-code"])
 def test_a_malformed_placeholder_leaves_the_text_unformatted(locales_dir, broken):
     write_json(locales_dir / "pl-PL.json", {"progress_time_format": broken})
     i18n = I18n(locales_dir)

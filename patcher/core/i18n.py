@@ -99,7 +99,7 @@ class I18n:
         if kwargs:
             try:
                 text = text.format(**kwargs)
-            except KeyError:
+            except (KeyError, IndexError, ValueError, AttributeError, TypeError):
                 pass
         return text
 
