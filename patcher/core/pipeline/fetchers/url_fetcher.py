@@ -15,8 +15,6 @@ class UrlFetcherStep(BaseStep):
 
         archive_path = patch_dir / "archive.tmp"
 
-        (patch_dir / "url.txt").write_text(step_config.url)
-
         req = urllib.request.Request(
             step_config.url,
             headers={"User-Agent": "Mozilla/5.0"}
