@@ -93,17 +93,19 @@ def test_offers_english_even_without_its_file(locales_dir):
     assert i18n.t("welcome_title") == "welcome_title"
 
 
-@pytest.mark.xfail(raises=AssertionError, strict=True,
-                   reason="Languages are listed in the order glob returns the files, which APFS does not sort")
-def test_lists_the_languages_in_the_same_order_whatever_the_disk_order(locales_dir, mocker):
+def test_lists_languages_and_picks_a_region_the_same_way_whatever_the_disk_order(locales_dir, system_locale,
+                                                                               mocker):
+    write_json(locales_dir / "pt-PT.json", {"welcome_title": "Bem-vindo ao HLPatcher ({version})"})
+    system_locale.return_value = ("pt_AO", "UTF-8")
     real_glob = Path.glob
-    orders = []
+    seen = []
     for reverse in (False, True):
         mocker.patch.object(Path, "glob",
                             lambda self, pattern, reverse=reverse: sorted(real_glob(self, pattern), reverse=reverse))
-        orders.append(I18n(locales_dir).available_langs)
+        i18n = I18n(locales_dir)
+        seen.append((i18n.available_langs, i18n.current_lang))
 
-    assert orders[0] == orders[1]
+    assert seen == [(["de-DE", "en-US", "pl-PL", "pt-BR", "pt-PT"], "pt-BR")] * 2
 
 
 def test_switches_language_and_tells_the_app(locales_dir):

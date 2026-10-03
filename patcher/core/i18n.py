@@ -73,6 +73,7 @@ class I18n:
 
         if "en-US" not in self.available_langs:
             self.available_langs.append("en-US")
+        self.available_langs.sort()
 
     def set_language(self, lang_code: str, notify: bool = True):
         if lang_code not in self.available_langs and lang_code != "en-US":
