@@ -3,6 +3,8 @@ import logging
 import os
 import signal
 import subprocess
+import sys
+import textwrap
 import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -134,8 +136,6 @@ def test_raise_if_stopped_raises_only_after_a_stop(executor):
         executor.raise_if_stopped()
 
 
-@pytest.mark.xfail(raises=AssertionError, strict=True,
-                   reason="Stop terminates only the command itself, so the processes it started keep running")
 def test_stop_also_ends_the_processes_a_command_started(executor, tmp_path, background):
     pid_file = tmp_path / "compiler.pid"
     future = background.submit(executor.run, ["sh", "-c", f"sleep 30 & echo $! > '{pid_file}'; wait"])
@@ -150,3 +150,55 @@ def test_stop_also_ends_the_processes_a_command_started(executor, tmp_path, back
     finally:
         with contextlib.suppress(ProcessLookupError):
             os.kill(compiler, signal.SIGKILL)
+
+
+@pytest.mark.parametrize("signum", [signal.SIGINT, signal.SIGHUP, signal.SIGTERM],
+                         ids=["ctrl-c", "terminal-closed", "killed"])
+def test_quitting_the_app_ends_running_commands_and_what_they_started(tmp_path, pytestconfig, signum):
+    pid_file = tmp_path / "compiler.pid"
+    command = ["sh", "-c", f"sleep 30 & echo $! > '{pid_file}'; wait"]
+    script = textwrap.dedent(f"""
+        import threading
+        import time
+        from pathlib import Path
+
+        from patcher.core import CommandExecutor
+
+        CommandExecutor.end_running_commands_on_exit()
+        executor = CommandExecutor(Path({str(tmp_path)!r}))
+        threading.Thread(target=executor.run, args=({command!r},), daemon=True).start()
+        while True:
+            time.sleep(0.05)
+    """)
+    app = subprocess.Popen([sys.executable, "-c", script], cwd=pytestconfig.rootpath, stderr=subprocess.DEVNULL)
+    compiler = None
+    try:
+        assert eventually(lambda: pid_file.exists() and pid_file.read_text().strip())
+        compiler = int(pid_file.read_text())
+
+        app.send_signal(signum)
+        app.wait(timeout=5)
+
+        assert eventually(lambda: not running(compiler), timeout=2)
+    finally:
+        app.kill()
+        if compiler:
+            with contextlib.suppress(ProcessLookupError):
+                os.kill(compiler, signal.SIGKILL)
+
+
+@pytest.fixture
+def terminal_input():
+    read_end, write_end = os.pipe()
+    saved_stdin = os.dup(0)
+    os.dup2(read_end, 0)
+    yield
+    os.dup2(saved_stdin, 0)
+    for fd in (saved_stdin, read_end, write_end):
+        os.close(fd)
+
+
+def test_commands_never_wait_for_the_terminal(executor, terminal_input):
+    result = executor.run(["sh", "-c", "[ /dev/stdin -ef /dev/null ] && echo \"$GIT_TERMINAL_PROMPT\""], capture=True)
+
+    assert result.stdout == "0\n"
