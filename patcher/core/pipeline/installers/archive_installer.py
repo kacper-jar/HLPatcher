@@ -1,8 +1,7 @@
-import shutil
 import tarfile
 import zipfile
-from pathlib import Path
-from tempfile import TemporaryDirectory
+from collections.abc import Iterator
+from pathlib import Path, PurePosixPath
 
 from patcher.core.models import ArchiveInstallStepConfig, Component, Game
 from patcher.core.pipeline.base import BaseStep
@@ -16,44 +15,37 @@ class ArchiveInstallerStep(BaseStep):
     def execute(self, game: Game, comp: Component, step_config: ArchiveInstallStepConfig):
         self.context.log(f"Extracting archive from {step_config.patch_dir_name}")
 
-        patch_dir = self.context.working_dir / step_config.patch_dir_name
-        archive_path = patch_dir / "archive.tmp"
-
+        archive_path = self.context.working_dir / step_config.patch_dir_name / "archive.tmp"
         if not archive_path.exists():
             raise FileNotFoundError(f"Archive not found: {archive_path}")
 
-        url_file = patch_dir / "url.txt"
-        original_url = url_file.read_text().strip() if url_file.exists() else ""
+        pattern = step_config.file_pattern or "*"
+        files = {}
+        for name, data in self._matching_files(archive_path, pattern):
+            if name in files:
+                raise ValueError(f"Archive {archive_path} has more than one file named {name}")
+            files[name] = data
+        if not files:
+            raise ValueError(f"No files matching '{pattern}' in archive {archive_path}")
 
-        with TemporaryDirectory() as temp_dir_name:
-            extract_dir = Path(temp_dir_name) / "extracted"
-            extract_dir.mkdir()
+        output_base = game.path / step_config.output_dir
+        output_base.mkdir(parents=True, exist_ok=True)
+        for name, data in files.items():
+            self.context.log(f"Copying {name} to {output_base}")
+            (output_base / name).write_bytes(data)
 
-            if original_url.endswith(".zip") or "zip" in original_url:
-                with zipfile.ZipFile(archive_path, "r") as zf:
-                    zf.extractall(extract_dir)
-            elif ".tar" in original_url or "tgz" in original_url:
-                with tarfile.open(archive_path, "r") as tf:
-                    tf.extractall(extract_dir)
-            else:
-                self.context.log("Unknown archive type, attempting zip and tar...")
-                try:
-                    with zipfile.ZipFile(archive_path, "r") as zf:
-                        zf.extractall(extract_dir)
-                except zipfile.BadZipFile:
-                    with tarfile.open(archive_path, "r") as tf:
-                        tf.extractall(extract_dir)
-
-            output_base = game.path / step_config.output_dir
-            output_base.mkdir(parents=True, exist_ok=True)
-
-            pattern = step_config.file_pattern or "*"
-            matched_files = list(extract_dir.rglob(pattern))
-
-            if not matched_files:
-                self.context.log(f"Warning: No files matched pattern '{pattern}' in the extracted archive.")
-
-            for file_path in matched_files:
-                if file_path.is_file():
-                    self.context.log(f"Copying {file_path.name} to {output_base}")
-                    shutil.copy2(file_path, output_base / file_path.name)
+    def _matching_files(self, archive_path: Path, pattern: str) -> Iterator[tuple[str, bytes]]:
+        if zipfile.is_zipfile(archive_path):
+            with zipfile.ZipFile(archive_path) as archive:
+                for info in archive.infolist():
+                    path = PurePosixPath(info.filename)
+                    if not info.is_dir() and path.match(pattern):
+                        yield path.name, archive.read(info)
+        elif tarfile.is_tarfile(archive_path):
+            with tarfile.open(archive_path) as archive:
+                for member in archive.getmembers():
+                    path = PurePosixPath(member.name)
+                    if member.isfile() and path.match(pattern):
+                        yield path.name, archive.extractfile(member).read()
+        else:
+            raise ValueError(f"Unsupported archive format: {archive_path}")

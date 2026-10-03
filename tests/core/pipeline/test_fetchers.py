@@ -203,7 +203,7 @@ def serve(server, path, chunks, delay=0.0):
     return f"http://127.0.0.1:{server.server_address[1]}{path}"
 
 
-def test_url_fetcher_downloads_the_archive_and_records_its_url(step_context, fetch, download_server):
+def test_url_fetcher_downloads_the_archive(step_context, fetch, download_server):
     content = bytes(range(256)) * 800
     url = serve(download_server, "/dejavu-fonts-ttf-2.37.zip", [content[:100_000], content[100_000:]])
 
@@ -211,7 +211,6 @@ def test_url_fetcher_downloads_the_archive_and_records_its_url(step_context, fet
 
     download_dir = step_context.working_dir / "dejavu-fonts"
     assert (download_dir / "archive.tmp").read_bytes() == content
-    assert (download_dir / "url.txt").read_text() == url
 
 
 def test_url_fetcher_stops_mid_download(step_context, fetch, download_server):

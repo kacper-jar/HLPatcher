@@ -8,9 +8,6 @@ from patcher.core.models import ArchiveInstallStepConfig, EngineType, Game, Inst
 from patcher.core.pipeline.installers import ArchiveInstallerStep, GenericInstaller, GoldSrcEngineInstaller, \
     SourceInstaller
 
-DEJAVU_URL = "https://github.com/dejavu-fonts/dejavu-fonts/releases/download/version_2_37/dejavu-fonts-ttf-2.37.zip"
-LIBERATION_URL = "https://github.com/liberationfonts/liberation-fonts/files/7261482/liberation-fonts-ttf-2.1.5.tar.gz"
-
 
 def write_zip(path, files):
     with zipfile.ZipFile(path, "w") as archive:
@@ -113,7 +110,6 @@ def test_archive_installer_copies_matching_files_from_a_zip(download_dir, instal
         "dejavu-fonts-ttf-2.37/ttf/DejaVuSerif.ttf": b"serif",
         "dejavu-fonts-ttf-2.37/LICENSE": b"license",
     })
-    (download_dir / "url.txt").write_text(DEJAVU_URL)
 
     fonts = install_archive()
 
@@ -123,32 +119,34 @@ def test_archive_installer_copies_matching_files_from_a_zip(download_dir, instal
 
 def test_archive_installer_copies_matching_files_from_a_tarball(download_dir, install_archive):
     write_tar(download_dir / "archive.tmp", {"liberation-fonts-ttf-2.1.5/LiberationSans-Regular.ttf": b"sans"})
-    (download_dir / "url.txt").write_text(LIBERATION_URL)
 
     fonts = install_archive()
 
     assert (fonts / "LiberationSans-Regular.ttf").read_bytes() == b"sans"
 
 
-@pytest.mark.parametrize("write_archive", [write_zip, write_tar], ids=["zip", "tar"])
-def test_archive_installer_detects_the_format_without_a_url(download_dir, install_archive, step_context,
-                                                            write_archive):
-    write_archive(download_dir / "archive.tmp", {"fonts/LiberationMono-Regular.ttf": b"mono"})
+def test_archive_installer_refuses_a_download_that_is_not_an_archive(download_dir, install_archive):
+    (download_dir / "archive.tmp").write_bytes(b"<html>Rate limit exceeded</html>")
 
-    fonts = install_archive()
-
-    assert (fonts / "LiberationMono-Regular.ttf").read_bytes() == b"mono"
-    step_context.log.assert_any_call("Unknown archive type, attempting zip and tar...")
+    with pytest.raises(ValueError, match="Unsupported archive format"):
+        install_archive()
 
 
-def test_archive_installer_warns_when_nothing_matches(download_dir, install_archive, step_context):
+def test_archive_installer_fails_when_nothing_matches(download_dir, install_archive):
     write_zip(download_dir / "archive.tmp", {"dejavu-fonts-ttf-2.37/ttf/DejaVuSans.ttf": b"sans"})
-    (download_dir / "url.txt").write_text(DEJAVU_URL)
 
-    fonts = install_archive(pattern="*.otf")
+    with pytest.raises(ValueError, match=r"No files matching '\*\.otf'"):
+        install_archive(pattern="*.otf")
 
-    assert list(fonts.iterdir()) == []
-    step_context.log.assert_any_call("Warning: No files matched pattern '*.otf' in the extracted archive.")
+
+def test_archive_installer_refuses_two_files_with_the_same_name(download_dir, install_archive):
+    write_zip(download_dir / "archive.tmp", {
+        "dejavu-fonts-ttf-2.37/ttf/DejaVuSans.ttf": b"sans",
+        "dejavu-fonts-ttf-2.37/ttf-hinted/DejaVuSans.ttf": b"hinted sans",
+    })
+
+    with pytest.raises(ValueError, match="more than one file named DejaVuSans.ttf"):
+        install_archive()
 
 
 def test_archive_installer_needs_the_downloaded_archive(download_dir, install_archive):
@@ -156,23 +154,30 @@ def test_archive_installer_needs_the_downloaded_archive(download_dir, install_ar
         install_archive()
 
 
-def test_archive_installer_refuses_entries_outside_the_extraction_folder(download_dir, install_archive):
-    write_tar(download_dir / "archive.tmp", {"../../escaped.ttf": b"outside"})
-    (download_dir / "url.txt").write_text(LIBERATION_URL)
-
-    with pytest.raises(tarfile.OutsideDestinationError):
-        install_archive()
-
-
-@pytest.mark.xfail(raises=zipfile.BadZipFile, strict=True,
-                   reason="Any URL containing \"zip\" is opened as a zip archive")
-def test_archive_installer_opens_a_tarball_whose_url_mentions_zip(download_dir, install_archive):
-    write_tar(download_dir / "archive.tmp", {"fonts/LiberationSans-Regular.ttf": b"sans"})
-    (download_dir / "url.txt").write_text("https://example.com/gzip-mirror/liberation-fonts-ttf-2.1.5.tar.gz")
+@pytest.mark.parametrize("write_archive", [write_zip, write_tar], ids=["zip", "tar"])
+def test_archive_installer_keeps_entries_with_parent_paths_inside_the_output_folder(download_dir, install_archive,
+                                                                                   tmp_path, write_archive):
+    write_archive(download_dir / "archive.tmp", {"../../escaped.ttf": b"outside"})
 
     fonts = install_archive()
 
-    assert (fonts / "LiberationSans-Regular.ttf").read_bytes() == b"sans"
+    assert (fonts / "escaped.ttf").read_bytes() == b"outside"
+    assert list(tmp_path.rglob("escaped.ttf")) == [fonts / "escaped.ttf"]
+
+
+def test_archive_installer_skips_links_in_a_tarball(download_dir, install_archive):
+    with tarfile.open(download_dir / "archive.tmp", "w:gz") as archive:
+        link = tarfile.TarInfo("fonts/Linked.ttf")
+        link.type = tarfile.SYMTYPE
+        link.linkname = "/etc/hosts"
+        archive.addfile(link)
+        font = tarfile.TarInfo("fonts/LiberationSans-Regular.ttf")
+        font.size = 4
+        archive.addfile(font, io.BytesIO(b"sans"))
+
+    fonts = install_archive()
+
+    assert [p.name for p in fonts.iterdir()] == ["LiberationSans-Regular.ttf"]
 
 
 @pytest.fixture
