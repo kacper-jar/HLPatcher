@@ -36,6 +36,9 @@ assignees: ''
 - While patching Half-Life 2
 - While patching Half-Life 2: Lost Coast
 - While patching Half-Life 2: Episodic (Episodes 1 & 2)
+- While patching Half-Life 2: Deathmatch
+- While patching Counter-Strike: Source
+- While patching Day of Defeat: Source
 - While patching Portal
 - After patching completed
 - Other (specify below)
@@ -57,6 +60,9 @@ assignees: ''
 - [ ] Half-Life 2: Lost Coast
 - [ ] Half-Life 2: Episode One
 - [ ] Half-Life 2: Episode Two
+- [ ] Half-Life 2: Deathmatch
+- [ ] Counter-Strike: Source
+- [ ] Day of Defeat: Source
 - [ ] Portal
 
 ## Bug Description
