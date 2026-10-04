@@ -63,6 +63,18 @@ It lets users enjoy the game again without the hassle of manual binary update.
 
     [:octicons-mark-github-16: Source Code](https://github.com/nillerusr/source-engine) · [:octicons-person-24: Nillerusr](https://github.com/nillerusr)
 
+-   **Half-Life 2: Deathmatch**
+
+    [:octicons-mark-github-16: Source Code](https://github.com/nillerusr/source-engine) · [:octicons-person-24: Nillerusr](https://github.com/nillerusr)
+
+-   **Counter-Strike: Source**
+
+    [:octicons-mark-github-16: Source Code](https://github.com/nillerusr/source-engine) · [:octicons-person-24: Nillerusr](https://github.com/nillerusr)
+
+-   **Day of Defeat: Source**
+
+    [:octicons-mark-github-16: Source Code](https://github.com/nillerusr/source-engine) · [:octicons-person-24: Nillerusr](https://github.com/nillerusr)
+
 -   **Portal**
 
     [:octicons-mark-github-16: Source Code](https://github.com/nillerusr/source-engine) · [:octicons-person-24: Nillerusr](https://github.com/nillerusr)
