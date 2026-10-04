@@ -22,6 +22,9 @@ assignees: ''
 - [ ] Half-Life 2: Lost Coast
 - [ ] Half-Life 2: Episode One
 - [ ] Half-Life 2: Episode Two
+- [ ] Half-Life 2: Deathmatch
+- [ ] Counter-Strike: Source
+- [ ] Day of Defeat: Source
 - [ ] Portal
 
 ### Other
