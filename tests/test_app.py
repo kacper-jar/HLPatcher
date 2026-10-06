@@ -1,3 +1,4 @@
+import logging
 import threading
 import time
 import tkinter
@@ -274,3 +275,16 @@ def test_quitting_while_patching_waits_for_the_patcher_to_stop(app, mocker):
     assert page.patcher.working_dir_when_stopped is True
     assert not page.is_patching()
     assert not app.context.working_dir.exists()
+
+
+def test_an_error_in_the_interface_goes_to_the_log(app, caplog):
+    def broken_button():
+        raise ValueError("the page lost its game list")
+
+    app.after(0, broken_button)
+    with caplog.at_level(logging.ERROR):
+        run_until(app, lambda: caplog.records)
+
+    record, = caplog.records
+    assert record.getMessage() == "Unhandled error in the interface"
+    assert record.exc_info[1].args == ("the page lost its game list",)

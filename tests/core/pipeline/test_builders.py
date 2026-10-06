@@ -1,3 +1,4 @@
+import io
 import subprocess
 
 import pytest
@@ -62,8 +63,7 @@ def test_cmake_builder_stops_at_the_first_failing_command(build, mocker):
 
     def popen(cmd, *args, **kwargs):
         commands.append(cmd)
-        process = mocker.Mock(args=cmd)
-        process.communicate.return_value = ("", "fetching dependencies failed")
+        process = mocker.Mock(args=cmd, stdout=io.StringIO("fetching dependencies failed\n"))
         process.poll.return_value = 1
         return process
 

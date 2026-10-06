@@ -28,6 +28,7 @@ from .updater import Updater
 from .game_detector import GameDetector
 from .guide_registry import GuideRegistry
 from .patcher import Patcher
+from .session_log import SessionLog
 from .planner import Planner
 from .i18n import I18n
 
@@ -44,6 +45,7 @@ __all__ = [
     "GameDetector",
     "GuideRegistry",
     "Patcher",
+    "SessionLog",
     "UpdateInfo",
     "VpkEntry",
     "GuideConfig",

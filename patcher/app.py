@@ -76,6 +76,9 @@ class App(ctk.CTk):
         self.router.route_interceptor = self._on_route_intercept
         self.router.show_page(PageRoute.WELCOME)
 
+    def report_callback_exception(self, exc, val, tb):
+        logger.error("Unhandled error in the interface", exc_info=(exc, val, tb))
+
     def _on_language_changed(self, lang_code: str):
         self.footer.retranslate(self.i18n)
 

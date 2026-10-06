@@ -1,3 +1,5 @@
+import io
+
 import customtkinter as ctk
 import pytest
 
@@ -89,9 +91,13 @@ def mock_run_command(mocker):
             self.returncode = returncode
             self._stdout = stdout
             self._stderr = stderr
+            self.stdout = io.StringIO(stdout)
 
         def communicate(self):
             return self._stdout, self._stderr
+
+        def wait(self):
+            return self.returncode
 
         def poll(self):
             return self.returncode
