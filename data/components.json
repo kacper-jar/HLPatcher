@@ -329,44 +329,6 @@
     ]
   },
   {
-    "id": "half-life-source",
-    "name": "Half-Life: Source",
-    "subfolder": "hl1",
-    "downgrade_group": "hl2",
-    "game": "half-life-2",
-    "estimated_time": 3,
-    "estimated_space": 25,
-    "downgrade_requires": {},
-    "steps": [
-      {
-        "type": "git-fetcher",
-        "url": "https://github.com/nillerusr/source-engine",
-        "patch_dir_name": "source-engine",
-        "stable_commit": "ed8209cc35c61fbd8ddff8480962a01c981eef2f",
-        "force_stable": false
-      },
-      {
-        "type": "patch",
-        "patch_dir_name": "source-engine"
-      },
-      {
-        "type": "waf-builder",
-        "patch_dir_name": "source-engine",
-        "build_args": [
-          "-T",
-          "release",
-          "--prefix=",
-          "--build-games=hl1"
-        ],
-        "waf_game": "hl1"
-      },
-      {
-        "type": "source-installer",
-        "patch_dir_name": "source-engine"
-      }
-    ]
-  },
-  {
     "id": "portal",
     "name": "Portal",
     "subfolder": "portal",
