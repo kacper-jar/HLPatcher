@@ -1,4 +1,5 @@
 import http.server
+import io
 import subprocess
 import threading
 import time
@@ -145,8 +146,7 @@ def test_goldsrc_engine_fetcher_stops_when_the_image_does_not_mount(step_context
 
     def popen(cmd, *args, **kwargs):
         commands.append(cmd)
-        process = mocker.Mock(args=cmd)
-        process.communicate.return_value = ("", "hdiutil: attach failed - image not recognized")
+        process = mocker.Mock(args=cmd, stdout=io.StringIO("hdiutil: attach failed - image not recognized\n"))
         process.poll.return_value = 1 if cmd[:2] == ["hdiutil", "attach"] else 0
         return process
 

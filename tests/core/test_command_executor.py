@@ -52,11 +52,47 @@ def test_runs_a_command_and_returns_its_output(executor):
     )
 
 
-def test_prints_output_straight_to_the_terminal_unless_captured(executor, capfd):
-    result = executor.run(["echo", "Building hlsdk-portable"])
+def output_lines(caplog):
+    return [record.getMessage() for record in caplog.records if record.name == "patcher.output"]
+
+
+def test_logs_the_output_and_errors_line_by_line_unless_captured(executor, caplog):
+    with caplog.at_level(logging.INFO):
+        result = executor.run(["sh", "-c", "echo 'Checking for clang'; echo 'clang: not found' >&2"])
+        executor.run(["echo", "captured"], capture=True)
 
     assert result.stdout is None
-    assert capfd.readouterr().out == "Building hlsdk-portable\n"
+    assert output_lines(caplog) == ["Checking for clang", "clang: not found"]
+
+
+def test_remembers_the_last_command_and_the_end_of_its_output(executor, tmp_path):
+    command = ["sh", "-c", "for i in $(seq 1 250); do echo \"line $i\"; done; exit 2"]
+
+    with pytest.raises(subprocess.CalledProcessError) as error:
+        executor.run(command, cwd=tmp_path)
+
+    last_lines = [f"line {i}" for i in range(51, 251)]
+    assert (executor.last_command, executor.last_cwd) == (command, tmp_path)
+    assert list(executor.recent_output) == last_lines
+    assert error.value.output == "\n".join(last_lines)
+
+
+def test_keeps_only_the_output_of_the_last_command(executor):
+    executor.run(["echo", "Cloning hlsdk-portable"])
+    executor.run(["echo", "Building hlsdk-portable"])
+
+    assert list(executor.recent_output) == ["Building hlsdk-portable"]
+
+
+def test_returns_when_the_command_ends_even_if_something_it_started_keeps_its_output_open(executor, tmp_path):
+    pid_file = tmp_path / "daemon.pid"
+    started = time.monotonic()
+    try:
+        executor.run(["sh", "-c", f"sleep 30 & echo $! > '{pid_file}'; echo started"])
+        assert time.monotonic() - started < 5
+    finally:
+        with contextlib.suppress(ProcessLookupError, ValueError):
+            os.kill(int(pid_file.read_text()), signal.SIGKILL)
 
 
 def test_runs_in_the_given_folder(executor, tmp_path):
