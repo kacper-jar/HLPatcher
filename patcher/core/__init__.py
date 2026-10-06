@@ -30,6 +30,7 @@ from .game_detector import GameDetector
 from .guide_registry import GuideRegistry
 from .patcher import Patcher
 from .session_log import SessionLog
+from .failure_report import FailureReport
 from .planner import Planner
 from .i18n import I18n
 
@@ -48,6 +49,7 @@ __all__ = [
     "GuideRegistry",
     "Patcher",
     "SessionLog",
+    "FailureReport",
     "UpdateInfo",
     "VpkEntry",
     "GuideConfig",
