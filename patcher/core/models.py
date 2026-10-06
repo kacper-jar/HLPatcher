@@ -1,5 +1,6 @@
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from datetime import datetime
 from enum import Enum
 from pathlib import Path
 from typing import NamedTuple
@@ -142,6 +143,17 @@ class StepContext:
     executor: CommandExecutor
     log: Callable[[str], None]
     applied_patch_containers: set[tuple[str, str]] = field(default_factory=set)
+
+
+@dataclass
+class StepRecord:
+    game: Game
+    component: Component
+    number: int
+    total: int
+    config: StepConfig
+    started: datetime
+    finished: datetime | None = None
 
 
 @dataclass

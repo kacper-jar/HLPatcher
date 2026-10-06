@@ -158,6 +158,30 @@ def test_a_failing_step_ends_the_run(games, make_patcher, actions, events):
     assert ran(events) == [("GoldSrc Engine", "fetch"), ("GoldSrc Engine", "build")]
 
 
+def test_keeps_a_timeline_of_the_steps_up_to_the_one_that_failed(games, make_patcher, actions):
+    def fail_on_half_life_2(context, game, comp):
+        if comp.name == "Half-Life 2":
+            raise subprocess.CalledProcessError(1, ["./waf", "build"])
+
+    actions["build"] = fail_on_half_life_2
+    patcher = make_patcher()
+
+    with pytest.raises(subprocess.CalledProcessError):
+        patcher.run(games)
+
+    assert [(r.game.name, r.component.name, r.number, r.total, r.config.type) for r in patcher.timeline] == [
+        ("Half-Life", "GoldSrc Engine", 1, 3, "fetch"),
+        ("Half-Life", "GoldSrc Engine", 2, 3, "build"),
+        ("Half-Life", "GoldSrc Engine", 3, 3, "install"),
+        ("Half-Life", "Opposing Force", 1, 2, "fetch"),
+        ("Half-Life", "Opposing Force", 2, 2, "install"),
+        ("Half-Life 2", "Half-Life 2", 1, 2, "build"),
+    ]
+    *finished, failed = patcher.timeline
+    assert all(r.started <= r.finished <= after.started for r, after in zip(finished, patcher.timeline[1:]))
+    assert failed.finished is None
+
+
 def test_rejects_a_step_type_that_is_not_registered(mock_steam_library, make_component, make_patcher):
     game = Game("Half-Life", mock_steam_library / "Half-Life", EngineType.GOLDSRC, [
         make_component("Half-Life", "valve", EngineType.GOLDSRC, steps=steps("svn-fetcher")),

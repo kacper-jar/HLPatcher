@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from patcher.core.command_executor import CommandExecutor
-from patcher.core.models import AppConfig, Game, PatchContext, StepContext
+from patcher.core.models import AppConfig, Game, PatchContext, StepContext, StepRecord
 from patcher.core.pipeline import STEP_REGISTRY
 
 logger = logging.getLogger(__name__)
@@ -20,6 +20,7 @@ class Patcher:
         self._component_callback = component_callback
         self._step_callback = step_callback
         self.executor = CommandExecutor(self._context.working_dir)
+        self.timeline: list[StepRecord] = []
 
     def stop(self):
         self.executor.stop()
@@ -70,7 +71,10 @@ class Patcher:
 
                     step = step_class(step_context)
                     self.executor.interruptible = step.interruptible
+                    record = StepRecord(game, comp, i + 1, len(comp.steps), step_config, datetime.now())
+                    self.timeline.append(record)
                     step.execute(game, comp, step_config)
+                    record.finished = datetime.now()
 
         self._cleanup()
 
