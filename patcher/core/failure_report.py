@@ -1,5 +1,6 @@
 import contextlib
 import dataclasses
+import fnmatch
 import json
 import logging
 import os
@@ -27,6 +28,9 @@ TOOLS = ["git", "python3", "make", "cmake", "ninja", "meson", "perl", "curl", "p
 VENV_TOOLS = ["python3", "cmake", "ninja", "meson"]
 ENVIRONMENT = ["PATH", "CC", "CXX", "CFLAGS", "CXXFLAGS", "CPPFLAGS", "LDFLAGS", "PKG_CONFIG_PATH", "SDKROOT",
                "MACOSX_DEPLOYMENT_TARGET", "DEVELOPER_DIR", "SHELL", "LANG", "LC_ALL"]
+BUILD_LOGS = ["*.log", "CMakeConfigureLog.yaml"]
+SKIPPED_FOLDERS = {".git", "venv"}
+MAX_TREE_ENTRIES = 100_000
 MAX_BINARIES = 500
 MACH_O_MAGICS = {bytes.fromhex(magic) for magic in ("feedface", "feedfacf", "cefaedfe", "cffaedfe", "cafebabe")}
 GIGABYTE = 1024 ** 3
@@ -61,6 +65,10 @@ class FailureReport:
     def _files(self, error: BaseException) -> Iterator[tuple[str, str]]:
         yield "report.txt", self._report(error)
         yield "session.log", self._session_log()
+        yield "working-folder.txt", self._collect(self._working_folder)
+        for clone in self._clones():
+            yield f"git/{clone.name}.txt", self._collect(lambda: self._git(clone))
+        yield from self._build_logs()
 
     def _report(self, error: BaseException) -> str:
         sections = [
@@ -277,6 +285,64 @@ class FailureReport:
         if not path or not path.exists():
             return "This session's log wasn't saved.\n"
         return path.read_text(encoding="utf-8", errors="replace")
+
+    def _working_folder(self) -> str:
+        root = self._context.working_dir
+        if not root.is_dir():
+            return f"The working folder {root} doesn't exist.\n"
+        lines = [f"{root}"]
+        for folder, folders, files in os.walk(root):
+            folder = Path(folder)
+            skipped = sorted(name for name in folders if name in SKIPPED_FOLDERS)
+            folders[:] = sorted(name for name in folders if name not in SKIPPED_FOLDERS)
+            for name in skipped + folders + sorted(files):
+                if len(lines) > MAX_TREE_ENTRIES:
+                    lines.append(f"... stopped after {MAX_TREE_ENTRIES} entries")
+                    return "\n".join(lines) + "\n"
+                lines.append(self._tree_line(root, folder / name, name in skipped))
+        return "\n".join(lines) + "\n"
+
+    @staticmethod
+    def _tree_line(root: Path, path: Path, skipped: bool) -> str:
+        try:
+            info = path.lstat()
+        except OSError as e:
+            return f"{'?':>12}  {'?':16}  {path.relative_to(root)}  ({e.strerror})"
+        kind = "/" if path.is_dir() and not path.is_symlink() else ""
+        note = "  (contents not listed)" if skipped else ""
+        return (f"{info.st_size:>12}  {datetime.fromtimestamp(info.st_mtime):%Y-%m-%d %H:%M}  "
+                f"{path.relative_to(root)}{kind}{note}")
+
+    def _clones(self) -> list[Path]:
+        root = self._context.working_dir
+        if not root.is_dir():
+            return []
+        return sorted(folder for folder in root.iterdir() if (folder / ".git").exists())
+
+    def _git(self, clone: Path) -> str:
+        def git(*args: str) -> str:
+            return self._run("git", "-c", "core.quotepath=off", *args, cwd=clone)
+
+        return "\n".join([
+            f"Remote: {git('remote', 'get-url', 'origin')}",
+            f"Commit: {git('rev-parse', 'HEAD')}",
+            f"Branch: {git('rev-parse', '--abbrev-ref', 'HEAD')}",
+            "== Status", git("status", "--short"),
+            "== Submodules", git("submodule", "status", "--recursive"),
+            "== Diff", git("diff"),
+        ]) + "\n"
+
+    def _build_logs(self) -> Iterator[tuple[str, str]]:
+        root = self._context.working_dir
+        if not root.is_dir():
+            return
+        for folder, folders, files in os.walk(root):
+            folders[:] = sorted(name for name in folders if name not in SKIPPED_FOLDERS)
+            for name in sorted(files):
+                if any(fnmatch.fnmatch(name, pattern) for pattern in BUILD_LOGS):
+                    path = Path(folder) / name
+                    log = self._collect(lambda: path.read_bytes().decode(errors="replace"))
+                    yield f"build-logs/{path.relative_to(root)}", log
 
     @staticmethod
     def _indent(text: str) -> str:
