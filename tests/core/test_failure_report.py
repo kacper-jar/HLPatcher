@@ -1,7 +1,9 @@
 import logging
 import re
 import shlex
+import shutil
 import subprocess
+import sys
 import zipfile
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -13,17 +15,58 @@ from patcher.core import (AppConfig, BuildStepConfig, CommandExecutor, Component
 
 LOGS = Path("Library/Application Support/HLPatcher/logs")
 GOLDSRC = EngineType.GOLDSRC
+SOURCE = EngineType.SOURCE
 FAILED_COMMAND = ["sh", "-c", "echo 'Checking for SDL2'; echo 'The configuration failed' >&2; exit 1"]
+BAD_CPU_TYPE = "arch: posix_spawnp: /usr/bin/true: Bad CPU type in executable\n"
+SYSTEM = {
+    ("sw_vers", "-productVersion"): (0, "27.0.1\n"),
+    ("sw_vers", "-buildVersion"): (1, "sw_vers: unknown option\n"),
+    ("sysctl", "-n", "hw.model"): (0, "Mac15,12\n"),
+    ("sysctl", "-n", "machdep.cpu.brand_string"): (0, "Apple M3\n"),
+    ("sysctl", "-n", "hw.memsize"): (0, "17179869184\n"),
+    ("sysctl", "-n", "sysctl.proc_translated"): (0, "0\n"),
+}
 
 
 def make_game(home):
+    game_dir = home / "Steam" / "steamapps" / "common" / "Half-Life"
     engine = Component("GoldSrc Engine", "", GOLDSRC, PatchStatus.NEEDS_PATCH, id="goldsrc-engine", steps=[
         FetchStepConfig("goldsrc-engine-fetcher", url="https://github.com/FWGS/xash3d-fwgs",
                         patch_dir_name="xash3d-fwgs"),
         BuildStepConfig("waf-builder", patch_dir_name="xash3d-fwgs", build_args=["-8", "--enable-bundled-deps"]),
     ])
     half_life = Component("Half-Life", "valve", GOLDSRC, PatchStatus.ALREADY_PATCHED, id="half-life")
-    return Game("Half-Life", home / "Steam" / "steamapps" / "common" / "Half-Life", GOLDSRC, [engine, half_life])
+    return Game("Half-Life", game_dir, GOLDSRC, [engine, half_life])
+
+
+def install_game(game, home):
+    (game.path / "valve").mkdir(parents=True)
+    shutil.copy("/usr/bin/true", game.path / "hl_osx")
+    (game.path / "launch.sh").write_text("#!/bin/sh\n")
+    (game.path / "launch.sh").chmod(0o755)
+    (game.path / "valve" / "libnotreally.dylib").write_text("not a library")
+    (game.path / "unreadable_osx").write_bytes(b"\xcf\xfa\xed\xfe")
+    (game.path / "unreadable_osx").chmod(0o100)
+    (home / "Documents" / "Half-Life backup (2026-10-01)").mkdir(parents=True)
+
+
+def half_life_2(home):
+    return Game("Half-Life 2", home / "Steam" / "steamapps" / "common" / "Half-Life 2", SOURCE, [
+        Component("Half-Life 2", "hl2", SOURCE, PatchStatus.NEEDS_PATCH, id="half-life-2"),
+    ])
+
+
+def fake_system(rosetta):
+    def run(cmd, **kwargs):
+        if cmd[:2] == ("arch", "-x86_64"):
+            code, output = (0, "") if rosetta else (1, BAD_CPU_TYPE)
+        elif Path(cmd[0]).name == "perl":
+            code, output = 0, "\nThis is perl 5, version 34, subversion 1 (v5.34.1)\n"
+        else:
+            code, output = SYSTEM.get(cmd, (0, ""))
+        return subprocess.CompletedProcess(cmd, code, output, "")
+
+    return run
 
 
 def failed_build(executor, folder):
@@ -41,6 +84,9 @@ def report(tmp_path_factory):
     home = tmp_path_factory.mktemp("home")
     with pytest.MonkeyPatch.context() as monkeypatch:
         monkeypatch.setattr(Path, "home", lambda: home)
+        monkeypatch.setenv("CC", "clang")
+        monkeypatch.setenv("DYLD_LIBRARY_PATH", str(home / "lib"))
+        monkeypatch.setenv("GITHUB_TOKEN", "ghp_secret")
         monkeypatch.setattr(SessionLog, "_path", home / LOGS / "session-2026-10-06_14-00-00.log")
         (home / LOGS).mkdir(parents=True)
         SessionLog.current().write_text(f"14:00:01 [INFO] patcher.core.patcher: Preparing environment in {home}\n")
@@ -51,11 +97,13 @@ def report(tmp_path_factory):
         working_dir = home / "work"
         clone = working_dir / "xash3d-fwgs"
         clone.mkdir(parents=True)
+        subprocess.run([sys.executable, "-m", "venv", "--without-pip", str(working_dir / "venv")], check=True)
         game = make_game(home)
+        install_game(game, home)
         engine = game.components[0]
         context = PatchContext(steam_library_path=home / "Steam", working_dir=working_dir,
                                script_dir=home / "HLPatcher", patch_mode=PatchMode.STABLE, create_backup=True,
-                               games=[game], selected_components=[engine])
+                               games=[game, half_life_2(home)], selected_components=[engine])
         started = datetime.now() - timedelta(seconds=30)
         timeline = [
             StepRecord(game, engine, 1, 2, engine.steps[0], started, started + timedelta(seconds=12.5)),
@@ -136,6 +184,8 @@ def test_describes_the_session_and_every_detected_game(text):
         "  Half-Life (GoldSrc) at ~/Steam/steamapps/common/Half-Life",
         "    GoldSrc Engine (goldsrc-engine): Needs patching",
         "    Half-Life (half-life): Already patched",
+        "  Half-Life 2 (Source) at ~/Steam/steamapps/common/Half-Life 2",
+        "    Half-Life 2 (half-life-2): Needs patching",
     ]))
 
 
@@ -146,8 +196,75 @@ def test_lists_the_steps_that_ran(text):
     assert second.endswith("GoldSrc Engine, step 2 of 2 (waf-builder): FAILED")
 
 
-def write_without_a_patch_run(home, timeline=()):
-    context = PatchContext(working_dir=home / "work")
+def test_lists_the_binaries_and_backups_of_the_failed_game(text):
+    lines = section(text, "Game folders").splitlines()
+
+    assert lines[:3] == [
+        "Half-Life at ~/Steam/steamapps/common/Half-Life",
+        "Backups: Half-Life backup (2026-10-01)",
+        "Binaries (1):",
+    ]
+    assert re.fullmatch(r"  hl_osx  \d+ bytes  \d{4}-\d\d-\d\d \d\d:\d\d  .*arm64.*", lines[3])
+    assert len(lines) == 4
+
+
+def test_describes_the_mac_and_its_build_tools(text):
+    machine, toolchain = section(text, "Machine"), section(text, "Toolchain")
+
+    assert re.search(r"^macOS: \d+\.\d+.* \(\w+\)$", machine, re.M)
+    assert re.search(r"^Chip: Apple ", machine, re.M)
+    assert re.search(r"^Memory: \d+ GB$", machine, re.M)
+    assert re.search(r"^Running under Rosetta: (True|False)$", machine, re.M)
+    assert re.search(r"^Rosetta installed: (True|False)$", machine, re.M)
+    assert re.search(r"^System disk: [\d.]+ GB free of [\d.]+ GB \(/\)$", machine, re.M)
+    assert re.search(r"^Working folder disk: .* \(~/work\)$", machine, re.M)
+    assert re.search(r"^Steam library disk: .* \(~/Steam\)$", machine, re.M)
+    assert re.search(r"^clang: .*clang version", toolchain, re.M)
+    assert re.search(r"^  git: /\S+/git, git version", toolchain, re.M)
+    assert "In the build venv (~/work/venv/bin):\n  python3: ~/work/venv/bin/python3, Python 3." in toolchain
+    assert "  cmake: not found\n" in toolchain
+
+
+@pytest.mark.parametrize("rosetta", [True, False], ids=["with-rosetta", "without-rosetta"])
+def test_reads_the_mac_from_its_system_tools(tmp_path, mocker, rosetta):
+    mocker.patch("pathlib.Path.home", return_value=tmp_path)
+    mocker.patch("patcher.core.failure_report.subprocess.run", side_effect=fake_system(rosetta))
+
+    text, _ = write_without_a_patch_run(tmp_path)
+
+    assert section(text, "Machine").splitlines()[:6] == [
+        "macOS: 27.0.1 (sw_vers: unknown option <exit code 1>)",
+        "Model: Mac15,12",
+        "Chip: Apple M3",
+        "Memory: 16 GB",
+        "Running under Rosetta: False",
+        f"Rosetta installed: {rosetta}",
+    ]
+    assert re.search(r"^  perl: \S+, This is perl 5, version 34", section(text, "Toolchain"), re.M)
+
+
+def test_shares_only_build_related_environment_variables(report, text):
+    environment = section(text, "Environment").splitlines()
+
+    assert "CC=clang" in environment
+    assert "DYLD_LIBRARY_PATH=~/lib" in environment
+    assert "CFLAGS=(not set)" in environment
+    assert not [name for name, content in report["files"].items() if "ghp_secret" in content]
+
+
+def test_describes_the_app_python_and_the_build_venv_with_their_packages(text):
+    python = section(text, "Python")
+
+    assert re.search(r"^customtkinter: \d", python, re.M)
+    assert re.search(r"^  customtkinter==\d", python, re.M)
+    assert "Build venv (~/work/venv):\n  Python 3." in python
+    assert re.search(r"^  home = /", python, re.M)
+    assert re.search(r"^Build venv packages:\n  .*No module named pip", python, re.M)
+
+
+def write_without_a_patch_run(home, timeline=(), games=()):
+    context = PatchContext(working_dir=home / "work", games=list(games),
+                           selected_components=[game.components[0] for game in games])
     path = FailureReport(context, AppConfig(), list(timeline), CommandExecutor(context.working_dir)).write(
         ValueError("bad config"))
     with zipfile.ZipFile(path) as archive:
@@ -165,6 +282,8 @@ def test_a_failure_before_any_step_still_gets_a_report(tmp_path, mocker):
     assert section(text, "Last command") == "No command was run."
     assert "Steam library: not chosen\n" in section(text, "Session")
     assert section(text, "Timeline") == "No patch step started."
+    assert section(text, "Game folders") == "No game was being patched."
+    assert section(text, "Python").endswith("Build venv (~/work/venv):\n  not created")
     assert session_log == "This session's log wasn't saved.\n"
 
 
@@ -197,6 +316,28 @@ def test_a_failure_after_a_successful_command_shows_that_command_without_an_exit
         "Last lines of its output:",
         "Installing xash3d-fwgs...",
     ])
+
+
+def test_without_a_failed_step_describes_the_selected_games(tmp_path, mocker):
+    mocker.patch("pathlib.Path.home", return_value=tmp_path)
+
+    text, _ = write_without_a_patch_run(tmp_path, games=[make_game(tmp_path)])
+
+    assert section(text, "Game folders") == ("Half-Life at ~/Steam/steamapps/common/Half-Life: "
+                                             "the folder doesn't exist.")
+
+
+def test_a_tool_that_hangs_doesnt_stop_the_report(tmp_path, mocker):
+    def hang(cmd, **kwargs):
+        raise subprocess.TimeoutExpired(cmd, 60)
+
+    mocker.patch("pathlib.Path.home", return_value=tmp_path)
+    mocker.patch("patcher.core.failure_report.subprocess.run", side_effect=hang)
+
+    text, _ = write_without_a_patch_run(tmp_path)
+
+    assert "macOS: <Command '('sw_vers', '-productVersion')' timed out after 60 seconds>" in section(text, "Machine")
+    assert section(text, "Error").endswith("ValueError: bad config")
 
 
 def test_a_part_that_cant_be_collected_doesnt_lose_the_rest(tmp_path, mocker):
