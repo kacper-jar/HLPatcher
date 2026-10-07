@@ -2,20 +2,34 @@ import contextlib
 import dataclasses
 import json
 import logging
+import os
 import shlex
+import shutil
 import subprocess
+import sys
+import tkinter
 import traceback
 import zipfile
 from collections.abc import Callable, Iterator
 from datetime import datetime
+from importlib import metadata
 from pathlib import Path
 
 import patcher
 from patcher.core.command_executor import CommandExecutor
-from patcher.core.models import AppConfig, PatchContext, StepRecord
+from patcher.core.models import AppConfig, Game, PatchContext, StepRecord
 from patcher.core.session_log import SessionLog
 
 logger = logging.getLogger(__name__)
+
+PROBE_TIMEOUT = 60
+TOOLS = ["git", "python3", "make", "cmake", "ninja", "meson", "perl", "curl", "patch"]
+VENV_TOOLS = ["python3", "cmake", "ninja", "meson"]
+ENVIRONMENT = ["PATH", "CC", "CXX", "CFLAGS", "CXXFLAGS", "CPPFLAGS", "LDFLAGS", "PKG_CONFIG_PATH", "SDKROOT",
+               "MACOSX_DEPLOYMENT_TARGET", "DEVELOPER_DIR", "SHELL", "LANG", "LC_ALL"]
+MAX_BINARIES = 500
+MACH_O_MAGICS = {bytes.fromhex(magic) for magic in ("feedface", "feedfacf", "cefaedfe", "cffaedfe", "cafebabe")}
+GIGABYTE = 1024 ** 3
 
 
 class FailureReport:
@@ -55,6 +69,11 @@ class FailureReport:
             ("Last command", lambda: self._last_command(error)),
             ("Session", self._session),
             ("Timeline", self._timeline_text),
+            ("Game folders", self._game_folders),
+            ("Machine", self._machine),
+            ("Toolchain", self._toolchain),
+            ("Environment", self._environment),
+            ("Python", self._python),
         ]
         parts = [f"HLPatcher failure report, {datetime.now().astimezone():%Y-%m-%d %H:%M:%S %z}"]
         parts += [f"== {title}\n{self._collect(describe)}" for title, describe in sections]
@@ -140,8 +159,135 @@ class FailureReport:
                          f"{record.total} ({record.config.type}): {result}")
         return "\n".join(lines)
 
+    def _game_folders(self) -> str:
+        record = self._failed_record()
+        selected = self._context.selected_components
+        if record:
+            games = [record.game]
+        else:
+            games = [game for game in self._context.games if any(c in game.components for c in selected)]
+        if not games:
+            return "No game was being patched."
+        return "\n\n".join(self._game_folder(game) for game in games)
+
+    def _game_folder(self, game: Game) -> str:
+        lines = [f"{game.name} at {game.path}"]
+        if not game.path.is_dir():
+            return f"{lines[0]}: the folder doesn't exist."
+        backups = sorted((Path.home() / "Documents").glob(f"{game.name} backup (*"))
+        lines.append("Backups: " + (", ".join(backup.name for backup in backups) or "none"))
+        binaries = []
+        for folder, _, files in os.walk(game.path):
+            for name in sorted(files):
+                path = Path(folder) / name
+                if path.suffix in (".dylib", ".so") or os.access(path, os.X_OK):
+                    if self._is_mach_o(path):
+                        binaries.append(path)
+        lines.append(f"Binaries ({len(binaries)}):")
+        for path in binaries[:MAX_BINARIES]:
+            info = path.stat()
+            archs = self._run("lipo", "-archs", str(path))
+            lines.append(f"  {path.relative_to(game.path)}  {info.st_size} bytes  "
+                         f"{datetime.fromtimestamp(info.st_mtime):%Y-%m-%d %H:%M}  {archs}")
+        return "\n".join(lines)
+
+    @staticmethod
+    def _is_mach_o(path: Path) -> bool:
+        try:
+            with open(path, "rb") as f:
+                return f.read(4) in MACH_O_MAGICS
+        except OSError:
+            return False
+
+    def _machine(self) -> str:
+        memory = self._run("sysctl", "-n", "hw.memsize")
+        lines = [
+            f"macOS: {self._run('sw_vers', '-productVersion')} ({self._run('sw_vers', '-buildVersion')})",
+            f"Model: {self._run('sysctl', '-n', 'hw.model')}",
+            f"Chip: {self._run('sysctl', '-n', 'machdep.cpu.brand_string')}",
+            f"Memory: {int(memory) / GIGABYTE:.0f} GB" if memory.isdigit() else f"Memory: {memory}",
+            f"Running under Rosetta: {self._run('sysctl', '-n', 'sysctl.proc_translated') == '1'}",
+            f"Rosetta installed: {self._run('arch', '-x86_64', '/usr/bin/true') == ''}",
+        ]
+        for label, path in [("System disk", Path("/")), ("Working folder disk", self._context.working_dir),
+                            ("Steam library disk", self._context.steam_library_path)]:
+            lines.append(f"{label}: {self._free_space(path)}")
+        return "\n".join(lines)
+
+    @staticmethod
+    def _free_space(path: Path) -> str:
+        existing = next((folder for folder in [path, *path.parents] if folder.exists()), Path("/"))
+        usage = shutil.disk_usage(existing)
+        return f"{usage.free / GIGABYTE:.1f} GB free of {usage.total / GIGABYTE:.1f} GB ({existing})"
+
+    def _toolchain(self) -> str:
+        xcode = Path("/Applications/Xcode.app")
+        lines = [
+            f"Developer folder: {self._run('xcode-select', '-p')}",
+            f"Command Line Tools: {self._indent(self._run('pkgutil', '--pkg-info=com.apple.pkg.CLTools_Executables'))}",
+            f"Xcode: {self._indent(self._run('xcodebuild', '-version')) if xcode.exists() else 'not installed'}",
+            f"clang: {self._indent(self._run('clang', '--version'))}",
+            f"SDK: {self._run('xcrun', '--show-sdk-path')} ({self._run('xcrun', '--show-sdk-version')})",
+            "On PATH:",
+        ]
+        lines += [f"  {tool}: {self._tool(shutil.which(tool))}" for tool in TOOLS]
+        venv_bin = self._context.working_dir / "venv" / "bin"
+        lines.append(f"In the build venv ({venv_bin}):")
+        lines += [f"  {tool}: {self._tool(venv_bin / tool if (venv_bin / tool).exists() else None)}"
+                  for tool in VENV_TOOLS]
+        return "\n".join(lines)
+
+    def _tool(self, path: str | Path | None) -> str:
+        if not path:
+            return "not found"
+        version = next((line for line in self._run(str(path), "--version").splitlines() if line.strip()), "")
+        return f"{path}, {version}"
+
+    @staticmethod
+    def _environment() -> str:
+        names = ENVIRONMENT + sorted(name for name in os.environ if name.startswith("DYLD_"))
+        return "\n".join(f"{name}={os.environ.get(name, '(not set)')}" for name in names)
+
+    def _python(self) -> str:
+        venv = self._context.working_dir / "venv"
+        venv_python = venv / "bin" / "python3"
+        venv_config = venv / "pyvenv.cfg"
+        lines = [
+            f"App Python: {sys.version.splitlines()[0]} at {sys.executable}",
+            f"Tk: {tkinter.TkVersion}",
+            f"customtkinter: {metadata.version('customtkinter')}",
+            "App packages:",
+            "  " + self._indent(self._run(sys.executable, "-m", "pip", "freeze")),
+            f"Build venv ({venv}):",
+        ]
+        if not venv_python.exists():
+            lines.append("  not created")
+            return "\n".join(lines)
+        venv_settings = venv_config.read_text(errors="replace").strip() if venv_config.exists() else "no pyvenv.cfg"
+        lines += [
+            "  " + self._run(str(venv_python), "--version"),
+            "  " + self._indent(venv_settings),
+            "Build venv packages:",
+            "  " + self._indent(self._run(str(venv_python), "-m", "pip", "freeze")),
+        ]
+        return "\n".join(lines)
+
     def _session_log(self) -> str:
         path = SessionLog.current()
         if not path or not path.exists():
             return "This session's log wasn't saved.\n"
         return path.read_text(encoding="utf-8", errors="replace")
+
+    @staticmethod
+    def _indent(text: str) -> str:
+        return text.replace("\n", "\n  ")
+
+    @staticmethod
+    def _run(*cmd: str, cwd: Path | None = None) -> str:
+        try:
+            result = subprocess.run(cmd, cwd=cwd, stdin=subprocess.DEVNULL, capture_output=True, text=True,
+                                    errors="replace", timeout=PROBE_TIMEOUT)
+        except (OSError, subprocess.TimeoutExpired) as e:
+            return f"<{e}>"
+        output = (result.stdout + result.stderr).rstrip()
+        return output if result.returncode == 0 else f"{output} <exit code {result.returncode}>"
