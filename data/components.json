@@ -83,7 +83,7 @@
         "url": "https://github.com/FWGS/hlsdk-portable",
         "patch_dir_name": "hlsdk-portable-opforfixed",
         "branch": "opforfixed",
-        "stable_commit": "bd9efef7f39ac6d1ffb31a12a5635d6a47e8dbca",
+        "stable_commit": "dffe28ca1663fb786dc8cde00e08da03e6b8934c",
         "force_stable": false
       },
       {
