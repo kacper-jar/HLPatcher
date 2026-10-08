@@ -2,9 +2,10 @@ import customtkinter as ctk
 import logging
 import time
 import threading
+from pathlib import Path
 from patcher.ui.base_page import BasePage
 from patcher.ui.page_route import PageRoute
-from patcher.core import Patcher, Planner
+from patcher.core import FailureReport, Patcher, Planner
 
 logger = logging.getLogger(__name__)
 
@@ -95,7 +96,10 @@ class ProgressPage(BasePage):
                 logger.info("Patching stopped by user")
             else:
                 logger.exception("Patching failed")
-                self._on_patching_error_threadsafe(self._patching_error)
+                self.after(0, self._on_collecting_logs)
+                report = FailureReport(self._app.context, self._app.config, self.patcher.timeline,
+                                       self.patcher.executor).write(e)
+                self._on_patching_error_threadsafe(self._patching_error, report)
 
     def _on_component_start_threadsafe(self, component_name: str):
         self.after(0, self._on_component_start, component_name)
@@ -126,11 +130,15 @@ class ProgressPage(BasePage):
         self._step_label.configure(text=self._app.i18n.t("progress_done"))
         self._app.router.show_page(PageRoute.SUCCESS)
 
-    def _on_patching_error_threadsafe(self, error: str):
-        self.after(0, self._on_patching_error_sync, error)
+    def _on_collecting_logs(self):
+        self._status_label.configure(text=self._app.i18n.t("progress_collecting_logs"))
 
-    def _on_patching_error_sync(self, error: str):
+    def _on_patching_error_threadsafe(self, error: str, report: Path | None):
+        self.after(0, self._on_patching_error_sync, error, report)
+
+    def _on_patching_error_sync(self, error: str, report: Path | None):
         self._app.patching_error = error
+        self._app.failure_report = report
         self._app.router.show_page(PageRoute.FAILURE)
 
     def stop_patching(self):

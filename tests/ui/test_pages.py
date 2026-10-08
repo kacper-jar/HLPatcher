@@ -55,6 +55,8 @@ class ScriptedPatcher:
         self.error = None
         self.stopped = False
         self.games = None
+        self.timeline = ["Half-Life 2, step 1 of 2"]
+        self.executor = object()
 
     def get_total_steps(self, games):
         return sum(comp.needs_patch for game in games for comp in game.components)
@@ -127,7 +129,7 @@ def guides():
 def app(tmp_path, guides):
     return SimpleNamespace(i18n=SimpleNamespace(t=translate), config=AppConfig(),
                            context=PatchContext(working_dir=tmp_path / "work"), update_info=None, patching_error="",
-                           footer=FakeFooter(), router=FakeRouter(),
+                           failure_report=None, footer=FakeFooter(), router=FakeRouter(),
                            guide_registry=SimpleNamespace(get_guide=guides.get))
 
 
@@ -481,7 +483,14 @@ def test_downgrade_guide_button_opens_the_guide_of_its_group(open_downgrade_page
 
 
 @pytest.fixture
-def progress_page(make_page, app, make_component, mocker, tmp_path):
+def failure_report(mocker, tmp_path):
+    report = mocker.patch("patcher.ui.pages.progress_page.FailureReport")
+    report.return_value.write.return_value = tmp_path / "HLPatcher-failure-2026-10-06_14-03-11.zip"
+    return report
+
+
+@pytest.fixture
+def progress_page(make_page, app, make_component, mocker, tmp_path, failure_report):
     mocker.patch("patcher.ui.pages.progress_page.Patcher", ScriptedPatcher)
     half_life_2 = Game("Source (Half-Life 2)", tmp_path / "Half-Life 2", SOURCE, [
         make_component("Half-Life 2", "hl2", SOURCE),
@@ -513,16 +522,22 @@ def test_progress_shows_the_component_and_step_being_patched(progress_page, tk_r
     assert (overall.get(), step.get()) == (1.0, 1.0)
 
 
-def test_progress_reports_a_failure(progress_page, tk_root, app):
-    progress_page.patcher.error = RuntimeError("git clone failed")
+def test_progress_reports_a_failure_with_a_saved_log_file(progress_page, tk_root, app, failure_report, tmp_path):
+    error = RuntimeError("git clone failed")
+    progress_page.patcher.error = error
 
     progress_page.patcher.release.set()
 
     assert run_until(tk_root, lambda: app.router.shown == [PageRoute.FAILURE])
+    patcher = progress_page.patcher
+    failure_report.assert_called_once_with(app.context, app.config, patcher.timeline, patcher.executor)
+    failure_report.return_value.write.assert_called_once_with(error)
     assert app.patching_error == "git clone failed"
+    assert app.failure_report == tmp_path / "HLPatcher-failure-2026-10-06_14-03-11.zip"
+    assert "progress_collecting_logs" in texts(progress_page)
 
 
-def test_stopping_the_patch_is_not_reported_as_a_failure(progress_page, tk_root, app):
+def test_stopping_the_patch_is_not_reported_as_a_failure(progress_page, tk_root, app, failure_report):
     assert run_until(tk_root, lambda: "progress_step_format current=1 total=2" in texts(progress_page))
 
     progress_page.stop_patching()
@@ -533,6 +548,7 @@ def test_stopping_the_patch_is_not_reported_as_a_failure(progress_page, tk_root,
     assert app.router.shown == []
     assert app.patching_error == ""
     assert "progress_stopping" in texts(progress_page)
+    failure_report.assert_not_called()
 
 
 @pytest.mark.parametrize(("error", "shown"), [("git clone failed", "git clone failed"), ("", "failure_unknown")],
@@ -544,3 +560,31 @@ def test_failure_page_shows_what_went_wrong(make_page, app, error, shown):
     page.on_enter()
 
     assert shown in texts(page)
+
+
+def test_failure_page_offers_the_saved_log_file_in_finder(make_page, app, mocker, tmp_path):
+    reveal = mocker.patch("patcher.ui.pages.failure_page.subprocess.run")
+    app.failure_report = tmp_path / "HLPatcher-failure-2026-10-06_14-03-11.zip"
+    page = make_page(FailurePage)
+
+    page.on_enter()
+    report_button = find(page, ctk.CTkButton, "failure_report_btn")
+    report_button.invoke()
+
+    shown = [widget.cget("text") for widget in report_button.master.pack_slaves() if isinstance(widget, ctk.CTkButton)]
+    assert shown == ["failure_report_btn", "failure_issue_btn"]
+    assert "failure_help_report" in texts(page)
+    reveal.assert_called_once_with(["open", "-R", str(app.failure_report)])
+
+
+def test_failure_page_asks_for_the_terminal_output_when_no_log_file_was_saved(make_page, app, tmp_path):
+    app.failure_report = tmp_path / "HLPatcher-failure-2026-10-06_14-03-11.zip"
+    page = make_page(FailurePage)
+    page.on_enter()
+
+    app.failure_report = None
+    page.on_enter()
+
+    assert "failure_help" in texts(page)
+    assert "failure_help_report" not in texts(page)
+    assert find(page, ctk.CTkButton, "failure_report_btn").winfo_manager() == ""
