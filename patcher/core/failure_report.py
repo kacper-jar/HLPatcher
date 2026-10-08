@@ -150,7 +150,7 @@ class FailureReport:
             "Detected games:" if context.games else "Detected games: none",
         ]
         for game in context.games:
-            lines.append(f"  {game.name} ({game.engine_type.value}) at {game.path}")
+            lines.append(f"  {game.name} at {game.path}")
             lines += [f"    {c.name} ({c.id}): {c.status.value}" for c in game.components]
         return "\n".join(lines)
 
