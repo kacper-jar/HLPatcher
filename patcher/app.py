@@ -46,6 +46,7 @@ class App(ctk.CTk):
             script_dir=Path(__file__).resolve().parent.parent,
         )
         self.patching_error = ""
+        self.failure_report: Path | None = None
         self.update_info: UpdateInfo | None = None
 
         locales_dir = self.context.script_dir / "data" / "locales"

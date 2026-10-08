@@ -1,10 +1,12 @@
 ---
 name: Bug Report - Patcher Issues
-about: Report problems with HLPatcher installation or patching process
+about: Report problems with the HLPatcher app itself, such as setup, crashes or the interface
 title: '[Patcher Bug] '
 labels: 'bug, patcher'
 assignees: ''
 ---
+
+*If patching failed and HLPatcher showed the "Patching Failed" page, please use the Patching Issues form instead.*
 
 ## HLPatcher Version
 *Which version of HLPatcher are you using? (e.g., 3.0.0)*
@@ -18,52 +20,14 @@ assignees: ''
 **Xcode Command Line Tools Installed:** *Yes / No / Not sure*
 
 ## When did the issue occur?
-*At what stage of the patching process did you encounter the problem? (Select one)*
+*At what point did you encounter the problem? (Select one)*
 - During initial setup / bootstrap
+- When starting HLPatcher
 - When selecting the Steam library folder
 - When selecting games/components to patch
 - When configuring patch options
-- During environment preparation (venv setup)
-- While cloning source repositories
-- While patching GoldSrc Engine
-- While patching Half-Life (GoldSrc)
-- While patching Half-Life: Opposing Force
-- While patching Half-Life: Blue Shift
-- While patching Deathmatch Classic
-- While patching Counter-Strike
-- While patching Source Engine
-- While patching Half-Life: Source
-- While patching Half-Life 2
-- While patching Half-Life 2: Lost Coast
-- While patching Half-Life 2: Episodic (Episodes 1 & 2)
-- While patching Half-Life 2: Deathmatch
-- While patching Counter-Strike: Source
-- While patching Day of Defeat: Source
-- While patching Portal
-- After patching completed
+- On the Downgrade Required page
 - Other (specify below)
-
-
-## Games Being Patched
-*Check all that apply*
-
-### GoldSrc
-- [ ] Half-Life
-- [ ] Half-Life: Opposing Force
-- [ ] Half-Life: Blue Shift
-- [ ] Deathmatch Classic
-- [ ] Counter-Strike
-
-### Source
-- [ ] Half-Life: Source
-- [ ] Half-Life 2
-- [ ] Half-Life 2: Lost Coast
-- [ ] Half-Life 2: Episode One
-- [ ] Half-Life 2: Episode Two
-- [ ] Half-Life 2: Deathmatch
-- [ ] Counter-Strike: Source
-- [ ] Day of Defeat: Source
-- [ ] Portal
 
 ## Bug Description
 *Provide a clear and detailed description of what went wrong*

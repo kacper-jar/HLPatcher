@@ -1,3 +1,4 @@
+import subprocess
 import webbrowser
 import customtkinter as ctk
 from patcher.ui.base_page import BasePage
@@ -31,21 +32,27 @@ class FailurePage(BasePage):
         help_frame = ctk.CTkFrame(self, fg_color="gray20", corner_radius=8)
         help_frame.pack(fill="x", padx=20, pady=10)
 
-        help_label = ctk.CTkLabel(
+        self._help_label = ctk.CTkLabel(
             help_frame,
             text=self._app.i18n.t("failure_help"),
             justify="center",
             font=ctk.CTkFont(size=12),
             wraplength=340,
         )
-        help_label.pack(pady=(10, 10), padx=15)
+        self._help_label.pack(pady=(10, 10), padx=15)
 
-        issue_button = ctk.CTkButton(
+        self._report_button = ctk.CTkButton(
+            help_frame,
+            text=self._app.i18n.t("failure_report_btn"),
+            command=self._show_report,
+        )
+
+        self._issue_button = ctk.CTkButton(
             help_frame,
             text=self._app.i18n.t("failure_issue_btn"),
             command=self._open_github_issue,
         )
-        issue_button.pack(pady=5)
+        self._issue_button.pack(pady=5)
 
         note_label = ctk.CTkLabel(
             help_frame,
@@ -55,11 +62,20 @@ class FailurePage(BasePage):
         note_label.pack(pady=(0, 10))
 
     def _open_github_issue(self):
-        webbrowser.open("https://github.com/kacper-jar/HLPatcher/issues/new?template=bug_patcher.md")
+        webbrowser.open("https://github.com/kacper-jar/HLPatcher/issues/new?template=bug_patching.md")
+
+    def _show_report(self):
+        subprocess.run(["open", "-R", str(self._app.failure_report)])
 
     def on_enter(self):
         error_message = self._app.patching_error or self._app.i18n.t("failure_unknown")
         self._error_label.configure(text=error_message)
+        if self._app.failure_report:
+            self._help_label.configure(text=self._app.i18n.t("failure_help_report"))
+            self._report_button.pack(pady=5, before=self._issue_button)
+        else:
+            self._help_label.configure(text=self._app.i18n.t("failure_help"))
+            self._report_button.pack_forget()
 
     def get_title(self) -> str:
         return self._app.i18n.t("failure_title")
