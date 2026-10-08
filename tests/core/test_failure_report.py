@@ -211,10 +211,10 @@ def test_describes_the_session_and_every_detected_game(text):
     assert "Selected components: GoldSrc Engine (goldsrc-engine)\n" in session
     assert session.endswith("\n".join([
         "Detected games:",
-        "  Half-Life (GoldSrc) at ~/Steam/steamapps/common/Half-Life",
+        "  Half-Life at ~/Steam/steamapps/common/Half-Life",
         "    GoldSrc Engine (goldsrc-engine): Needs patching",
         "    Half-Life (half-life): Already patched",
-        "  Half-Life 2 (Source) at ~/Steam/steamapps/common/Half-Life 2",
+        "  Half-Life 2 at ~/Steam/steamapps/common/Half-Life 2",
         "    Half-Life 2 (half-life-2): Needs patching",
     ]))
 
