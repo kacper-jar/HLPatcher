@@ -332,7 +332,6 @@
     "id": "half-life-source",
     "name": "Half-Life: Source",
     "subfolder": "hl1",
-    "downgrade_group": "hl2",
     "game": "half-life-2",
     "estimated_time": 3,
     "estimated_space": 25,
