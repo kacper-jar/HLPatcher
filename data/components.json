@@ -336,7 +336,6 @@
     "game": "half-life-2",
     "estimated_time": 3,
     "estimated_space": 25,
-    "downgrade_requires": {},
     "steps": [
       {
         "type": "git-fetcher",
