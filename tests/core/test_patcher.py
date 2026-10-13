@@ -139,6 +139,17 @@ def test_starts_from_an_empty_working_dir_with_a_venv_for_the_build_tools(mock_p
     ]
 
 
+def test_venv_is_created_from_the_standalone_python_when_provided(mock_patch_context, mock_run_command, tmp_path):
+    standalone_python = tmp_path / "python" / "bin" / "python3"
+    patcher = Patcher(mock_patch_context, AppConfig(python_bin=standalone_python))
+
+    patcher.run([])
+
+    assert mock_run_command.commands[0] == (
+        [str(standalone_python), "-m", "venv", str(mock_patch_context.working_dir / "venv")], None
+    )
+
+
 @pytest.mark.parametrize("debug", [False, True], ids=["normal", "debug"])
 def test_removes_the_working_dir_afterwards_unless_debugging(mock_patch_context, games, make_patcher, debug):
     make_patcher(debug=debug).run(games)

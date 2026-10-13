@@ -110,8 +110,9 @@ class Patcher:
             shutil.rmtree(working_dir)
         working_dir.mkdir(parents=True)
 
+        python_bin = str(self._config.python_bin) if self._config.python_bin else "python3"
         self.log("Setting up Python venv for build tools...")
-        self.executor.run(["python3", "-m", "venv", str(working_dir / "venv")])
+        self.executor.run([python_bin, "-m", "venv", str(working_dir / "venv")])
         venv_pip = str(working_dir / "venv" / "bin" / "pip")
         self.executor.run([venv_pip, "install", "cmake", "ninja", "meson"])
 
