@@ -17,9 +17,29 @@ if ! xcode-select -p &>/dev/null; then
     exit 1
 fi
 
-PYTHON_ARCHIVE_URL="https://github.com/astral-sh/python-build-standalone/releases/download/20260623/cpython-3.14.6+20260623-aarch64-apple-darwin-install_only.tar.gz"
-PYTHON_ARCHIVE="cpython-3.14.6+20260623-aarch64-apple-darwin-install_only.tar.gz"
-PYTHON_ARCHIVE_SHA256="44f31db9afd16f714194580f2362e66d8b1784bf3a3e2d0ac86e7b392f32d75b"
+if [[ "$(uname -m)" == "x86_64" ]]; then
+    echo ""
+    echo "================================================================================"
+    echo "                      UNSUPPORTED ARCHITECTURE DETECTED                         "
+    echo "================================================================================"
+    echo " You are running HLPatcher on an Intel (x86_64) Mac."
+    echo ""
+    echo " HLPatcher is not officially supported on Intel Macs. It may work, but you"
+    echo " should expect issues. No support will be provided for Intel Mac users."
+    echo ""
+    echo " Press CTRL+C to quit or press any key to continue anyway."
+    echo "================================================================================"
+    read -r -s -n 1
+    echo ""
+    PYTHON_ARCHIVE_URL="https://github.com/astral-sh/python-build-standalone/releases/download/20260623/cpython-3.14.6+20260623-x86_64-apple-darwin-install_only.tar.gz"
+    PYTHON_ARCHIVE="cpython-3.14.6+20260623-x86_64-apple-darwin-install_only.tar.gz"
+    PYTHON_ARCHIVE_SHA256="ad7e98f99975051ac4831c7062e6446b4fa21d04bfe112f3b60ef279dab4f4c5"
+else
+    PYTHON_ARCHIVE_URL="https://github.com/astral-sh/python-build-standalone/releases/download/20260623/cpython-3.14.6+20260623-aarch64-apple-darwin-install_only.tar.gz"
+    PYTHON_ARCHIVE="cpython-3.14.6+20260623-aarch64-apple-darwin-install_only.tar.gz"
+    PYTHON_ARCHIVE_SHA256="44f31db9afd16f714194580f2362e66d8b1784bf3a3e2d0ac86e7b392f32d75b"
+fi
+
 PYTHON_DIR="$SCRIPT_DIR/.python"
 PYTHON_BIN="$PYTHON_DIR/python/bin/python3"
 DOWNLOAD_DIR="$PYTHON_DIR/download"
