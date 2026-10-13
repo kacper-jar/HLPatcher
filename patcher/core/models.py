@@ -21,6 +21,7 @@ class PatchMode(Enum):
 @dataclass
 class AppConfig:
     debug: bool = False
+    python_bin: Path | None = None
 
 
 class PatchStatus(Enum):
