@@ -1,0 +1,39 @@
+--- a/game_launch/steam_launcher.c
++++ b/game_launch/steam_launcher.c
+@@ -0,0 +1,24 @@
++#include <libgen.h>
++#include <limits.h>
++#include <mach-o/dyld.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <unistd.h>
++
++int main( int argc, char **argv )
++{
++	char exe[PATH_MAX], real[PATH_MAX], script[PATH_MAX];
++	uint32_t size = sizeof( exe );
++
++	if ( argc < 1 || _NSGetExecutablePath( exe, &size ) != 0 || !realpath( exe, real ) )
++	{
++		fprintf( stderr, "steam_launcher: cannot locate own executable\n" );
++		return 1;
++	}
++	snprintf( script, sizeof( script ), "%s/hl_launcher.sh", dirname( real ) );
++
++	argv[0] = script;
++	execv( script, argv );
++	perror( "steam_launcher: execv hl_launcher.sh" );
++	return 1;
++}
+--- a/game_launch/wscript
++++ b/game_launch/wscript
+@@ -37,3 +37,9 @@
+ 		install_path = bld.env.BINDIR,
+ 		subsystem = bld.env.MSVC_SUBSYSTEM
+ 	)
++
++	if bld.env.DEST_OS == 'darwin':
++		bld.program(source = 'steam_launcher.c',
++			target   = 'steam_launcher',
++			install_path = bld.env.BINDIR
++		)

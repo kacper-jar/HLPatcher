@@ -8,6 +8,11 @@ from patcher.core.models import ArchiveInstallStepConfig, EngineType, Game, Inst
 from patcher.core.pipeline.installers import ArchiveInstallerStep, GenericInstaller, GoldSrcEngineInstaller, \
     SourceInstaller
 
+HL_SCRIPT = b"#!/bin/bash\n\"${GAMEROOT}\"/hl_osx $@\n"
+HL_LAUNCHER = b"\xcf\xfa\xed\xfehl launcher"
+VALVE_SCRIPT = b"#!/bin/bash\nexec \"${GAMEROOT}\"/hl2_osx \"$@\"\n"
+LAUNCHER = b"\xcf\xfa\xed\xfesteam launcher"
+
 
 def write_zip(path, files):
     with zipfile.ZipFile(path, "w") as archive:
@@ -54,21 +59,72 @@ def test_generic_installer_merges_the_build_output_into_the_game(step_context, m
     assert (game.path / "valve" / "liblist.gam").read_bytes() == b"game info"
 
 
-def test_goldsrc_engine_installer_replaces_hl_osx_with_xash3d(step_context, make_game):
-    game = make_game("Half-Life", "", EngineType.GOLDSRC)
-    xash_dir = step_context.working_dir / "xash3d-fwgs"
-    write_file(xash_dir / "output" / "xash3d", b"xash3d launcher")
-    write_file(xash_dir / "output" / "libxash.dylib", b"engine")
-    write_file(xash_dir / "3rdparty" / "SDL2.framework" / "Versions" / "A" / "SDL2", b"sdl")
-    write_file(game.path / "hl_osx", b"valve launcher")
+@pytest.fixture
+def xash_dir(step_context):
+    path = step_context.working_dir / "xash3d-fwgs"
+    write_file(path / "output" / "xash3d", b"xash3d launcher")
+    write_file(path / "output" / "steam_launcher", HL_LAUNCHER)
+    write_file(path / "output" / "libxash.dylib", b"engine")
+    write_file(path / "3rdparty" / "SDL2.framework" / "Versions" / "A" / "SDL2", b"sdl")
+    return path
 
+
+def install_goldsrc_engine(step_context, game):
     GoldSrcEngineInstaller(step_context).execute(
         game, game.components[0], InstallStepConfig("goldsrc-engine-installer", patch_dir_name="xash3d-fwgs"))
+
+
+def test_goldsrc_engine_installer_replaces_hl_osx_with_xash3d(step_context, make_game, xash_dir):
+    game = make_game("Half-Life", "", EngineType.GOLDSRC)
+    write_file(game.path / "hl_osx", b"valve launcher")
+
+    install_goldsrc_engine(step_context, game)
 
     assert (game.path / "hl_osx").read_bytes() == b"xash3d launcher"
     assert not (game.path / "xash3d").exists()
     assert (game.path / "libxash.dylib").read_bytes() == b"engine"
     assert (game.path / "SDL2.framework" / "Versions" / "A" / "SDL2").read_bytes() == b"sdl"
+
+
+def test_goldsrc_engine_installer_keeps_valves_script_and_puts_the_steam_launcher_in_its_place(step_context,
+                                                                                               make_game, xash_dir):
+    game = make_game("Half-Life", "", EngineType.GOLDSRC)
+    write_file(game.path / "hl.sh", HL_SCRIPT)
+
+    install_goldsrc_engine(step_context, game)
+
+    assert (game.path / "hl_launcher.sh").read_bytes() == HL_SCRIPT
+    assert (game.path / "hl.sh").read_bytes() == HL_LAUNCHER
+    assert (game.path / "hl.sh").stat().st_mode & 0o777 == 0o755
+    assert not (game.path / "steam_launcher").exists()
+
+
+@pytest.mark.parametrize(("hl_sh", "kept_script"), [
+    (HL_LAUNCHER, HL_SCRIPT),
+    (HL_SCRIPT.replace(b"$@", b"\"$@\""), HL_SCRIPT.replace(b"$@", b"\"$@\"")),
+], ids=["patched-before", "restored-by-steam"])
+def test_goldsrc_engine_installer_patching_again_keeps_the_newest_valve_script(step_context, make_game, xash_dir,
+                                                                               hl_sh, kept_script):
+    game = make_game("Half-Life", "", EngineType.GOLDSRC)
+    write_file(game.path / "hl.sh", hl_sh)
+    write_file(game.path / "hl_launcher.sh", HL_SCRIPT)
+
+    install_goldsrc_engine(step_context, game)
+
+    assert (game.path / "hl_launcher.sh").read_bytes() == kept_script
+    assert (game.path / "hl.sh").read_bytes() == HL_LAUNCHER
+
+
+def test_goldsrc_engine_installer_needs_the_steam_launcher(step_context, make_game, xash_dir):
+    game = make_game("Half-Life", "", EngineType.GOLDSRC)
+    write_file(game.path / "hl.sh", HL_SCRIPT)
+    (xash_dir / "output" / "steam_launcher").unlink()
+
+    with pytest.raises(FileNotFoundError, match="Steam launcher not found"):
+        install_goldsrc_engine(step_context, game)
+
+    assert [p.name for p in game.path.iterdir()] == ["hl.sh"]
+    assert (game.path / "hl.sh").read_bytes() == HL_SCRIPT
 
 
 def test_goldsrc_engine_installer_leaves_the_game_untouched_without_xash3d(step_context, make_game):
@@ -156,7 +212,7 @@ def test_archive_installer_needs_the_downloaded_archive(download_dir, install_ar
 
 @pytest.mark.parametrize("write_archive", [write_zip, write_tar], ids=["zip", "tar"])
 def test_archive_installer_keeps_entries_with_parent_paths_inside_the_output_folder(download_dir, install_archive,
-                                                                                   tmp_path, write_archive):
+                                                                                    tmp_path, write_archive):
     write_archive(download_dir / "archive.tmp", {"../../escaped.ttf": b"outside"})
 
     fonts = install_archive()
@@ -182,7 +238,9 @@ def test_archive_installer_skips_links_in_a_tarball(download_dir, install_archiv
 
 @pytest.fixture
 def source_dir(step_context):
-    return step_context.working_dir / "source-engine"
+    path = step_context.working_dir / "source-engine"
+    write_file(path / "output" / "steam_launcher", LAUNCHER)
+    return path
 
 
 def install_source(step_context, game, steam_executable=""):
@@ -266,9 +324,10 @@ def test_source_installer_relinks_mod_libraries(step_context, make_game, source_
     assert client_cwd == mod_bin
 
 
-def test_source_installer_installs_the_steam_launcher(step_context, make_game, source_dir, mock_run_command):
+def test_source_installer_installs_the_steam_launcher_as_the_windows_executable_too(step_context, make_game,
+                                                                                    source_dir, mock_run_command):
     game = make_game("Day of Defeat Source", "dod")
-    write_file(source_dir / "output" / "steam_launcher", b"launcher")
+    write_file(game.path / "hl2.sh", VALVE_SCRIPT)
     write_file(game.path / "old_launcher", b"old")
     (game.path / "dod.exe").symlink_to("old_launcher")
 
@@ -276,17 +335,61 @@ def test_source_installer_installs_the_steam_launcher(step_context, make_game, s
 
     steam_exe = game.path / "dod.exe"
     assert not steam_exe.is_symlink()
-    assert steam_exe.read_bytes() == b"launcher"
+    assert steam_exe.read_bytes() == (game.path / "hl2.sh").read_bytes() == LAUNCHER
     assert steam_exe.stat().st_mode & 0o777 == 0o755
     assert (game.path / "old_launcher").read_bytes() == b"old"
+    assert (game.path / "hl2_launcher.sh").read_bytes() == VALVE_SCRIPT
 
 
-def test_source_installer_needs_the_steam_launcher_when_configured(step_context, make_game, source_dir,
-                                                                   mock_run_command):
+def test_source_installer_keeps_valves_script_and_puts_the_steam_launcher_in_its_place(step_context, make_game,
+                                                                                       source_dir, mock_run_command):
+    game = make_game("Half-Life 2", "hl2")
+    write_file(game.path / "hl2.sh", VALVE_SCRIPT)
+
+    install_source(step_context, game)
+
+    assert (game.path / "hl2_launcher.sh").read_bytes() == VALVE_SCRIPT
+    assert (game.path / "hl2.sh").read_bytes() == LAUNCHER
+    assert (game.path / "hl2.sh").stat().st_mode & 0o777 == 0o755
+    assert not (game.path / "hl2mp.exe").exists()
+
+
+@pytest.mark.parametrize(("hl2_sh", "kept_script"), [
+    (LAUNCHER, VALVE_SCRIPT),
+    (VALVE_SCRIPT.replace(b"exec", b"exec -a hl2"), VALVE_SCRIPT.replace(b"exec", b"exec -a hl2")),
+], ids=["patched-before", "restored-by-steam"])
+def test_source_installer_patching_again_keeps_the_newest_valve_script(step_context, make_game, source_dir,
+                                                                       mock_run_command, hl2_sh, kept_script):
+    game = make_game("Half-Life 2", "lostcoast")
+    write_file(game.path / "hl2.sh", hl2_sh)
+    write_file(game.path / "hl2_launcher.sh", VALVE_SCRIPT)
+
+    install_source(step_context, game)
+
+    assert (game.path / "hl2_launcher.sh").read_bytes() == kept_script
+    assert (game.path / "hl2.sh").read_bytes() == LAUNCHER
+
+
+def test_source_installer_installs_the_steam_launcher_even_without_valves_script(step_context, make_game,
+                                                                                 source_dir, mock_run_command):
+    game = make_game("Portal", "portal")
+
+    install_source(step_context, game)
+
+    assert (game.path / "hl2.sh").read_bytes() == LAUNCHER
+    assert not (game.path / "hl2_launcher.sh").exists()
+
+
+@pytest.mark.parametrize("steam_executable", ["", "dod.exe"], ids=["single-player", "multiplayer"])
+def test_source_installer_needs_the_steam_launcher(step_context, make_game, source_dir, mock_run_command,
+                                                   steam_executable):
     game = make_game("Day of Defeat Source", "dod")
+    write_file(game.path / "hl2.sh", VALVE_SCRIPT)
     write_file(source_dir / "output" / "bin" / "libtier0.dylib")
+    (source_dir / "output" / "steam_launcher").unlink()
 
     with pytest.raises(FileNotFoundError, match="Steam launcher not found"):
-        install_source(step_context, game, steam_executable="dod.exe")
+        install_source(step_context, game, steam_executable=steam_executable)
 
     assert not (game.path / "bin").exists()
+    assert (game.path / "hl2.sh").read_bytes() == VALVE_SCRIPT

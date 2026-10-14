@@ -24,5 +24,5 @@ Code from [this unmerged PR](https://github.com/nillerusr/source-engine/pull/456
 
 # 06_steam_launcher.patch
 
-Adds `steam_launcher` target to `launcher_main` that executes `hl2.sh -game <game>` for the game set with 
-`--build-games`.
+Adds `steam_launcher` target to `launcher_main` that executes `hl2_launcher.sh` (Valve's original `hl2.sh`) next to it,
+adding `-game <game>` for the game set with `--build-games` unless the arguments already contain `-game`.

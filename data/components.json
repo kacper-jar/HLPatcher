@@ -17,6 +17,10 @@
         "force_stable": false
       },
       {
+        "type": "patch",
+        "patch_dir_name": "xash3d-fwgs"
+      },
+      {
         "type": "waf-builder",
         "patch_dir_name": "xash3d-fwgs",
         "build_args": [
