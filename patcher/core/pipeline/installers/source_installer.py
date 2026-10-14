@@ -19,7 +19,7 @@ class SourceInstaller(BaseStep):
         output_dir = source_dir / "output"
 
         steam_launcher = output_dir / "steam_launcher"
-        if step_config.steam_executable and not steam_launcher.is_file():
+        if not steam_launcher.is_file():
             raise FileNotFoundError(f"Steam launcher not found: {steam_launcher}")
 
         bin_src = output_dir / "bin"
@@ -48,15 +48,22 @@ class SourceInstaller(BaseStep):
             shutil.copy2(hl2_launcher, hl2_osx)
             hl2_osx.chmod(0o755)
 
+        valve_script = game.path / "hl2.sh"
+        if valve_script.is_file() and valve_script.read_bytes().startswith(b"#!"):
+            self.context.log("Keeping Valve's hl2.sh as hl2_launcher.sh...")
+            valve_script.replace(game.path / "hl2_launcher.sh")
+        self._install_steam_launcher(steam_launcher, game.path / "hl2.sh")
         if step_config.steam_executable:
-            self.context.log(f"Installing Steam launcher as {step_config.steam_executable}...")
-            steam_exe = game.path / step_config.steam_executable
-            steam_exe.unlink(missing_ok=True)
-            shutil.copy2(steam_launcher, steam_exe)
-            steam_exe.chmod(0o755)
+            self._install_steam_launcher(steam_launcher, game.path / step_config.steam_executable)
 
         self._fix_source_links(game.path, step_config.patch_dir_name)
         self._fix_source_game_links(game.path, subfolder, step_config.patch_dir_name)
+
+    def _install_steam_launcher(self, steam_launcher: Path, destination: Path):
+        self.context.log(f"Installing Steam launcher as {destination.name}...")
+        destination.unlink(missing_ok=True)
+        shutil.copy2(steam_launcher, destination)
+        destination.chmod(0o755)
 
     def _fix_source_links(self, game_path: Path, patch_dir_name: str):
         self.context.log("Fixing Source Engine links...")
