@@ -13,7 +13,7 @@
         "type": "goldsrc-engine-fetcher",
         "url": "https://github.com/FWGS/xash3d-fwgs",
         "patch_dir_name": "xash3d-fwgs",
-        "stable_commit": "fd0cd6afdda9dff94346af60884b99876001ca5f",
+        "stable_commit": "00d9514ca6f3b5085e85dd6d78e81ffe590a9740",
         "force_stable": false
       },
       {
@@ -191,7 +191,7 @@
         "type": "git-fetcher",
         "url": "https://github.com/Velaron/cs16-client",
         "patch_dir_name": "cs16-client",
-        "stable_commit": "6a49bcc6f5292dec13046b23140c1e555dca8b31",
+        "stable_commit": "9778fec4c6f956d2b483949feb704fb479c92f7f",
         "force_stable": false
       },
       {
