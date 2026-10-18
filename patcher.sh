@@ -1,6 +1,6 @@
 #!/bin/bash
 
-HLPATCHER_VERSION="3.3.4"
+HLPATCHER_VERSION="3.3.5"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
 
