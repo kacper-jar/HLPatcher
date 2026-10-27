@@ -13,7 +13,7 @@
         "type": "goldsrc-engine-fetcher",
         "url": "https://github.com/FWGS/xash3d-fwgs",
         "patch_dir_name": "xash3d-fwgs",
-        "stable_commit": "bf86144e62af35a24970bc18fb448637b34516e2",
+        "stable_commit": "27092af50d912432887faa43a1cccddfae569b2d",
         "force_stable": false
       },
       {
