@@ -1,0 +1,72 @@
+[project]
+site_name = "HLPatcher"
+site_description = "Play Half-Life and Valve games on Apple Silicon Macs"
+site_author = "Kacper Jarosławski"
+site_url = "https://hlpatcher.kzl21.ovh"
+repo_url = "https://github.com/kacper-jar/HLPatcher"
+repo_name = "kacper-jar/HLPatcher"
+copyright = "Copyright &copy; 2025-2026 Kacper Jarosławski"
+nav = [
+  { "Home" = "index.md" },
+  { "Getting Started" = "getting-started.md" },
+  { "Removing Patches" = "removing-patches.md" },
+  { "Contributing" = "contributing.md" },
+]
+extra_css = ["stylesheets/extra.css"]
+extra_javascript = ["javascripts/download-count.js"]
+
+[project.theme]
+custom_dir = "overrides"
+features = ["navigation.tabs", "navigation.sections", "navigation.top", "content.code.copy"]
+
+[project.theme.icon]
+logo = "material/lambda"
+repo = "fontawesome/brands/github"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
+scheme = "default"
+primary = "deep orange"
+accent = "deep orange"
+toggle.icon = "material/brightness-7"
+toggle.name = "Switch to dark mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
+scheme = "slate"
+primary = "deep orange"
+accent = "deep orange"
+toggle.icon = "material/brightness-4"
+toggle.name = "Switch to light mode"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/github"
+link = "https://github.com/kacper-jar/hlpatcher"
+
+[[project.extra.social]]
+icon = "fontawesome/solid/globe"
+link = "https://kzl21.ovh"
+
+[project.markdown_extensions.admonition]
+[project.markdown_extensions.attr_list]
+[project.markdown_extensions.md_in_html]
+[project.markdown_extensions.pymdownx.details]
+[project.markdown_extensions.pymdownx.inlinehilite]
+[project.markdown_extensions.pymdownx.snippets]
+
+[project.markdown_extensions.pymdownx.superfences]
+custom_fences = [
+  { name = "mermaid", class = "mermaid", format = "pymdownx.superfences.fence_code_format" },
+]
+
+[project.markdown_extensions.pymdownx.emoji]
+emoji_index = "zensical.extensions.emoji.twemoji"
+emoji_generator = "zensical.extensions.emoji.to_svg"
+
+[project.markdown_extensions.pymdownx.highlight]
+anchor_linenums = true
+line_spans = "__span"
+pygments_lang_class = true
+
+[project.markdown_extensions.pymdownx.tabbed]
+alternate_style = true

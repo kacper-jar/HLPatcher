@@ -7,37 +7,31 @@ on:
     paths:
       - 'docs/**'
       - 'overrides/**'
-      - 'mkdocs.yml'
+      - 'zensical.toml'
       - '.github/workflows/docs.yml'
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   deploy:
-    name: Deploy Documentation
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/configure-pages@v6
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
-          fetch-depth: 0
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
+          python-version: 3.x
+      - run: pip install zensical
+      - run: zensical build --clean
+      - uses: actions/upload-pages-artifact@v5
         with:
-          python-version: '3.x'
-          cache: 'pip'
-
-      - name: Install dependencies
-        run: |
-          pip install -r requirements-dev.txt
-
-      - name: Build and deploy to GitHub Pages
-        run: mkdocs gh-deploy --force
-
-      - name: Summary
-        run: |
-          echo "Documentation deployed successfully!" >> $GITHUB_STEP_SUMMARY
-          echo "View at: https://hlpatcher.kzl21.ovh" >> $GITHUB_STEP_SUMMARY
+          path: site
+      - uses: actions/deploy-pages@v5
+        id: deployment
