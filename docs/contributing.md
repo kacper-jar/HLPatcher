@@ -48,7 +48,7 @@ Here is a quick overview of the project's structure to help you navigate the cod
     - `workflows/tests.yml`: Runs the full test suite on every push and pull request to `main`.
     - `workflows/commitlint.yml`: Validates commit messages against Conventional Commits.
     - `workflows/release.yml`: Triggered on a tag push - runs tests, creates a ZIP archive, and opens a draft GitHub Release.
-    - `workflows/docs.yml`: Builds and deploys MkDocs documentation.
+    - `workflows/docs.yml`: Builds and deploys Zensical documentation.
 - `data/`: Game data, patches, guides, and localization files.
     - `fixes/`: Game-specific patch scripts and binary fixes applied during the patching process.
     - `guides/`: Game downgrade guides shown to the user (JSON format).
@@ -56,7 +56,7 @@ Here is a quick overview of the project's structure to help you navigate the cod
     - `components.json`: Game component definitions used by the patcher.
     - `games.json`: Supported game installs (Steam folder, launcher, engine) used for game detection.
     - `locales.json`: Language mappings.
-- `docs/`: Documentation source files (MkDocs + Material theme).
+- `docs/`: Documentation source files (Zensical).
 - `overrides/`: Material theme overrides - homepage title and link preview tags.
 - `patcher/`: Main application source code.
     - `patcher.core`: Core logic - game detection, patching, models, i18n, update checker, and pipeline.
@@ -67,7 +67,7 @@ Here is a quick overview of the project's structure to help you navigate the cod
 - `patcher.sh`: Bootstrap shell script - sets up the virtual environment and launches the app.
 - `crowdin.yml`: Crowdin localization configuration.
 - `commitlint.config.js`: Commit message linting rules.
-- `mkdocs.yml`: MkDocs documentation configuration.
+- `zensical.toml`: Zensical documentation configuration.
 - `requirements.txt`: Runtime dependencies.
 - `requirements-dev.txt`: Development dependencies.
 

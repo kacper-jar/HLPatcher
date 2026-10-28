@@ -1,5 +1,4 @@
 pytest
 pytest-mock
 pytest-cov
-mkdocs
-mkdocs-material
+zensical
