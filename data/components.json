@@ -13,7 +13,7 @@
         "type": "goldsrc-engine-fetcher",
         "url": "https://github.com/FWGS/xash3d-fwgs",
         "patch_dir_name": "xash3d-fwgs",
-        "stable_commit": "03a396e208cfd50fd7a59ed0fa0cbe03ca4bb54c",
+        "stable_commit": "a7becfdf8d134eb2ae5cd083a45c816e6b4e42fc",
         "force_stable": false
       },
       {
@@ -52,7 +52,7 @@
         "url": "https://github.com/FWGS/hlsdk-portable",
         "patch_dir_name": "hlsdk-portable-hlfixed",
         "branch": "hlfixed",
-        "stable_commit": "9352fba814fc06650684eb48ad9a0d84917fd2c4",
+        "stable_commit": "4937330f46e69b84f6553524ec249ef4c3aa00eb",
         "force_stable": false
       },
       {
@@ -87,7 +87,7 @@
         "url": "https://github.com/FWGS/hlsdk-portable",
         "patch_dir_name": "hlsdk-portable-opforfixed",
         "branch": "opforfixed",
-        "stable_commit": "dffe28ca1663fb786dc8cde00e08da03e6b8934c",
+        "stable_commit": "cc4500e51fa08b38402cb491dc06610b1c4f4ee3",
         "force_stable": false
       },
       {
@@ -122,7 +122,7 @@
         "url": "https://github.com/FWGS/hlsdk-portable",
         "patch_dir_name": "hlsdk-portable-bshift",
         "branch": "bshift",
-        "stable_commit": "701bcef1a0ebac49e93ecff9e2c7724ff0b4278d",
+        "stable_commit": "ebc703ef52aef4d4623a2e54348fc0104887143e",
         "force_stable": false
       },
       {
@@ -191,7 +191,7 @@
         "type": "git-fetcher",
         "url": "https://github.com/Velaron/cs16-client",
         "patch_dir_name": "cs16-client",
-        "stable_commit": "9778fec4c6f956d2b483949feb704fb479c92f7f",
+        "stable_commit": "a238ef131803ed7592c4ba701499027c862889ee",
         "force_stable": false
       },
       {
