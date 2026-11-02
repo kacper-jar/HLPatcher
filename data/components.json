@@ -191,7 +191,7 @@
         "type": "git-fetcher",
         "url": "https://github.com/Velaron/cs16-client",
         "patch_dir_name": "cs16-client",
-        "stable_commit": "9b7850edcd27352126767c794cc987673525a32f",
+        "stable_commit": "3c0de6b6e7ca21de030fce91e80da2cef7dfd559",
         "force_stable": false
       },
       {
