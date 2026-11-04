@@ -1,5 +1,22 @@
 .md-sidebar--primary { display: none; }
 
+.md-typeset .help-cards > ul > li {
+  display: flex;
+  flex-direction: column;
+}
+
+.md-typeset .help-cards > ul > li > p:last-child {
+  margin-top: auto;
+  padding-top: 0.5em;
+}
+
+.md-typeset .help-cards .md-button {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  text-align: center;
+}
+
 .md-typeset .download-count {
   min-height: 1.6em;
   margin-top: -0.5em;

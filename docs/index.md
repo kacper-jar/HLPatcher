@@ -115,19 +115,25 @@ Without them, HLPatcher wouldn't exist.
 
 ## Help Make HLPatcher Better
 
-<div class="grid cards" markdown>
+<div class="grid cards help-cards" markdown>
 
 -   **Contribute**
 
-    Help improve HLPatcher by contributing code or ideas. Check out the [Contributing Guide](contributing.md) to get started.
+    Help improve HLPatcher by contributing code or ideas.
+
+    [Contributing Guide](contributing.md){ .md-button .md-button--primary }
 
 -   **Translate**
 
-    Make HLPatcher accessible in your native language via [:octicons-link-external-24: Crowdin](https://crowdin.com/project/hlpatcher).
+    Make HLPatcher accessible in your native language.
+
+    [:octicons-link-external-24: Crowdin](https://crowdin.com/project/hlpatcher){ .md-button .md-button--primary }
 
 -   **Support Financially**
 
-    If you enjoy HLPatcher, consider supporting the project on [:octicons-link-external-24: Buy Me a Coffee](https://buymeacoffee.com/kacperjar).
+    If you enjoy HLPatcher, consider supporting the project.
+
+    [:octicons-link-external-24: Buy Me a Coffee](https://buymeacoffee.com/kacperjar){ .md-button .md-button--primary }
 
 </div>
 
