@@ -15,6 +15,9 @@ nav = [
 extra_css = ["stylesheets/extra.css"]
 extra_javascript = ["javascripts/download-count.js"]
 
+[project.plugins.search]
+enabled = false
+
 [project.theme]
 custom_dir = "overrides"
 features = ["navigation.tabs", "navigation.sections", "navigation.top", "content.code.copy"]
