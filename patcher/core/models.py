@@ -41,6 +41,7 @@ class FetchStepConfig(StepConfig):
     branch: str = ""
     stable_commit: str = ""
     force_stable: bool = False
+    sha256: str = ""
 
 
 @dataclass

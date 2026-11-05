@@ -497,6 +497,7 @@
       {
         "type": "url-fetcher",
         "url": "https://github.com/dejavu-fonts/dejavu-fonts/releases/download/version_2_37/dejavu-fonts-ttf-2.37.zip",
+        "sha256": "7576310b219e04159d35ff61dd4a4ec4cdba4f35c00e002a136f00e96a908b0a",
         "patch_dir_name": "dejavu-fonts"
       },
       {
@@ -508,6 +509,7 @@
       {
         "type": "url-fetcher",
         "url": "https://github.com/liberationfonts/liberation-fonts/files/7261482/liberation-fonts-ttf-2.1.5.tar.gz",
+        "sha256": "7191c669bf38899f73a2094ed00f7b800553364f90e2637010a69c0e268f25d0",
         "patch_dir_name": "liberation-fonts"
       },
       {
@@ -652,6 +654,7 @@
       {
         "type": "url-fetcher",
         "url": "https://github.com/dejavu-fonts/dejavu-fonts/releases/download/version_2_37/dejavu-fonts-ttf-2.37.zip",
+        "sha256": "7576310b219e04159d35ff61dd4a4ec4cdba4f35c00e002a136f00e96a908b0a",
         "patch_dir_name": "dejavu-fonts"
       },
       {
@@ -663,6 +666,7 @@
       {
         "type": "url-fetcher",
         "url": "https://github.com/liberationfonts/liberation-fonts/files/7261482/liberation-fonts-ttf-2.1.5.tar.gz",
+        "sha256": "7191c669bf38899f73a2094ed00f7b800553364f90e2637010a69c0e268f25d0",
         "patch_dir_name": "liberation-fonts"
       },
       {
@@ -807,6 +811,7 @@
       {
         "type": "url-fetcher",
         "url": "https://github.com/dejavu-fonts/dejavu-fonts/releases/download/version_2_37/dejavu-fonts-ttf-2.37.zip",
+        "sha256": "7576310b219e04159d35ff61dd4a4ec4cdba4f35c00e002a136f00e96a908b0a",
         "patch_dir_name": "dejavu-fonts"
       },
       {
@@ -818,6 +823,7 @@
       {
         "type": "url-fetcher",
         "url": "https://github.com/liberationfonts/liberation-fonts/files/7261482/liberation-fonts-ttf-2.1.5.tar.gz",
+        "sha256": "7191c669bf38899f73a2094ed00f7b800553364f90e2637010a69c0e268f25d0",
         "patch_dir_name": "liberation-fonts"
       },
       {

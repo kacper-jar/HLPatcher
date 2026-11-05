@@ -46,11 +46,15 @@ DOWNLOAD_DIR="$PYTHON_DIR/download"
 
 if [ ! -x "$PYTHON_BIN" ]; then
     rm -rf "$PYTHON_DIR"
-    mkdir -p "$DOWNLOAD_DIR"
+    mkdir -p "$DOWNLOAD_DIR" || exit 1
     echo "=> Downloading standalone Python..."
-    curl -fL -o "$DOWNLOAD_DIR/$PYTHON_ARCHIVE" "$PYTHON_ARCHIVE_URL" || exit 1
-    if ! echo "$PYTHON_ARCHIVE_SHA256  $DOWNLOAD_DIR/$PYTHON_ARCHIVE" | shasum -a 256 -c -s -; then
-        echo "The standalone Python download is corrupted. Please run HLPatcher again."
+    if ! curl -fL -o "$DOWNLOAD_DIR/$PYTHON_ARCHIVE" "$PYTHON_ARCHIVE_URL"; then
+        rm -rf "$DOWNLOAD_DIR"
+        exit 1
+    fi
+    if ! (cd "$DOWNLOAD_DIR" && printf '%s  %s\n' "$PYTHON_ARCHIVE_SHA256" "$PYTHON_ARCHIVE" | shasum -a 256 -c -s -); then
+        echo "SHA-256 verification failed for $PYTHON_ARCHIVE. Please run HLPatcher again." >&2
+        rm -rf "$DOWNLOAD_DIR"
         exit 1
     fi
     echo "=> Extracting standalone Python..."
