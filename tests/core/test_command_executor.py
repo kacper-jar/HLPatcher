@@ -102,7 +102,7 @@ def test_runs_in_the_given_folder(executor, tmp_path):
 
 
 def test_finds_build_tools_in_the_venv_first(executor, tmp_path):
-    cmake = tmp_path / "working_dir" / "venv" / "bin" / "cmake"
+    cmake = tmp_path / "working_dir" / "buildvenv" / "bin" / "cmake"
     cmake.parent.mkdir(parents=True)
     cmake.write_text("#!/bin/sh\necho cmake from the venv\n")
     cmake.chmod(0o755)

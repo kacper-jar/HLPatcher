@@ -59,7 +59,7 @@ class CommandExecutor:
 
             logger.info(f"Running: {' '.join(cmd)}")
             env = os.environ.copy()
-            venv_bin = str(self.working_dir / "venv" / "bin")
+            venv_bin = str(self.working_dir / "buildvenv" / "bin")
             env["PATH"] = f"{venv_bin}:{env.get('PATH', '')}"
             env["GIT_TERMINAL_PROMPT"] = "0"
 

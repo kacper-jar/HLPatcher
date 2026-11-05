@@ -134,8 +134,9 @@ def test_starts_from_an_empty_working_dir_with_a_venv_for_the_build_tools(mock_p
 
     assert list(working_dir.iterdir()) == []
     assert mock_run_command.commands == [
-        (["python3", "-m", "venv", str(working_dir / "venv")], None),
-        ([str(working_dir / "venv" / "bin" / "pip"), "install", "cmake", "ninja", "meson"], None),
+        (["python3", "-m", "venv", str(working_dir / "buildvenv")], None),
+        ([str(working_dir / "buildvenv" / "bin" / "pip"), "install", "-r",
+          str(mock_patch_context.script_dir / "requirements-buildvenv.txt")], None),
     ]
 
 
@@ -146,7 +147,7 @@ def test_venv_is_created_from_the_standalone_python_when_provided(mock_patch_con
     patcher.run([])
 
     assert mock_run_command.commands[0] == (
-        [str(standalone_python), "-m", "venv", str(mock_patch_context.working_dir / "venv")], None
+        [str(standalone_python), "-m", "venv", str(mock_patch_context.working_dir / "buildvenv")], None
     )
 
 
