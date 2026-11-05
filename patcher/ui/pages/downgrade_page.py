@@ -1,4 +1,5 @@
 import hashlib
+from stat import S_ISREG
 import customtkinter as ctk
 from patcher.ui.base_page import BasePage
 from patcher.ui.guide_window import BaseGuideWindow
@@ -11,12 +12,14 @@ class DowngradePage(BasePage):
 
         self._check_job = None
         self._cards = {}
+        self._file_hashes = {}
 
     def on_enter(self):
         for widget in self.winfo_children():
             widget.destroy()
 
         self._cards.clear()
+        self._file_hashes.clear()
 
         self._scroll_frame = ctk.CTkScrollableFrame(self, fg_color="transparent")
         self._scroll_frame.pack(fill="both", expand=True)
@@ -91,6 +94,7 @@ class DowngradePage(BasePage):
         if self._check_job:
             self.after_cancel(self._check_job)
             self._check_job = None
+        self._file_hashes.clear()
 
     def _open_downgrade_guide(self, group_key):
         config = self._app.guide_registry.get_guide(group_key)
@@ -104,6 +108,26 @@ class DowngradePage(BasePage):
                     button_url=step.step_button_url,
                     button_text_key=step.step_button_text
                 )
+
+    def _matches_requirement(self, file_path, expected_hash):
+        try:
+            info = file_path.stat()
+            if S_ISREG(info.st_mode):
+                if expected_hash == "":
+                    return True
+
+                signature = (info.st_size, info.st_mtime_ns, info.st_ctime_ns, info.st_dev, info.st_ino)
+                cached_signature, digest = self._file_hashes.get(file_path, (None, None))
+                if signature != cached_signature:
+                    with file_path.open("rb") as file:
+                        digest = hashlib.file_digest(file, "sha256").hexdigest()
+                    self._file_hashes[file_path] = (signature, digest)
+                return digest == expected_hash
+        except OSError:
+            pass
+
+        self._file_hashes.pop(file_path, None)
+        return False
 
     def _check_downgrades(self):
         all_match = True
@@ -119,21 +143,7 @@ class DowngradePage(BasePage):
                 comp_match = True
                 if component in context.selected_components and component.downgrade_requires:
                     for filename, expected_hash in component.downgrade_requires.items():
-                        file_path = game.path / filename
-                        if not file_path.is_file():
-                            comp_match = False
-                            break
-
-                        if expected_hash == "":
-                            continue
-
-                        try:
-                            with open(file_path, "rb") as f:
-                                file_hash = hashlib.sha256(f.read()).hexdigest()
-                            if file_hash != expected_hash:
-                                comp_match = False
-                                break
-                        except Exception:
+                        if not self._matches_requirement(game.path / filename, expected_hash):
                             comp_match = False
                             break
 
