@@ -13,6 +13,7 @@ class SelectionPage(BasePage):
             text=self._app.i18n.t("selection_hint"),
             justify="center",
             font=ctk.CTkFont(size=12),
+            wraplength=350,
         )
         hint_label.pack(pady=(0, 10))
 
@@ -23,7 +24,9 @@ class SelectionPage(BasePage):
             self,
             text=self._app.i18n.t("selection_time_est", mins=0),
             font=ctk.CTkFont(size=13, weight="bold"),
-            text_color="gray70"
+            text_color="gray70",
+            wraplength=350,
+            justify="center",
         )
         self._time_label.pack(pady=(0, 2))
 
@@ -31,7 +34,9 @@ class SelectionPage(BasePage):
             self,
             text=self._app.i18n.t("selection_space_est", mb=0),
             font=ctk.CTkFont(size=13, weight="bold"),
-            text_color="gray70"
+            text_color="gray70",
+            wraplength=350,
+            justify="center",
         )
         self._space_label.pack(pady=(0, 10))
 

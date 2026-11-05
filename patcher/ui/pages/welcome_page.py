@@ -16,6 +16,8 @@ class WelcomePage(BasePage):
             text=self._app.i18n.t("welcome_about_title"),
             font=ctk.CTkFont(weight="bold"),
             anchor="w",
+            wraplength=320,
+            justify="left",
         )
         about_title.pack(fill="x", padx=15, pady=(10, 0))
 
@@ -36,6 +38,8 @@ class WelcomePage(BasePage):
             text=self._app.i18n.t("welcome_translations_title"),
             font=ctk.CTkFont(weight="bold"),
             anchor="w",
+            wraplength=320,
+            justify="left",
         )
         trans_title.pack(fill="x", padx=15, pady=(10, 0))
 
@@ -63,6 +67,8 @@ class WelcomePage(BasePage):
             text=self._app.i18n.t("welcome_credits_title"),
             font=ctk.CTkFont(weight="bold"),
             anchor="w",
+            wraplength=320,
+            justify="left",
         )
         credits_title.pack(fill="x", padx=15, pady=(10, 0))
 
@@ -91,6 +97,8 @@ class WelcomePage(BasePage):
             font=ctk.CTkFont(weight="bold"),
             text_color="#FFDD00",
             anchor="w",
+            wraplength=320,
+            justify="left",
         )
         sponsor_title.pack(fill="x", padx=15, pady=(10, 5))
 

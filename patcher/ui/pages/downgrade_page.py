@@ -61,6 +61,8 @@ class DowngradePage(BasePage):
                 text=title_text,
                 font=ctk.CTkFont(weight="bold"),
                 anchor="w",
+                wraplength=320,
+                justify="left",
             )
             card_title.pack(fill="x", padx=15, pady=(10, 10))
 
@@ -188,7 +190,8 @@ class DowngradePage(BasePage):
             frame,
             text="",
             font=ctk.CTkFont(weight="bold", size=11),
-            justify="center"
+            justify="center",
+            wraplength=130,
         )
         self._status_label.pack(expand=True, fill="both")
         return frame

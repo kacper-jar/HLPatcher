@@ -23,6 +23,8 @@ class UpdateAvailablePage(BasePage):
                 self,
                 text=version_text,
                 font=ctk.CTkFont(weight="bold"),
+                wraplength=350,
+                justify="center",
             )
             version_label.pack(pady=(0, 20))
 
@@ -40,6 +42,8 @@ class UpdateAvailablePage(BasePage):
             text=self._app.i18n.t("update_skip"),
             font=ctk.CTkFont(size=11),
             text_color="gray",
+            wraplength=350,
+            justify="center",
         )
         skip_label.pack(side="bottom", pady=20)
 

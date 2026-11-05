@@ -17,6 +17,8 @@ class LimitationsPage(BasePage):
             font=ctk.CTkFont(weight="bold"),
             text_color="#f39c12",
             anchor="w",
+            wraplength=320,
+            justify="left",
         )
         multiplayer_title.pack(fill="x", padx=15, pady=(10, 0))
 
@@ -38,6 +40,8 @@ class LimitationsPage(BasePage):
             font=ctk.CTkFont(weight="bold"),
             text_color="#f39c12",
             anchor="w",
+            wraplength=320,
+            justify="left",
         )
         singleplayer_title.pack(fill="x", padx=15, pady=(10, 0))
 
@@ -58,6 +62,8 @@ class LimitationsPage(BasePage):
             text=self._app.i18n.t("limitations_issues_title"),
             font=ctk.CTkFont(weight="bold"),
             anchor="w",
+            wraplength=320,
+            justify="left",
         )
         issues_title.pack(fill="x", padx=15, pady=(10, 5))
 

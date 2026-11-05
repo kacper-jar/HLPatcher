@@ -16,6 +16,8 @@ class OptionsPage(BasePage):
             text=self._app.i18n.t("options_mode_title"),
             font=ctk.CTkFont(weight="bold"),
             anchor="w",
+            wraplength=320,
+            justify="left",
         )
         mode_title.pack(fill="x", padx=15, pady=(10, 5))
 
@@ -35,6 +37,8 @@ class OptionsPage(BasePage):
             font=ctk.CTkFont(size=11),
             text_color="gray60",
             anchor="w",
+            wraplength=320,
+            justify="left",
         )
         latest_desc.pack(fill="x", padx=35, pady=(0, 5))
 
@@ -53,6 +57,7 @@ class OptionsPage(BasePage):
             text_color="gray60",
             anchor="w",
             wraplength=320,
+            justify="left",
         )
         stable_desc.pack(fill="x", padx=35, pady=(0, 10))
 
@@ -64,6 +69,8 @@ class OptionsPage(BasePage):
             text=self._app.i18n.t("options_backup_title"),
             font=ctk.CTkFont(weight="bold"),
             anchor="w",
+            wraplength=320,
+            justify="left",
         )
         backup_title.pack(fill="x", padx=15, pady=(10, 5))
 
@@ -82,6 +89,8 @@ class OptionsPage(BasePage):
             font=ctk.CTkFont(size=11),
             text_color="gray60",
             anchor="w",
+            wraplength=320,
+            justify="left",
         )
         backup_desc.pack(fill="x", padx=35, pady=(0, 10))
 

@@ -13,6 +13,7 @@ class NoGamesPage(BasePage):
             self,
             text=desc_text,
             justify="center",
+            wraplength=350,
         )
         desc_label.pack(pady=10)
 
