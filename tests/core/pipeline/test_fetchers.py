@@ -1,3 +1,4 @@
+import hashlib
 import http.server
 import io
 import subprocess
@@ -29,8 +30,8 @@ def xash_config():
                            stable_commit=XASH_STABLE)
 
 
-def url_config(url):
-    return FetchStepConfig("url-fetcher", url=url, patch_dir_name="dejavu-fonts")
+def url_config(url, sha256="0" * 64):
+    return FetchStepConfig("url-fetcher", url=url, patch_dir_name="dejavu-fonts", sha256=sha256)
 
 
 @pytest.fixture
@@ -102,7 +103,14 @@ def test_git_fetcher_skips_an_existing_checkout(step_context, fetch, mock_run_co
 
 
 @pytest.fixture
-def sdl_disk_image(mocker, mock_run_command):
+def sdl_download(mocker):
+    mocker.patch("patcher.core.pipeline.fetchers.goldsrc_engine_fetcher.SDL_SHA256",
+                 hashlib.sha256(b"dmg").hexdigest())
+    return mocker.patch("urllib.request.urlopen", return_value=io.BytesIO(b"dmg"))
+
+
+@pytest.fixture
+def sdl_disk_image(mocker, mock_run_command, sdl_download):
     def popen(cmd, *args, **kwargs):
         if cmd[:2] == ["hdiutil", "attach"]:
             framework = Path(cmd[cmd.index("-mountpoint") + 1]) / "SDL2.framework" / "Versions" / "A"
@@ -114,34 +122,35 @@ def sdl_disk_image(mocker, mock_run_command):
     return mock_run_command
 
 
-def test_goldsrc_engine_fetcher_copies_sdl2_from_the_disk_image(step_context, fetch, sdl_disk_image):
+def test_goldsrc_engine_fetcher_copies_sdl2_from_the_disk_image(step_context, fetch, sdl_disk_image, sdl_download):
     fetch(GoldSrcEngineFetcher, xash_config())
 
     framework = step_context.working_dir / "xash3d-fwgs" / "3rdparty" / "SDL2.framework"
     assert (framework / "Versions" / "A" / "SDL2").read_bytes() == b"sdl"
 
-    dmg = str(step_context.working_dir / "SDL2-2.32.10.dmg")
+    assert sdl_download.call_args.args[0].full_url == SDL_URL
     commands = [cmd for cmd, _ in sdl_disk_image.commands]
-    attach = commands[2]
+    attach = commands[1]
+    dmg = attach[2]
     mount_point = attach[attach.index("-mountpoint") + 1]
     assert commands[1:] == [
-        ["curl", "-L", "-o", dmg, SDL_URL],
         ["hdiutil", "attach", dmg, "-nobrowse", "-readonly", "-mountpoint", mount_point],
         ["hdiutil", "detach", mount_point],
     ]
     assert Path(mount_point).name.startswith("HLPatcher-SDL2-")
     assert not Path(mount_point).exists()
+    assert not Path(dmg).exists()
 
 
-def test_goldsrc_engine_fetcher_detaches_the_image_when_the_copy_fails(fetch, mock_run_command):
+def test_goldsrc_engine_fetcher_detaches_the_image_when_the_copy_fails(fetch, mock_run_command, sdl_download):
     with pytest.raises(FileNotFoundError):
         fetch(GoldSrcEngineFetcher, xash_config())
 
-    attach, detach = mock_run_command.commands[2][0], mock_run_command.commands[3][0]
+    attach, detach = mock_run_command.commands[1][0], mock_run_command.commands[2][0]
     assert detach == ["hdiutil", "detach", attach[attach.index("-mountpoint") + 1]]
 
 
-def test_goldsrc_engine_fetcher_stops_when_the_image_does_not_mount(step_context, fetch, mocker):
+def test_goldsrc_engine_fetcher_stops_when_the_image_does_not_mount(step_context, fetch, mocker, sdl_download):
     commands = []
 
     def popen(cmd, *args, **kwargs):
@@ -159,12 +168,27 @@ def test_goldsrc_engine_fetcher_stops_when_the_image_does_not_mount(step_context
     assert not (step_context.working_dir / "xash3d-fwgs" / "3rdparty").exists()
 
 
-def test_goldsrc_engine_fetcher_skips_an_existing_checkout(step_context, fetch, mock_run_command):
-    (step_context.working_dir / "xash3d-fwgs").mkdir()
+def test_goldsrc_engine_fetcher_skips_a_checkout_with_sdl2(step_context, fetch, mock_run_command, sdl_download):
+    (step_context.working_dir / "xash3d-fwgs" / "3rdparty" / "SDL2.framework").mkdir(parents=True)
 
     fetch(GoldSrcEngineFetcher, xash_config())
 
     assert mock_run_command.commands == []
+    sdl_download.assert_not_called()
+
+
+def test_goldsrc_engine_fetcher_does_not_mount_a_mismatched_image(
+        step_context, fetch, mock_run_command, sdl_download,
+):
+    checkout = step_context.working_dir / "xash3d-fwgs"
+    checkout.mkdir()
+    sdl_download.return_value = io.BytesIO(b"tampered dmg")
+
+    with pytest.raises(ValueError, match="SHA-256 mismatch"):
+        fetch(GoldSrcEngineFetcher, xash_config())
+
+    assert mock_run_command.commands == []
+    assert list(step_context.working_dir.iterdir()) == [checkout]
 
 
 class DownloadHandler(http.server.BaseHTTPRequestHandler):
@@ -207,10 +231,29 @@ def test_url_fetcher_downloads_the_archive(step_context, fetch, download_server)
     content = bytes(range(256)) * 800
     url = serve(download_server, "/dejavu-fonts-ttf-2.37.zip", [content[:100_000], content[100_000:]])
 
-    fetch(UrlFetcherStep, url_config(url))
+    fetch(UrlFetcherStep, url_config(url, hashlib.sha256(content).hexdigest()))
 
     download_dir = step_context.working_dir / "dejavu-fonts"
     assert (download_dir / "archive.tmp").read_bytes() == content
+
+
+def test_url_fetcher_does_not_publish_a_mismatched_archive(step_context, fetch, download_server):
+    url = serve(download_server, "/tampered.zip", [b"tampered archive"])
+
+    with pytest.raises(ValueError, match="SHA-256 mismatch"):
+        fetch(UrlFetcherStep, url_config(url))
+
+    assert list((step_context.working_dir / "dejavu-fonts").iterdir()) == []
+
+
+@pytest.mark.parametrize("checksum", ["", "g" * 64])
+def test_url_fetcher_requires_a_valid_checksum(fetch, mocker, checksum):
+    urlopen = mocker.patch("urllib.request.urlopen")
+
+    with pytest.raises(ValueError, match="64-character SHA-256 checksum"):
+        fetch(UrlFetcherStep, url_config("https://example.com/fonts.zip", checksum))
+
+    urlopen.assert_not_called()
 
 
 def test_url_fetcher_stops_mid_download(step_context, fetch, download_server):
