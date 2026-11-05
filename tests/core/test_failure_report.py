@@ -118,8 +118,8 @@ def report(tmp_path_factory):
 
         working_dir = home / "work"
         clone = make_clone(working_dir)
-        subprocess.run([sys.executable, "-m", "venv", "--without-pip", str(working_dir / "venv")], check=True)
-        (working_dir / "venv" / "pip.log").write_text("Collecting cmake\n")
+        subprocess.run([sys.executable, "-m", "venv", "--without-pip", str(working_dir / "buildvenv")], check=True)
+        (working_dir / "buildvenv" / "pip.log").write_text("Collecting cmake\n")
         game = make_game(home)
         install_game(game, home)
         engine = game.components[0]
@@ -251,7 +251,7 @@ def test_describes_the_mac_and_its_build_tools(text):
     assert re.search(r"^Steam library disk: .* \(~/Steam\)$", machine, re.M)
     assert re.search(r"^clang: .*clang version", toolchain, re.M)
     assert re.search(r"^  git: /\S+/git, git version", toolchain, re.M)
-    assert "In the build venv (~/work/venv/bin):\n  python3: ~/work/venv/bin/python3, Python 3." in toolchain
+    assert "In the build venv (~/work/buildvenv/bin):\n  python3: ~/work/buildvenv/bin/python3, Python 3." in toolchain
     assert "  cmake: not found\n" in toolchain
 
 
@@ -287,7 +287,7 @@ def test_describes_the_app_python_and_the_build_venv_with_their_packages(text):
 
     assert re.search(r"^customtkinter: \d", python, re.M)
     assert re.search(r"^  customtkinter==\d", python, re.M)
-    assert "Build venv (~/work/venv):\n  Python 3." in python
+    assert "Build venv (~/work/buildvenv):\n  Python 3." in python
     assert re.search(r"^  home = /", python, re.M)
     assert re.search(r"^Build venv packages:\n  .*No module named pip", python, re.M)
 
@@ -301,7 +301,7 @@ def test_lists_the_working_folder_without_git_or_venv_internals(report):
 
     assert listing.startswith("~/work\n")
     assert entries(listing) == [
-        "venv/  (contents not listed)",
+        "buildvenv/  (contents not listed)",
         "xash3d-fwgs/",
         "xash3d-fwgs/.git/  (contents not listed)",
         "xash3d-fwgs/build/",
@@ -384,7 +384,7 @@ def test_a_failure_before_any_step_still_gets_a_report(tmp_path, mocker):
     assert "Steam library: not chosen\n" in section(text, "Session")
     assert section(text, "Timeline") == "No patch step started."
     assert section(text, "Game folders") == "No game was being patched."
-    assert section(text, "Python").endswith("Build venv (~/work/venv):\n  not created")
+    assert section(text, "Python").endswith("Build venv (~/work/buildvenv):\n  not created")
     assert session_log == "This session's log wasn't saved.\n"
 
 

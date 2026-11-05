@@ -48,7 +48,7 @@ def test_waf_builder_passes_source_engine_arguments_through(step_context, build,
 def test_cmake_builder_runs_the_full_sequence_with_the_venv_python(step_context, build, mock_run_command):
     build(CMakeBuilder, BuildStepConfig("cmake-builder", patch_dir_name="cs16-client"))
 
-    python = str(step_context.working_dir / "venv" / "bin" / "python3")
+    python = str(step_context.working_dir / "buildvenv" / "bin" / "python3")
     mod_dir = step_context.working_dir / "cs16-client"
     assert mock_run_command.commands == [
         ([python, "build_deps.py"], str(mod_dir)),

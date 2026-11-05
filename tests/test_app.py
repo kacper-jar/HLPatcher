@@ -235,7 +235,7 @@ def test_switching_language_retranslates_the_footer_and_rebuilds_the_page(app):
                      if isinstance(widget, ctk.CTkButton) and widget.cget("text") == app.i18n.t("btn_quit")).invoke(),
 ], ids=["window-close", "cmd-q", "quit-button"])
 def test_quitting_removes_the_working_dir_and_closes(app, quit_app):
-    (app.context.working_dir / "venv").mkdir(parents=True)
+    (app.context.working_dir / "buildvenv").mkdir(parents=True)
 
     quit_app(app)
 
@@ -253,7 +253,7 @@ def test_a_second_quit_request_is_ignored(app):
 
 def test_quitting_in_debug_mode_keeps_the_working_dir(make_app):
     app = make_app(debug=True)
-    (app.context.working_dir / "venv").mkdir(parents=True)
+    (app.context.working_dir / "buildvenv").mkdir(parents=True)
 
     app.tk.call("::tk::mac::Quit")
 
@@ -263,7 +263,7 @@ def test_quitting_in_debug_mode_keeps_the_working_dir(make_app):
 
 def test_quitting_while_patching_waits_for_the_patcher_to_stop(app, mocker):
     mocker.patch.object(FakePatcher, "hold", True)
-    (app.context.working_dir / "venv").mkdir(parents=True)
+    (app.context.working_dir / "buildvenv").mkdir(parents=True)
     app.router.show_page(PageRoute.PROGRESS)
     page = app.router.get_current_page()
     assert eventually(page.patcher.started.is_set)

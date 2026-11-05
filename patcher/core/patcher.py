@@ -112,9 +112,10 @@ class Patcher:
 
         python_bin = str(self._config.python_bin) if self._config.python_bin else "python3"
         self.log("Setting up Python venv for build tools...")
-        self.executor.run([python_bin, "-m", "venv", str(working_dir / "venv")])
-        venv_pip = str(working_dir / "venv" / "bin" / "pip")
-        self.executor.run([venv_pip, "install", "cmake", "ninja", "meson"])
+        self.executor.run([python_bin, "-m", "venv", str(working_dir / "buildvenv")])
+        venv_pip = str(working_dir / "buildvenv" / "bin" / "pip")
+        requirements = self._context.script_dir / "requirements-buildvenv.txt"
+        self.executor.run([venv_pip, "install", "-r", str(requirements)])
 
     def _cleanup(self):
         if self._config.debug:

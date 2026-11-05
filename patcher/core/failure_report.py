@@ -29,7 +29,7 @@ VENV_TOOLS = ["python3", "cmake", "ninja", "meson"]
 ENVIRONMENT = ["PATH", "CC", "CXX", "CFLAGS", "CXXFLAGS", "CPPFLAGS", "LDFLAGS", "PKG_CONFIG_PATH", "SDKROOT",
                "MACOSX_DEPLOYMENT_TARGET", "DEVELOPER_DIR", "SHELL", "LANG", "LC_ALL"]
 BUILD_LOGS = ["*.log", "CMakeConfigureLog.yaml"]
-SKIPPED_FOLDERS = {".git", "venv"}
+SKIPPED_FOLDERS = {".git", "buildvenv"}
 MAX_TREE_ENTRIES = 100_000
 MAX_BINARIES = 500
 MACH_O_MAGICS = {bytes.fromhex(magic) for magic in ("feedface", "feedfacf", "cefaedfe", "cffaedfe", "cafebabe")}
@@ -239,7 +239,7 @@ class FailureReport:
             "On PATH:",
         ]
         lines += [f"  {tool}: {self._tool(shutil.which(tool))}" for tool in TOOLS]
-        venv_bin = self._context.working_dir / "venv" / "bin"
+        venv_bin = self._context.working_dir / "buildvenv" / "bin"
         lines.append(f"In the build venv ({venv_bin}):")
         lines += [f"  {tool}: {self._tool(venv_bin / tool if (venv_bin / tool).exists() else None)}"
                   for tool in VENV_TOOLS]
@@ -257,7 +257,7 @@ class FailureReport:
         return "\n".join(f"{name}={os.environ.get(name, '(not set)')}" for name in names)
 
     def _python(self) -> str:
-        venv = self._context.working_dir / "venv"
+        venv = self._context.working_dir / "buildvenv"
         venv_python = venv / "bin" / "python3"
         venv_config = venv / "pyvenv.cfg"
         lines = [

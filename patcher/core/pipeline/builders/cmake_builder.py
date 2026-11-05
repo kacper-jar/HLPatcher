@@ -9,7 +9,7 @@ class CMakeBuilder(BaseStep):
         target_dir_name = step_config.patch_dir_name
         self.context.log(f"Building {target_dir_name}...")
         mod_dir = self.context.working_dir / target_dir_name
-        venv_python = str(self.context.working_dir / "venv" / "bin" / "python3")
+        venv_python = str(self.context.working_dir / "buildvenv" / "bin" / "python3")
 
         self.context.executor.run([venv_python, "build_deps.py"], cwd=mod_dir)
         self.context.executor.run([venv_python, "-m", "cmake", "-S", ".", "-B", "build", "-G", "Ninja"], cwd=mod_dir)
