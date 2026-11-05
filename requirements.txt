@@ -1,3 +1,4 @@
-customtkinter>=5.2.0
-packaging
-certifi
+customtkinter==6.0.0
+darkdetect==0.8.0
+packaging==26.3
+certifi==2026.10.23
