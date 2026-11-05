@@ -1,9 +1,11 @@
+import errno
 import logging
 import shutil
 import subprocess
 from dataclasses import replace
 from datetime import datetime, timezone
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -292,6 +294,22 @@ def test_patching_another_component_the_same_day_keeps_the_first_backup(mock_pat
     make_patcher().run([replace(half_life, components=[blue_shift])])
 
     assert (documents / "Half-Life backup (2026-09-27)" / "hl_osx").read_bytes() == b"valve launcher"
+
+
+def test_insufficient_disk_space_stops_before_copying_or_patching(mock_patch_context, games, make_patcher, documents,
+                                                                  patched_launcher, mocker, events):
+    mock_patch_context.create_backup = True
+    required = patched_launcher.stat().st_size
+    disk_usage = mocker.patch("shutil.disk_usage", return_value=SimpleNamespace(free=required - 1))
+    copytree = mocker.patch("shutil.copytree")
+
+    with pytest.raises(OSError, match="Not enough disk space to back up Half-Life") as error:
+        make_patcher().run([games[0]])
+
+    assert error.value.errno == errno.ENOSPC
+    disk_usage.assert_called_once_with(documents)
+    copytree.assert_not_called()
+    assert not events
 
 
 def test_a_backup_cut_short_is_made_again_on_the_next_run(mock_patch_context, games, make_patcher, documents,

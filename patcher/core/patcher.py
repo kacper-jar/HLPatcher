@@ -1,4 +1,6 @@
+import errno
 import logging
+import os
 import shutil
 from collections.abc import Callable
 from datetime import datetime, timezone
@@ -98,6 +100,20 @@ class Patcher:
 
             incomplete_dest = backup_dest.with_name(f"{backup_dest.name} (incomplete)")
             shutil.rmtree(incomplete_dest, ignore_errors=True)
+            backup_dest.parent.mkdir(parents=True, exist_ok=True)
+            required = sum(
+                (Path(root) / name).stat().st_size
+                for root, _, files in os.walk(game.path, followlinks=True)
+                for name in files
+            )
+            free = shutil.disk_usage(backup_dest.parent).free
+            if free < required:
+                raise OSError(
+                    errno.ENOSPC,
+                    f"Not enough disk space to back up {game.name} "
+                    f"({required:,} bytes required, {free:,} bytes available)",
+                    str(backup_dest),
+                )
             self.log(f"Backing up {game.path} to {backup_dest}")
             shutil.copytree(game.path, incomplete_dest)
             incomplete_dest.rename(backup_dest)
