@@ -16,6 +16,8 @@ class FailurePage(BasePage):
             text=self._app.i18n.t("failure_details"),
             font=ctk.CTkFont(weight="bold"),
             anchor="w",
+            wraplength=340,
+            justify="left",
         )
         error_title.pack(fill="x", padx=15, pady=(10, 5))
 
@@ -58,6 +60,8 @@ class FailurePage(BasePage):
             help_frame,
             text=self._app.i18n.t("failure_note"),
             font=ctk.CTkFont(size=10),
+            wraplength=340,
+            justify="center",
         )
         note_label.pack(pady=(0, 10))
 

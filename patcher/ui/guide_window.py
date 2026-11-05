@@ -54,7 +54,9 @@ class BaseGuideWindow(ctk.CTkToplevel):
             card,
             text=self._app.i18n.t(title_key),
             font=ctk.CTkFont(weight="bold"),
-            anchor="w"
+            anchor="w",
+            wraplength=500,
+            justify="left",
         )
         title_label.pack(fill="x", padx=15, pady=(10, 5))
 

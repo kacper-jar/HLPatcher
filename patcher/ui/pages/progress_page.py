@@ -18,6 +18,8 @@ class ProgressPage(BasePage):
             self,
             text=self._app.i18n.t("progress_preparing"),
             font=ctk.CTkFont(size=14, weight="bold"),
+            wraplength=350,
+            justify="center",
         )
         self._status_label.pack(pady=(20, 10))
 
@@ -33,6 +35,8 @@ class ProgressPage(BasePage):
             self,
             text=self._app.i18n.t("progress_step_format", current=0, total=0),
             font=ctk.CTkFont(size=14, weight="bold"),
+            wraplength=350,
+            justify="center",
         )
         self._step_label.pack(pady=(0, 10))
 
@@ -40,7 +44,9 @@ class ProgressPage(BasePage):
             self,
             text=self._app.i18n.t("progress_time_format", mins=0, secs=0),
             font=ctk.CTkFont(size=13, weight="bold"),
-            text_color="gray70"
+            text_color="gray70",
+            wraplength=350,
+            justify="center",
         )
         self._elapsed_time_label.pack(pady=(5, 10))
 

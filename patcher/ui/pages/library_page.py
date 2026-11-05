@@ -16,6 +16,7 @@ class LibraryPage(BasePage):
             text=self._app.i18n.t("library_hint"),
             justify="center",
             font=ctk.CTkFont(size=12),
+            wraplength=350,
         )
         hint_label.pack(pady=(0, 15))
 
@@ -44,6 +45,8 @@ class LibraryPage(BasePage):
             text="",
             text_color="#e74c3c",
             font=ctk.CTkFont(size=12),
+            wraplength=350,
+            justify="center",
         )
         self._error_label.pack(pady=(10, 0))
 

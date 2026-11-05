@@ -588,3 +588,41 @@ def test_failure_page_asks_for_the_terminal_output_when_no_log_file_was_saved(ma
     assert "failure_help" in texts(page)
     assert "failure_help_report" not in texts(page)
     assert find(page, ctk.CTkButton, "failure_report_btn").winfo_manager() == ""
+
+
+@pytest.mark.parametrize("page_class", [
+    AllPatchedPage,
+    FailurePage,
+    Hl2RequiredPage,
+    LibraryPage,
+    LimitationsPage,
+    NoGamesPage,
+    OptionsPage,
+    ProgressPage,
+    SelectionPage,
+    SuccessPage,
+    UpdateAvailablePage,
+    WelcomePage,
+])
+def test_all_text_labels_on_page_use_wraplength(make_page, page_class):
+    page = make_page(page_class)
+    labels = [label for label in widgets(page, ctk.CTkLabel) if label.cget("text")]
+    assert labels
+    assert all(label.cget("wraplength") > 0 for label in labels)
+
+
+def test_downgrade_page_labels_use_wraplength(open_downgrade_page, downgrade_files):
+    page, status_bar = open_downgrade_page()
+    labels = [label for label in widgets(page, ctk.CTkLabel) if label.cget("text")]
+    labels += widgets(status_bar, ctk.CTkLabel)
+    assert labels
+    assert all(label.cget("wraplength") > 0 for label in labels)
+
+
+def test_guide_window_labels_use_wraplength(tk_root, app):
+    window = BaseGuideWindow(tk_root, app, title="Guide Title")
+    window.add_step("step_title", "step_desc")
+    labels = [label for label in widgets(window.content_frame, ctk.CTkLabel) if label.cget("text")]
+    assert labels
+    assert all(label.cget("wraplength") > 0 for label in labels)
+    window.destroy()

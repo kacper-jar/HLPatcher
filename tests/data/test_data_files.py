@@ -210,3 +210,9 @@ def test_the_code_asks_only_for_messages_that_exist_in_english(pytestconfig, eng
 
     assert keys
     assert sorted(keys - english.keys()) == []
+
+
+def test_source_messages_do_not_contain_single_newlines(english):
+    problems = [key for key, text in english.items() if "\n" in text.replace("\n\n", "")]
+
+    assert problems == []

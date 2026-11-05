@@ -15,6 +15,8 @@ class SuccessPage(BasePage):
             font=ctk.CTkFont(weight="bold"),
             text_color="#f39c12",
             anchor="w",
+            wraplength=340,
+            justify="left",
         )
         warning_title.pack(fill="x", padx=15, pady=(10, 5))
 
@@ -31,6 +33,8 @@ class SuccessPage(BasePage):
             self,
             text=self._app.i18n.t("success_enjoy"),
             font=ctk.CTkFont(size=14),
+            wraplength=350,
+            justify="center",
         )
         enjoy_label.pack(pady=10)
 
