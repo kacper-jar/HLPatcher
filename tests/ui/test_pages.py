@@ -10,6 +10,7 @@ import pytest
 from patcher.core import (AppConfig, EngineType, Game, GuideConfig, GuideStepConfig, PatchContext, PatchMode,
                           PatchStatus, Planner, UpdateInfo)
 from patcher.ui import BaseGuideWindow, PageRoute
+from patcher.ui.base_page import BasePage
 from patcher.ui.pages import (AllPatchedPage, DowngradePage, FailurePage, Hl2RequiredPage, LibraryPage,
                               LimitationsPage, NoGamesPage, OptionsPage, ProgressPage, SelectionPage, SuccessPage,
                               UpdateAvailablePage, WelcomePage)
@@ -445,6 +446,28 @@ def test_downgrade_notices_the_files_as_soon_as_they_match(open_downgrade_page, 
 
     assert run_until(tk_root, lambda: app.footer.next_enabled is True, timeout=3)
     assert status(status_bar) == "downgrade_status_all"
+
+
+def test_downgrade_reuses_hash_until_file_changes(tmp_path, mocker):
+    mocker.patch.object(BasePage, "__init__", return_value=None)
+    page = DowngradePage(None, None)
+    path = tmp_path / "client.dylib"
+    path.write_bytes(b"old")
+    expected = sha256(b"new")
+    digest = mocker.spy(hashlib, "file_digest")
+
+    assert not page._matches_requirement(path, expected)
+    assert not page._matches_requirement(path, expected)
+    assert digest.call_count == 1
+
+    path.write_bytes(b"new")
+    assert page._matches_requirement(path, expected)
+    assert page._matches_requirement(path, expected)
+    assert digest.call_count == 2
+
+    path.unlink()
+    assert not page._matches_requirement(path, expected)
+    assert digest.call_count == 2
 
 
 def test_leaving_the_downgrade_page_stops_checking(open_downgrade_page, downgrade_files, tk_root, app):
