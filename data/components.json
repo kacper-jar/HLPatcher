@@ -13,7 +13,7 @@
         "type": "goldsrc-engine-fetcher",
         "url": "https://github.com/FWGS/xash3d-fwgs",
         "patch_dir_name": "xash3d-fwgs",
-        "stable_commit": "03a396e208cfd50fd7a59ed0fa0cbe03ca4bb54c",
+        "stable_commit": "e9b94dc1a89bcd8867e2d16b37cd6f1cbd4dbd1c",
         "force_stable": false
       },
       {
@@ -52,7 +52,7 @@
         "url": "https://github.com/FWGS/hlsdk-portable",
         "patch_dir_name": "hlsdk-portable-hlfixed",
         "branch": "hlfixed",
-        "stable_commit": "9352fba814fc06650684eb48ad9a0d84917fd2c4",
+        "stable_commit": "2308448c08dc0463ba06210b88ab2772c9eac0a1",
         "force_stable": false
       },
       {
@@ -87,7 +87,7 @@
         "url": "https://github.com/FWGS/hlsdk-portable",
         "patch_dir_name": "hlsdk-portable-opforfixed",
         "branch": "opforfixed",
-        "stable_commit": "dffe28ca1663fb786dc8cde00e08da03e6b8934c",
+        "stable_commit": "ccec725dfb7ac2b8b4dc6d1520faf32a43413562",
         "force_stable": false
       },
       {
@@ -122,7 +122,7 @@
         "url": "https://github.com/FWGS/hlsdk-portable",
         "patch_dir_name": "hlsdk-portable-bshift",
         "branch": "bshift",
-        "stable_commit": "701bcef1a0ebac49e93ecff9e2c7724ff0b4278d",
+        "stable_commit": "a137bb1a3d0a8f94d8598c42cc08aac506027cac",
         "force_stable": false
       },
       {
@@ -157,7 +157,7 @@
         "url": "https://github.com/FWGS/hlsdk-portable",
         "patch_dir_name": "hlsdk-portable-dmc",
         "branch": "dmc",
-        "stable_commit": "1507ee56e6f9c01eb573cfc5fb48e0f3a415dd54",
+        "stable_commit": "41a503f236636cc643e70dea1c4331e1768d0312",
         "force_stable": false
       },
       {
@@ -191,7 +191,7 @@
         "type": "git-fetcher",
         "url": "https://github.com/Velaron/cs16-client",
         "patch_dir_name": "cs16-client",
-        "stable_commit": "9778fec4c6f956d2b483949feb704fb479c92f7f",
+        "stable_commit": "8ae1ebe2764c016669d381591ea778c7c9e86f51",
         "force_stable": false
       },
       {
