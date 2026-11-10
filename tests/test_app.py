@@ -146,16 +146,26 @@ def test_starts_on_the_welcome_page_with_the_shipped_data(app, pytestconfig):
     (UpdateInfo("3.2.1", False, RELEASE_URL), PageRoute.LIBRARY),
     (None, PageRoute.LIBRARY),
 ], ids=["update-available", "up-to-date", "check-failed"])
-def test_offers_an_available_update_before_the_library(make_app, update_check, mocker, info, shown):
+def test_waits_for_the_update_check_when_next_is_clicked_early(make_app, update_check, mocker, info, shown):
     mocker.patch("patcher.__version__", "3.2.1")
-    update_check.return_value = info
+    release_check = threading.Event()
+
+    def check(_version):
+        release_check.wait(5)
+        return info
+
+    update_check.side_effect = check
     app = make_app()
-    assert eventually(lambda: update_check.called and app.update_info == info)
 
-    app.router.go_next()
+    try:
+        app.router.go_next()
+        assert app.router.current_page_key == PageRoute.WELCOME
+    finally:
+        release_check.set()
 
+    assert run_until(app, lambda: app.router.current_page_key == shown)
     assert update_check.call_args.args == ("3.2.1",)
-    assert app.router.current_page_key == shown
+    assert app.update_info == info
 
 
 @pytest.mark.parametrize(("files", "shown"), [
