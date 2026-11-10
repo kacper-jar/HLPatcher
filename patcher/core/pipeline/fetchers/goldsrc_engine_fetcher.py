@@ -17,6 +17,7 @@ class GoldSrcEngineFetcher(GitFetcher):
     def execute(self, game: Game, comp: Component, step_config: FetchStepConfig):
         target_dir_name = step_config.patch_dir_name
         working_dir = self.context.working_dir
+        executor = self.context.executor
         xash_dir = working_dir / target_dir_name
         sdl_dest = xash_dir / "3rdparty" / "SDL2.framework"
 
@@ -29,16 +30,22 @@ class GoldSrcEngineFetcher(GitFetcher):
         with tempfile.TemporaryDirectory(dir=working_dir) as temp_dir:
             sdl_dmg = Path(temp_dir) / SDL_DMG
             self.context.log(f"Downloading from {SDL_URL}")
-            download_verified(SDL_URL, sdl_dmg, SDL_SHA256, self.context.executor.raise_if_stopped)
+            download_verified(SDL_URL, sdl_dmg, SDL_SHA256, executor.raise_if_stopped)
 
             with tempfile.TemporaryDirectory(prefix="HLPatcher-SDL2-", ignore_cleanup_errors=True) as mount_point:
-                self.context.executor.run(["hdiutil", "attach", str(sdl_dmg), "-nobrowse", "-readonly",
-                                           "-mountpoint", mount_point])
+                executor.run(["hdiutil", "attach", str(sdl_dmg), "-nobrowse", "-readonly",
+                              "-mountpoint", mount_point])
                 staged_framework = Path(temp_dir) / "SDL2.framework"
                 try:
                     shutil.copytree(Path(mount_point) / "SDL2.framework", staged_framework)
                 finally:
-                    self.context.executor.run(["hdiutil", "detach", mount_point])
+                    interruptible = executor.interruptible
+                    executor.interruptible = False
+                    try:
+                        executor.run(["hdiutil", "detach", mount_point])
+                    finally:
+                        executor.interruptible = interruptible
 
+            executor.raise_if_stopped()
             sdl_dest.parent.mkdir(parents=True, exist_ok=True)
             staged_framework.replace(sdl_dest)
