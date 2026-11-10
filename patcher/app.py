@@ -2,6 +2,7 @@ import logging
 import shutil
 import threading
 from pathlib import Path
+from queue import Empty, SimpleQueue
 import customtkinter as ctk
 
 import patcher
@@ -48,6 +49,7 @@ class App(ctk.CTk):
         self.patching_error = ""
         self.failure_report: Path | None = None
         self.update_info: UpdateInfo | None = None
+        self._update_check_job: str | None = None
 
         locales_dir = self.context.script_dir / "data" / "locales"
         self.i18n = I18n(locales_dir)
@@ -56,7 +58,7 @@ class App(ctk.CTk):
         guides_dir = self.context.script_dir / "data" / "guides"
         self.guide_registry = GuideRegistry(guides_dir)
 
-        self._start_update_check()
+        self._update_results: SimpleQueue[UpdateInfo | None] | None = self._start_update_check()
 
         self._header = PageHeader(self)
         self._header.pack(fill="x")
@@ -86,13 +88,22 @@ class App(ctk.CTk):
         current = self.router.current_page_key
         self.router.invalidate_page(current)
         self.router.show_page(current)
+        if current == PageRoute.WELCOME and self._update_check_job is not None:
+            self.footer.set_next_enabled(False)
 
-    def _start_update_check(self):
+    def _start_update_check(self) -> SimpleQueue[UpdateInfo | None]:
+        results: SimpleQueue[UpdateInfo | None] = SimpleQueue()
+
         def check():
-            updater = Updater()
-            self.update_info = updater.check_for_update(patcher.__version__)
+            results.put(Updater().check_for_update(patcher.__version__))
 
         threading.Thread(target=check, daemon=True).start()
+        return results
+
+    def _resume_after_update_check(self):
+        self._update_check_job = None
+        if self.router.current_page_key == PageRoute.WELCOME:
+            self.router.go_next()
 
     def _on_route_intercept(self, current_key: PageRoute, next_key: PageRoute) -> PageRoute | None:
         if next_key == PageRoute.SCAN_AND_ROUTE:
@@ -107,12 +118,19 @@ class App(ctk.CTk):
             if Planner(self.context.games).find_missing_dependencies(self.context.selected_components):
                 return PageRoute.HL2_REQUIRED
 
-        if (
-                current_key == PageRoute.WELCOME
-                and self.update_info
-                and self.update_info.update_available
-        ):
-            return PageRoute.UPDATE_AVAILABLE
+        if current_key == PageRoute.WELCOME:
+            if self._update_results is not None:
+                try:
+                    self.update_info = self._update_results.get_nowait()
+                except Empty:
+                    self.footer.set_next_enabled(False)
+                    if self._update_check_job is None:
+                        self._update_check_job = self.after(100, self._resume_after_update_check)
+                    return PageRoute.HALT
+                self._update_results = None
+
+            if self.update_info and self.update_info.update_available:
+                return PageRoute.UPDATE_AVAILABLE
 
         return None
 
@@ -136,6 +154,8 @@ class App(ctk.CTk):
         self._cleanup_and_destroy()
 
     def _cleanup_and_destroy(self):
+        if self._update_check_job is not None:
+            self.after_cancel(self._update_check_job)
         if not self.config.debug and self.context.working_dir.exists():
             shutil.rmtree(self.context.working_dir, ignore_errors=True)
         self.destroy()
