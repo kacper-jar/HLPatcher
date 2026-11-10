@@ -1,6 +1,7 @@
 import hashlib
 import http.server
 import io
+import shutil
 import subprocess
 import threading
 import time
@@ -148,6 +149,25 @@ def test_goldsrc_engine_fetcher_detaches_the_image_when_the_copy_fails(fetch, mo
 
     attach, detach = mock_run_command.commands[1][0], mock_run_command.commands[2][0]
     assert detach == ["hdiutil", "detach", attach[attach.index("-mountpoint") + 1]]
+
+
+def test_goldsrc_engine_fetcher_detaches_the_image_when_stopped_during_copy(
+        step_context, fetch, sdl_disk_image, mocker,
+):
+    def copy_and_stop(source, destination):
+        step_context.executor.stop()
+        return shutil.copytree(source, destination)
+
+    fetcher_shutil = mocker.patch("patcher.core.pipeline.fetchers.goldsrc_engine_fetcher.shutil")
+    fetcher_shutil.copytree.side_effect = copy_and_stop
+
+    with pytest.raises(RuntimeError, match="Execution stopped by user"):
+        fetch(GoldSrcEngineFetcher, xash_config())
+
+    attach, detach = (cmd for cmd, _ in sdl_disk_image.commands[-2:])
+    assert detach == ["hdiutil", "detach", attach[attach.index("-mountpoint") + 1]]
+    assert step_context.executor.interruptible
+    assert not (step_context.working_dir / "xash3d-fwgs" / "3rdparty").exists()
 
 
 def test_goldsrc_engine_fetcher_stops_when_the_image_does_not_mount(step_context, fetch, mocker, sdl_download):
