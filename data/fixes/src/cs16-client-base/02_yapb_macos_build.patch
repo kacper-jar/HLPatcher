@@ -1,0 +1,12 @@
+--- a/3rdparty/yapb/cmake/YapbFlags.cmake
++++ b/3rdparty/yapb/cmake/YapbFlags.cmake
+@@ -179,9 +179,6 @@ if(CLANG_OR_GCC AND NOT ANDROID)
+       list(APPEND _ldflags -mmacosx-version-min=11.0 -Wl,-dead_strip)
+       list(APPEND _ldflags -Wl,--as-needed -Wl,--no-undefined)
+       list(APPEND _dist_ldflags -Wl,-soname,yapb${LIB_SUFFIX}.dylib)
+-    else()
+-      list(APPEND _cflags -mmacosx-version-min=10.9)
+-      list(APPEND _ldflags -lstdc++ -mmacosx-version-min=10.9)
+     endif()
+   endif()
+ 
