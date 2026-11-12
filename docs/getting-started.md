@@ -30,7 +30,7 @@ In **Terminal**, navigate to the folder where you unzipped HLPatcher, then run:
 chmod +x ./patcher.sh && ./patcher.sh
 ```
 
-The `patcher.sh` bootstrap script will automatically verify prerequisites, set up a Python virtual environment, install dependencies, and launch HLPatcher.
+The `patcher.sh` bootstrap script checks prerequisites, downloads a standalone Python runtime into `.python` on first run, installs dependencies into that runtime, and launches HLPatcher.
 
 !!! tip
     You only need to run `chmod +x ./patcher.sh` once. On subsequent runs, just use `./patcher.sh`.
