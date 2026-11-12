@@ -10,7 +10,7 @@ Adds local dependency build support via build_deps.py.
 
 Adds download retry logic for unreliable connections when downloading dependencies.
 
-# 05_notch_mouse_y_fix.patch
+# 04_notch_mouse_y_fix.patch
 
 Fixes an issue where the user had to click under a button due to an incorrectly calculated mouse Y scale in fullscreen
 mode on devices with a camera notch.
@@ -18,7 +18,7 @@ mode on devices with a camera notch.
 Code from [this unmerged PR](https://github.com/nillerusr/source-engine/pull/456) by [Sethur](https://github.com/Sethur)
 (Tris).
 
-# 06_steam_launcher.patch
+# 05_steam_launcher.patch
 
 Adds `steam_launcher` target to `launcher_main` that executes `hl2_launcher.sh` (Valve's original `hl2.sh`) next to it,
 adding `-game <game>` for the game set with `--build-games` unless the arguments already contain `-game`.
