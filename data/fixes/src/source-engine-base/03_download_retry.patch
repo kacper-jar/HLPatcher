@@ -8,7 +8,7 @@
  import urllib.request
  
  THIRDPARTY_DIR = os.path.abspath('thirdparty')
-@@ -37,7 +38,22 @@
+@@ -38,7 +39,22 @@
      filepath = os.path.join(DOWNLOAD_DIR, filename)
      if not os.path.exists(filepath):
          print(f'Downloading {name} from {url}...')
