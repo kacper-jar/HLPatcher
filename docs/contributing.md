@@ -24,22 +24,6 @@ git clone https://github.com/YOUR_USERNAME/HLPatcher.git
 cd HLPatcher
 ```
 
-### Set Up Development Environment
-
-Create and activate a virtual environment:
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
-
-Install the runtime and development dependencies:
-
-```bash
-pip install -r requirements.txt
-pip install -r requirements-dev.txt
-```
-
 ## Project Structure
 
 Here is a quick overview of the project's structure to help you navigate the codebase:
@@ -64,7 +48,7 @@ Here is a quick overview of the project's structure to help you navigate the cod
 - `tests/`: Unit and integration tests (pytest).
     - `tests/core/`: Tests for game detection, patching logic, i18n, and models.
     - `tests/ui/`: Tests for UI pages.
-- `patcher.sh`: Bootstrap shell script - sets up the virtual environment and launches the app.
+- `patcher.sh`: Bootstrap shell script that sets up standalone Python and launches the app.
 - `crowdin.yml`: Crowdin localization configuration.
 - `commitlint.config.js`: Commit message linting rules.
 - `zensical.toml`: Zensical documentation configuration.
@@ -73,13 +57,13 @@ Here is a quick overview of the project's structure to help you navigate the cod
 
 ## Running Locally
 
-Ensure your virtual environment is activated, then run the bootstrap script:
+Run the bootstrap script from the repository root.
 
 ```bash
 ./patcher.sh
 ```
 
-This will install any missing dependencies and launch the HLPatcher UI.
+The script downloads standalone Python into `.python` on first run, installs runtime dependencies, and launches the HLPatcher UI.
 
 !!! tip "Debug Mode"
     You can launch HLPatcher in debug mode by passing the `debug` argument to `patcher.sh`:
@@ -92,10 +76,11 @@ This will install any missing dependencies and launch the HLPatcher UI.
 
 ### Automated Testing
 
-We use `pytest` for testing. Tests run on **macOS** (matching the CI environment). Run the full suite with:
+We use `pytest` for testing on **macOS** (matching the CI environment). 
+Run `./patcher.sh debug` once to install the test dependencies, then run the full suite from the repository root.
 
 ```bash
-pytest
+./.python/python/bin/python3 -m pytest
 ```
 
 This will also generate a coverage report for the `patcher/` package. The configuration is defined in `pytest.ini`.
