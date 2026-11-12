@@ -10,10 +10,6 @@ Adds local dependency build support via build_deps.py.
 
 Adds download retry logic for unreliable connections when downloading dependencies.
 
-# 04_openssl_fix.patch
-
-Adds OpenSSL to the local dependency downloads in build_deps.py.
-
 # 05_notch_mouse_y_fix.patch
 
 Fixes an issue where the user had to click under a button due to an incorrectly calculated mouse Y scale in fullscreen
