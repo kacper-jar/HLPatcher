@@ -3,6 +3,7 @@
 HLPATCHER_VERSION="3.3.7"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+cd "$SCRIPT_DIR" || exit 1
 
 echo "HLPatcher Bootstrap ($HLPATCHER_VERSION)"
 
