@@ -24,11 +24,14 @@ A system prompt will appear asking you to confirm the installation. Click **Inst
 
 ## Step 3: Run the Patcher
 
-In **Terminal**, navigate to the folder where you unzipped HLPatcher, then run:
+In **Terminal**, first `cd` into the folder where you unzipped HLPatcher (for example, if it is in your Downloads folder), then run the script:
 
 ```shell
+cd ~/Downloads/<HLPatcher folder>
 chmod +x ./patcher.sh && ./patcher.sh
 ```
+
+Replace the path with the actual location of the unzipped folder. You can also type `cd ` and drag the folder into the Terminal window.
 
 The `patcher.sh` bootstrap script checks prerequisites, downloads a standalone Python runtime into `.python` on first run, installs dependencies into that runtime, and launches HLPatcher.
 
