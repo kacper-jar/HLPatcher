@@ -45,7 +45,7 @@ Once HLPatcher opens, it will guide you through the rest of the process:
 1. **Select your games folder** – point HLPatcher to your Steam `common` folder (pre-filled automatically if using the default Steam path).
 2. **Select games to patch** – unpatched games are pre-selected. You'll see live estimates for time and disk space.
 3. **Choose patching options** – select **Latest** or **Stable** engine builds and whether to create a backup.
-4. **Switch Steam branches** *(Source Engine games only)* – if you're patching Half-Life 2, Portal or similar games, HLPatcher will ask you to switch them to their legacy Steam branch before continuing.
+4. **Switch Steam branches, if asked** – some Source Engine games need an older Steam branch. HLPatcher lists them on its **Downgrade Required** page, together with the branch to pick and a step-by-step guide.
 5. **Wait for patching to complete** – a progress bar will track each component as it's being patched.
 
 !!! note
