@@ -26,11 +26,7 @@ class SourceInstaller(BaseStep):
         if bin_src.is_dir():
             shutil.copytree(bin_src, game.path / "bin", dirs_exist_ok=True)
 
-        if subfolder == "lostcoast":
-            mod_src = output_dir / "hl2"
-        else:
-            mod_src = output_dir / subfolder
-
+        mod_src = output_dir / (step_config.install_from or subfolder)
         if mod_src.is_dir():
             shutil.copytree(mod_src, game.path / subfolder, dirs_exist_ok=True)
 

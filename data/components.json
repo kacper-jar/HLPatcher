@@ -287,7 +287,8 @@
       },
       {
         "type": "source-installer",
-        "patch_dir_name": "source-engine"
+        "patch_dir_name": "source-engine",
+        "install_from": "hl2"
       }
     ]
   },
