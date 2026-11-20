@@ -78,6 +78,7 @@ class ArchiveInstallStepConfig(InstallStepConfig):
 @dataclass
 class SourceInstallStepConfig(InstallStepConfig):
     steam_executable: str = ""
+    install_from: str = ""
 
 
 @dataclass

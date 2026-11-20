@@ -243,34 +243,38 @@ def source_dir(step_context):
     return path
 
 
-def install_source(step_context, game, steam_executable=""):
+def install_source(step_context, game, steam_executable="", install_from=""):
     config = SourceInstallStepConfig("source-installer", patch_dir_name="source-engine",
-                                     steam_executable=steam_executable)
+                                     steam_executable=steam_executable, install_from=install_from)
     SourceInstaller(step_context).execute(game, game.components[0], config)
 
 
 def test_source_installer_copies_engine_mod_and_third_party_libraries(step_context, make_game, source_dir,
                                                                       mock_run_command):
-    game = make_game("Half-Life 2", "hl2")
+    game = make_game("Portal", "portal")
     write_file(source_dir / "output" / "bin" / "libtier0.dylib", b"tier0")
-    write_file(source_dir / "output" / "hl2" / "bin" / "libclient.dylib", b"client")
+    write_file(source_dir / "output" / "portal" / "bin" / "libclient.dylib", b"client")
+    write_file(source_dir / "output" / "hl2" / "bin" / "libclient.dylib", b"wrong build")
     write_file(source_dir / "thirdparty" / "install" / "lib" / "libz.1.3.1.dylib", b"zlib")
 
     install_source(step_context, game)
 
     assert (game.path / "bin" / "libtier0.dylib").read_bytes() == b"tier0"
-    assert (game.path / "hl2" / "bin" / "libclient.dylib").read_bytes() == b"client"
+    assert (game.path / "portal" / "bin" / "libclient.dylib").read_bytes() == b"client"
+    assert not (game.path / "hl2").exists()
     assert (game.path / "bin" / "libz.1.3.1.dylib").read_bytes() == b"zlib"
 
 
-def test_source_installer_installs_lost_coast_from_the_hl2_build(step_context, make_game, source_dir,
-                                                                 mock_run_command):
+def test_source_installer_installs_a_mod_from_another_games_build(step_context, make_game, source_dir,
+                                                                  mock_run_command):
     game = make_game("Half-Life 2", "lostcoast")
     write_file(source_dir / "output" / "hl2" / "bin" / "libclient.dylib", b"client")
+    write_file(source_dir / "output" / "lostcoast" / "bin" / "libclient.dylib", b"wrong build")
 
-    install_source(step_context, game)
+    install_source(step_context, game, install_from="hl2")
 
     assert (game.path / "lostcoast" / "bin" / "libclient.dylib").read_bytes() == b"client"
+    assert not (game.path / "hl2").exists()
 
 
 def test_source_installer_replaces_the_hl2_launcher(step_context, make_game, source_dir, mock_run_command):
