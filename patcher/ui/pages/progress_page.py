@@ -3,6 +3,7 @@ import logging
 import time
 import threading
 from pathlib import Path
+from queue import Empty, SimpleQueue
 from patcher.ui.base_page import BasePage
 from patcher.ui.page_route import PageRoute
 from patcher.core import FailureReport, Patcher, Planner
@@ -51,6 +52,7 @@ class ProgressPage(BasePage):
         self._elapsed_time_label.pack(pady=(5, 10))
 
         self._patching_thread = None
+        self._events: SimpleQueue = SimpleQueue()
         self._patching_complete = False
         self._patching_error = None
         self._stop_requested = False
@@ -78,8 +80,23 @@ class ProgressPage(BasePage):
             component_callback=self._on_component_start_threadsafe,
             step_callback=self._on_step_start_threadsafe
         )
+        self._events = SimpleQueue()
         self._patching_thread = threading.Thread(target=self._run_patching, daemon=True)
         self._patching_thread.start()
+        self.after(50, self._drain_events)
+
+    def _post(self, callback, *args):
+        self._events.put((callback, args))
+
+    def _drain_events(self):
+        while True:
+            try:
+                callback, args = self._events.get_nowait()
+            except Empty:
+                break
+            callback(*args)
+        if self.is_patching() or not self._events.empty():
+            self.after(50, self._drain_events)
 
     def _update_timer(self):
         if not self._patching_complete and not self._patching_error:
@@ -102,13 +119,13 @@ class ProgressPage(BasePage):
                 logger.info("Patching stopped by user")
             else:
                 logger.exception("Patching failed")
-                self.after(0, self._on_collecting_logs)
+                self._post(self._on_collecting_logs)
                 report = FailureReport(self._app.context, self._app.config, self.patcher.timeline,
                                        self.patcher.executor).write(e)
                 self._on_patching_error_threadsafe(self._patching_error, report)
 
     def _on_component_start_threadsafe(self, component_name: str):
-        self.after(0, self._on_component_start, component_name)
+        self._post(self._on_component_start, component_name)
 
     def _on_component_start(self, component_name: str):
         self._status_label.configure(text=self._app.i18n.t("progress_patching_comp", component=component_name))
@@ -117,7 +134,7 @@ class ProgressPage(BasePage):
         self._current_step += 1
 
     def _on_step_start_threadsafe(self, current: int, total: int):
-        self.after(0, self._on_step_start, current, total)
+        self._post(self._on_step_start, current, total)
 
     def _on_step_start(self, current: int, total: int):
         self._step_label.configure(text=self._app.i18n.t("progress_step_format", current=current, total=total))
@@ -125,7 +142,7 @@ class ProgressPage(BasePage):
             self._step_progress_bar.set(current / total)
 
     def _on_patching_complete_threadsafe(self):
-        self.after(0, self._on_patching_complete)
+        self._post(self._on_patching_complete)
 
     def _on_patching_complete(self):
         if self._patching_error:
@@ -140,7 +157,7 @@ class ProgressPage(BasePage):
         self._status_label.configure(text=self._app.i18n.t("progress_collecting_logs"))
 
     def _on_patching_error_threadsafe(self, error: str, report: Path | None):
-        self.after(0, self._on_patching_error_sync, error, report)
+        self._post(self._on_patching_error_sync, error, report)
 
     def _on_patching_error_sync(self, error: str, report: Path | None):
         self._app.patching_error = error
