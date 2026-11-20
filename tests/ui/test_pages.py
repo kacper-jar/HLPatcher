@@ -560,6 +560,16 @@ def test_progress_reports_a_failure_with_a_saved_log_file(progress_page, tk_root
     assert "progress_collecting_logs" in texts(progress_page)
 
 
+def test_progress_reports_the_real_error_even_when_the_window_was_busy(progress_page, tk_root, app):
+    progress_page.patcher.error = RuntimeError("git clone failed")
+    time.sleep(1.5)
+
+    progress_page.patcher.release.set()
+
+    assert run_until(tk_root, lambda: app.router.shown == [PageRoute.FAILURE])
+    assert app.patching_error == "git clone failed"
+
+
 def test_stopping_the_patch_is_not_reported_as_a_failure(progress_page, tk_root, app, failure_report):
     assert run_until(tk_root, lambda: "progress_step_format current=1 total=2" in texts(progress_page))
 
