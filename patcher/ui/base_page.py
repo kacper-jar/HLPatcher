@@ -1,4 +1,3 @@
-from abc import abstractmethod
 import customtkinter as ctk
 
 from patcher.ui.page_route import PageRoute
@@ -9,9 +8,8 @@ class BasePage(ctk.CTkFrame):
         super().__init__(parent, fg_color="transparent", **kwargs)
         self._app = app
 
-    @abstractmethod
     def get_title(self) -> str:
-        pass
+        raise NotImplementedError(f"{type(self).__name__} has no title")
 
     def on_enter(self):
         pass

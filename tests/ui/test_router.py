@@ -256,3 +256,11 @@ def test_navigation_does_nothing_before_the_first_page(router, app):
     router.go_back()
 
     assert (router.current_page_key, app.events) == (None, [])
+
+
+def test_a_page_without_a_title_fails_loudly(tk_root, app):
+    class UntitledPage(BasePage):
+        pass
+
+    with pytest.raises(NotImplementedError, match="UntitledPage has no title"):
+        UntitledPage(tk_root, app).get_title()
