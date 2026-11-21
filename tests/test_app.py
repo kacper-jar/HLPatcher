@@ -7,7 +7,7 @@ import customtkinter as ctk
 import pytest
 
 from patcher.app import App
-from patcher.core import AppConfig, UpdateInfo
+from patcher.core import AppConfig, EngineType, Game, UpdateInfo
 from patcher.ui import PageRoute
 
 RELEASE_URL = "https://github.com/kacper-jar/HLPatcher/releases/tag/3.3.0"
@@ -216,9 +216,10 @@ def test_asks_for_half_life_2_before_its_multiplayer_games(app, library, files, 
     ({"hl2mp/bin/client.dylib": HASH}, PageRoute.DOWNGRADE),
     ({}, PageRoute.PROGRESS),
 ], ids=["needs-downgrade", "ready-to-patch"])
-def test_checks_for_downgrades_before_patching(app, make_component, requires, shown):
-    app.context.selected_components = [make_component("Half-Life 2: Deathmatch", "hl2mp",
-                                                      downgrade_requires=requires)]
+def test_checks_for_downgrades_before_patching(app, make_component, library, requires, shown):
+    hl2dm = make_component("Half-Life 2: Deathmatch", "hl2mp", downgrade_requires=requires)
+    app.context.games = [Game("Half-Life 2 Deathmatch", library / "Half-Life 2 Deathmatch", EngineType.SOURCE, [hl2dm])]
+    app.context.selected_components = [hl2dm]
     app.router.show_page(PageRoute.LIMITATIONS)
 
     app.router.go_next()

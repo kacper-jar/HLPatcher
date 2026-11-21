@@ -44,6 +44,9 @@ class Planner:
                     missing.append(dependency_id)
         return list(dict.fromkeys(missing))
 
+    def find_components_to_downgrade(self, selected: list[Component]) -> list[tuple[Game, Component]]:
+        return [(game, c) for game in self._games for c in game.components if c in selected and c.downgrade_requires]
+
     def _planned_ids(self, selected: list[Component]) -> set[str]:
         planned_ids = {c.id for c in selected}
         for component in selected:

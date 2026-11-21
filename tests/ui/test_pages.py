@@ -354,9 +354,11 @@ def test_options_save_the_patch_mode_and_backup_choice(make_page, app, choose, e
     ({"hl2mp/bin/client.dylib": sha256(b"client")}, "btn_next"),
     ({}, "btn_patch"),
 ], ids=["downgrade-next", "patch-next"])
-def test_limitations_next_button_says_patch_when_no_downgrade_comes_next(make_page, app, make_component, requires,
-                                                                         next_text):
-    app.context.selected_components = [make_component("Half-Life 2: Deathmatch", "hl2mp", downgrade_requires=requires)]
+def test_limitations_next_button_says_patch_when_no_downgrade_comes_next(make_page, app, make_component, tmp_path,
+                                                                         requires, next_text):
+    hl2dm = make_component("Half-Life 2: Deathmatch", "hl2mp", downgrade_requires=requires)
+    app.context.games = [Game("Half-Life 2 Deathmatch", tmp_path / "Half-Life 2 Deathmatch", SOURCE, [hl2dm])]
+    app.context.selected_components = [hl2dm]
 
     assert make_page(LimitationsPage).get_next_button_text() == next_text
 

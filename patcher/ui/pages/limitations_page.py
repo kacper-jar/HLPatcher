@@ -1,5 +1,6 @@
 import customtkinter as ctk
 import webbrowser
+from patcher.core import Planner
 from patcher.ui.base_page import BasePage
 from patcher.ui.page_route import PageRoute
 
@@ -84,10 +85,8 @@ class LimitationsPage(BasePage):
         return PageRoute.OPTIONS
 
     def get_next_button_text(self) -> str:
-        needs_downgrade = any(
-            bool(c.downgrade_requires)
-            for c in self._app.context.selected_components
-        )
+        context = self._app.context
+        needs_downgrade = Planner(context.games).find_components_to_downgrade(context.selected_components)
         return self._app.i18n.t("btn_next") if needs_downgrade else self._app.i18n.t("btn_patch")
 
     def _open_issues_site(self):
