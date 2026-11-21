@@ -1,5 +1,6 @@
 import webbrowser
 import customtkinter as ctk
+from patcher.core import RELEASES_URL
 from patcher.ui.base_page import BasePage
 from patcher.ui.page_route import PageRoute
 
@@ -51,7 +52,7 @@ class UpdateAvailablePage(BasePage):
         url = (
             self._app.update_info.release_url
             if self._app.update_info
-            else "https://github.com/kacper-jar/HLPatcher/releases"
+            else RELEASES_URL
         )
         webbrowser.open(url)
 

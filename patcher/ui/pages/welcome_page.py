@@ -1,5 +1,6 @@
 import customtkinter as ctk
 import patcher
+from patcher.core import DONATE_URL, THANKS_URL, TRANSLATE_URL
 from patcher.ui.base_page import BasePage
 from patcher.ui.page_route import PageRoute
 
@@ -145,12 +146,12 @@ class WelcomePage(BasePage):
 
     def _open_translation_site(self):
         import webbrowser
-        webbrowser.open("https://crowdin.com/project/hlpatcher")
+        webbrowser.open(TRANSLATE_URL)
 
     def _open_credits_site(self):
         import webbrowser
-        webbrowser.open("https://hlpatcher.org/#thanks-to")
+        webbrowser.open(THANKS_URL)
 
     def _open_sponsor_site(self):
         import webbrowser
-        webbrowser.open("https://buymeacoffee.com/kacperjar")
+        webbrowser.open(DONATE_URL)
