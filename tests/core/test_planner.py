@@ -120,3 +120,16 @@ def test_a_dependency_that_is_not_installed_is_missing(games, components):
     missing = Planner(without_half_life_2).find_missing_dependencies([components["half-life-2-deathmatch"]])
 
     assert missing == ["half-life-2"]
+
+
+def test_finds_the_selected_components_that_need_a_downgrade_in_detection_order(planner, components, select):
+    for comp_id in ("half-life-2", "day-of-defeat-source", "lost-coast"):
+        components[comp_id].downgrade_requires = {f"{components[comp_id].subfolder}/bin/client.dylib": "0" * 64}
+
+    found = planner().find_components_to_downgrade(select("day-of-defeat-source", "half-life", "half-life-2"))
+
+    assert [(game.name, comp.id) for game, comp in found] == [
+        ("Half-Life 2", "half-life-2"),
+        ("Day of Defeat Source", "day-of-defeat-source"),
+    ]
+    assert planner().find_components_to_downgrade(select("half-life", "opposing-force")) == []

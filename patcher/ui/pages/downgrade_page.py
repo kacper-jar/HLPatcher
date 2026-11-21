@@ -1,6 +1,7 @@
 import hashlib
 from stat import S_ISREG
 import customtkinter as ctk
+from patcher.core import Planner
 from patcher.ui.base_page import BasePage
 from patcher.ui.guide_window import BaseGuideWindow
 from patcher.ui.page_route import PageRoute
@@ -26,11 +27,7 @@ class DowngradePage(BasePage):
 
         context = self._app.context
 
-        components_to_downgrade = []
-        for game in context.games:
-            for component in game.components:
-                if component in context.selected_components and component.downgrade_requires:
-                    components_to_downgrade.append((game, component))
+        components_to_downgrade = Planner(context.games).find_components_to_downgrade(context.selected_components)
 
         groups = {}
         for game, component in components_to_downgrade:
@@ -132,7 +129,6 @@ class DowngradePage(BasePage):
     def _check_downgrades(self):
         all_match = True
         remaining_count = 0
-        context = self._app.context
 
         for card_key, card_info in self._cards.items():
             game = card_info['game']
@@ -140,13 +136,8 @@ class DowngradePage(BasePage):
             group_match = True
 
             for component in components:
-                comp_match = True
-                if component in context.selected_components and component.downgrade_requires:
-                    for filename, expected_hash in component.downgrade_requires.items():
-                        if not self._matches_requirement(game.path / filename, expected_hash):
-                            comp_match = False
-                            break
-
+                comp_match = all(self._matches_requirement(game.path / filename, expected_hash)
+                                 for filename, expected_hash in component.downgrade_requires.items())
                 if not comp_match:
                     group_match = False
                     remaining_count += 1

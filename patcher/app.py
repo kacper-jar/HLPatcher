@@ -181,11 +181,7 @@ class App(ctk.CTk):
         self.router.show_page(PageRoute.SELECTION)
 
     def _check_downgrade_needed(self):
-        needs_downgrade = any(
-            bool(c.downgrade_requires)
-            for c in self.context.selected_components
-        )
-        if needs_downgrade:
+        if Planner(self.context.games).find_components_to_downgrade(self.context.selected_components):
             self.router.show_page(PageRoute.DOWNGRADE)
         else:
             self.router.show_page(PageRoute.PROGRESS)
