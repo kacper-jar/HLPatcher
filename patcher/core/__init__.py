@@ -1,5 +1,12 @@
 from .constants import (
+    DONATE_URL,
+    ISSUES_URL,
+    LATEST_RELEASE_API_URL,
+    PATCHING_ISSUE_URL,
+    RELEASES_URL,
     SOURCE_LINK_FIXES,
+    THANKS_URL,
+    TRANSLATE_URL,
 )
 from .models import (
     AppConfig,
@@ -55,6 +62,13 @@ __all__ = [
     "GuideConfig",
     "GuideStepConfig",
     "SOURCE_LINK_FIXES",
+    "ISSUES_URL",
+    "LATEST_RELEASE_API_URL",
+    "PATCHING_ISSUE_URL",
+    "RELEASES_URL",
+    "THANKS_URL",
+    "TRANSLATE_URL",
+    "DONATE_URL",
     "Updater",
     "CommandExecutor",
     "StepConfig",

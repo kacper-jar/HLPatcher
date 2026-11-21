@@ -3,6 +3,7 @@ import logging
 import urllib.request
 from packaging import version
 
+from patcher.core.constants import LATEST_RELEASE_API_URL, RELEASES_URL
 from patcher.core.models import UpdateInfo
 
 logger = logging.getLogger(__name__)
@@ -10,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 class Updater:
     def __init__(self):
-        self.api_url = "https://api.github.com/repos/kacper-jar/HLPatcher/releases/latest"
+        self.api_url = LATEST_RELEASE_API_URL
 
     def check_for_update(self, current_version: str) -> UpdateInfo | None:
         if current_version == "indev":
@@ -29,9 +30,7 @@ class Updater:
                 data = json.loads(response.read().decode())
 
             latest_version_str = data.get("tag_name", "").lstrip("v")
-            release_url = data.get(
-                "html_url", "https://github.com/kacper-jar/HLPatcher/releases"
-            )
+            release_url = data.get("html_url", RELEASES_URL)
 
             if not latest_version_str:
                 logger.warning("Could not find tag_name in GitHub response.")

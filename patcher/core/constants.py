@@ -1,3 +1,12 @@
+REPO_URL = "https://github.com/kacper-jar/HLPatcher"
+RELEASES_URL = f"{REPO_URL}/releases"
+ISSUES_URL = f"{REPO_URL}/issues"
+PATCHING_ISSUE_URL = f"{ISSUES_URL}/new?template=bug_patching.md"
+LATEST_RELEASE_API_URL = "https://api.github.com/repos/kacper-jar/HLPatcher/releases/latest"
+THANKS_URL = "https://hlpatcher.org/#thanks-to"
+TRANSLATE_URL = "https://crowdin.com/project/hlpatcher"
+DONATE_URL = "https://buymeacoffee.com/kacperjar"
+
 SOURCE_LINK_FIXES = {
     "libvphysics.dylib": [
         ("{build_prefix}/vstdlib/libvstdlib.dylib", "@loader_path/libvstdlib.dylib"),

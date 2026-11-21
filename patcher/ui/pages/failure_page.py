@@ -1,6 +1,7 @@
 import subprocess
 import webbrowser
 import customtkinter as ctk
+from patcher.core import PATCHING_ISSUE_URL
 from patcher.ui.base_page import BasePage
 
 
@@ -66,7 +67,7 @@ class FailurePage(BasePage):
         note_label.pack(pady=(0, 10))
 
     def _open_github_issue(self):
-        webbrowser.open("https://github.com/kacper-jar/HLPatcher/issues/new?template=bug_patching.md")
+        webbrowser.open(PATCHING_ISSUE_URL)
 
     def _show_report(self):
         subprocess.run(["open", "-R", str(self._app.failure_report)])

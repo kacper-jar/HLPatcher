@@ -1,6 +1,6 @@
 import customtkinter as ctk
 import webbrowser
-from patcher.core import Planner
+from patcher.core import ISSUES_URL, Planner
 from patcher.ui.base_page import BasePage
 from patcher.ui.page_route import PageRoute
 
@@ -90,4 +90,4 @@ class LimitationsPage(BasePage):
         return self._app.i18n.t("btn_next") if needs_downgrade else self._app.i18n.t("btn_patch")
 
     def _open_issues_site(self):
-        webbrowser.open("https://github.com/kacper-jar/HLPatcher/issues")
+        webbrowser.open(ISSUES_URL)
