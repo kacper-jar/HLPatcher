@@ -68,6 +68,12 @@ HLPATCHER_BIN="$PYTHON_DIR/python/bin/HLPatcher"
 if [ ! -x "$HLPATCHER_BIN" ]; then
     echo "=> Creating HLPatcher link to standalone Python..."
     ln -f "$PYTHON_DIR/python/bin/python3.14" "$HLPATCHER_BIN"
+    osascript -l JavaScript -e '
+ObjC.import("Cocoa");
+function run(argv) {
+    var icon = $.NSImage.alloc.initWithContentsOfFile(argv[0]);
+    return icon.isValid && $.NSWorkspace.sharedWorkspace.setIconForFileOptions(icon, argv[1], 0);
+}' "$SCRIPT_DIR/data/icon.png" "$HLPATCHER_BIN" >/dev/null 2>&1
 fi
 
 echo "=> Installing dependencies..."

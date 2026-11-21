@@ -20,10 +20,11 @@ enabled = false
 
 [project.theme]
 custom_dir = "overrides"
+logo = "imgs/icon.png"
+favicon = "imgs/icon.png"
 features = ["navigation.tabs", "navigation.sections", "navigation.top", "content.code.copy"]
 
 [project.theme.icon]
-logo = "material/lambda"
 repo = "fontawesome/brands/github"
 
 [[project.theme.palette]]
