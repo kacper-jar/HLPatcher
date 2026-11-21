@@ -149,7 +149,7 @@ class WelcomePage(BasePage):
 
     def _open_credits_site(self):
         import webbrowser
-        webbrowser.open("https://hlpatcher.kzl21.ovh/#thanks-to")
+        webbrowser.open("https://hlpatcher.org/#thanks-to")
 
     def _open_sponsor_site(self):
         import webbrowser
