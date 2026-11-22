@@ -267,7 +267,7 @@
         "type": "git-fetcher",
         "url": "https://github.com/nillerusr/source-engine",
         "patch_dir_name": "source-engine",
-        "stable_commit": "ed8209cc35c61fbd8ddff8480962a01c981eef2f",
+        "stable_commit": "9f9a2053b7a449ec8389c3eeaad693aa113396ec",
         "force_stable": false
       },
       {
