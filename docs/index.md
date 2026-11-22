@@ -24,7 +24,7 @@ hide:
 
 Free, open-source patcher that makes Half-Life, Half-Life 2, Portal, Counter-Strike and other Valve games run natively on Apple Silicon Macs (M1 and newer).
 
-[Get Started](getting-started.md){ .md-button .md-button--primary }
+[Get Started](getting-started.md){ .md-button .md-button--primary } [Supported Games](supported-games.md){ .md-button .md-button--secondary }
 
 <p class="download-count"></p>
 
@@ -40,7 +40,7 @@ Free, open-source patcher that makes Half-Life, Half-Life 2, Portal, Counter-Str
 
 -   :material-controller:{ .lg .middle } **From Half-Life to Portal**
 
-    Supports over 10 games, including GoldSrc and Source titles. See the [full list](#supported-games).
+    Supports over 10 games, including GoldSrc and Source titles. See the [full list](supported-games.md).
 
 -   :material-chip:{ .lg .middle } **Native on Apple Silicon**
 
@@ -61,68 +61,6 @@ Free, open-source patcher that makes Half-Life, Half-Life 2, Portal, Counter-Str
 -   :material-github:{ .lg .middle } **Free and open source**
 
     No cost, no account, and all the code is publicly available on GitHub.
-
-</div>
-
-## Supported Games
-
-<div class="grid cards" markdown>
-
--   **Half-Life**
-
-    [:octicons-mark-github-16: Source Code](https://github.com/FWGS/hlsdk-portable/tree/hlfixed) · [:octicons-person-24: Flying with Gauss](https://github.com/FWGS)
-
--   **Half-Life: Opposing Force**
-
-    [:octicons-mark-github-16: Source Code](https://github.com/FWGS/hlsdk-portable/tree/opforfixed) · [:octicons-person-24: Flying with Gauss](https://github.com/FWGS)
-
--   **Half-Life: Blue Shift**
-
-    [:octicons-mark-github-16: Source Code](https://github.com/FWGS/hlsdk-portable/tree/bshift) · [:octicons-person-24: Flying with Gauss](https://github.com/FWGS)
-
--   **Deathmatch Classic**
-
-    [:octicons-mark-github-16: Source Code](https://github.com/FWGS/hlsdk-portable/tree/dmc) · [:octicons-person-24: Flying with Gauss](https://github.com/FWGS)
-
--   **Counter-Strike**
-
-    [:octicons-mark-github-16: Source Code](https://github.com/Velaron/cs16-client) · [:octicons-person-24: Velaron](https://github.com/Velaron)
-
--   **Half-Life: Source**
-
-    [:octicons-mark-github-16: Source Code](https://github.com/nillerusr/source-engine) · [:octicons-person-24: Nillerusr](https://github.com/nillerusr)
-
--   **Half-Life 2**
-
-    [:octicons-mark-github-16: Source Code](https://github.com/nillerusr/source-engine) · [:octicons-person-24: Nillerusr](https://github.com/nillerusr)
-
--   **Half-Life 2: Episode One**
-
-    [:octicons-mark-github-16: Source Code](https://github.com/nillerusr/source-engine) · [:octicons-person-24: Nillerusr](https://github.com/nillerusr)
-
--   **Half-Life 2: Episode Two**
-
-    [:octicons-mark-github-16: Source Code](https://github.com/nillerusr/source-engine) · [:octicons-person-24: Nillerusr](https://github.com/nillerusr)
-
--   **Half-Life 2: Lost Coast**
-
-    [:octicons-mark-github-16: Source Code](https://github.com/nillerusr/source-engine) · [:octicons-person-24: Nillerusr](https://github.com/nillerusr)
-
--   **Half-Life 2: Deathmatch**
-
-    [:octicons-mark-github-16: Source Code](https://github.com/nillerusr/source-engine) · [:octicons-person-24: Nillerusr](https://github.com/nillerusr)
-
--   **Counter-Strike: Source**
-
-    [:octicons-mark-github-16: Source Code](https://github.com/nillerusr/source-engine) · [:octicons-person-24: Nillerusr](https://github.com/nillerusr)
-
--   **Day of Defeat: Source**
-
-    [:octicons-mark-github-16: Source Code](https://github.com/nillerusr/source-engine) · [:octicons-person-24: Nillerusr](https://github.com/nillerusr)
-
--   **Portal**
-
-    [:octicons-mark-github-16: Source Code](https://github.com/nillerusr/source-engine) · [:octicons-person-24: Nillerusr](https://github.com/nillerusr)
 
 </div>
 

@@ -1,7 +1,7 @@
 # HLPatcher <img src="docs/imgs/icon.png" alt="HLPatcher Logo" width="50" align="right">
 HLPatcher makes Half-Life and other Valve games playable on modern ARM Macs that only support 64-bit applications. It lets users enjoy the game again without the hassle of manual binary update.
 
-[Supported Games](https://hlpatcher.org/#supported-games) - [Getting Started](https://hlpatcher.org/getting-started/) - [Removing Patches](https://hlpatcher.org/removing-patches/) - [Contributing](https://hlpatcher.org/contributing/)
+[Supported Games](https://hlpatcher.org/supported-games/) - [Getting Started](https://hlpatcher.org/getting-started/) - [Removing Patches](https://hlpatcher.org/removing-patches/) - [Contributing](https://hlpatcher.org/contributing/)
 
 ## Thanks to
  - [Flying with Gauss](https://xash.su/) team for developing [Xash3D FWGS](https://github.com/FWGS/xash3d-fwgs) engine and [HLSDK Portable](https://github.com/FWGS/hlsdk-portable). 
