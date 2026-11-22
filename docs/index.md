@@ -16,7 +16,11 @@ hide:
 
 <div class="hero-text" markdown>
 
-# ![](imgs/icon.png){ .hero-logo } HLPatcher
+<div class="hero-brand">
+<img src="imgs/icon.png" alt="" class="hero-logo">
+<h1>HLPatcher</h1>
+<p class="hero-subtitle">14 games, one patcher</p>
+</div>
 
 Free, open-source patcher that makes Half-Life, Half-Life 2, Portal, Counter-Strike and other Valve games run natively on Apple Silicon Macs (M1 and newer).
 
