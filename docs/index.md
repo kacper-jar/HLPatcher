@@ -6,10 +6,17 @@ hide:
   - toc
 ---
 
-<center markdown>
-![HLPatcher](imgs/index.png){ width="400" }
+<div class="hero" markdown>
 
-# HLPatcher
+<div class="hero-shot" markdown>
+
+![HLPatcher](imgs/index.png)
+
+</div>
+
+<div class="hero-text" markdown>
+
+# ![](imgs/icon.png){ .hero-logo } HLPatcher
 
 HLPatcher makes Half-Life and other Valve games playable on Apple Silicon Macs (M1 and newer) that only support 64-bit applications.
 
@@ -18,6 +25,12 @@ It lets users enjoy the game again without the hassle of manual binary update.
 [Get Started](getting-started.md){ .md-button .md-button--primary }
 
 <p class="download-count"></p>
+
+</div>
+
+</div>
+
+<center markdown>
 
 ## Supported Games
 

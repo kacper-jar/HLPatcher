@@ -23,3 +23,51 @@
   font-size: 0.7rem;
   color: var(--md-default-fg-color--light);
 }
+
+.md-typeset .hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 3rem;
+  width: 100vw;
+  margin-inline: calc(50% - 50vw);
+  padding: 2rem max(2rem, calc(50vw - 30rem));
+  box-sizing: border-box;
+  min-height: calc(100svh - 7.4rem);
+}
+
+.md-typeset .hero-shot p {
+  margin: 0;
+}
+
+.md-typeset .hero-shot img {
+  display: block;
+  width: auto;
+  max-width: min(100%, 32rem);
+  max-height: calc(100svh - 11.4rem);
+  margin-inline: auto;
+}
+
+.md-typeset .hero-text h1 {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+  margin: 0 0 0.6em;
+}
+
+.md-typeset .hero-logo {
+  width: 1.6em;
+  height: 1.6em;
+}
+
+@media screen and (max-width: 59.9375em) {
+  .md-typeset .hero {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    min-height: 0;
+  }
+
+  .md-typeset .hero-shot img {
+    max-height: 70svh;
+  }
+}
