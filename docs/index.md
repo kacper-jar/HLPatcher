@@ -32,6 +32,36 @@ It lets users enjoy the game again without the hassle of manual binary update.
 
 <center markdown>
 
+## Features
+
+<div class="grid cards" markdown>
+
+-   :material-controller:{ .lg .middle } **From Half-Life to Portal**
+
+    Supports over 10 games, including GoldSrc and Source titles. See the [full list](#supported-games).
+
+-   :material-chip:{ .lg .middle } **Native on Apple Silicon**
+
+    Your favourite Valve games run natively on Apple Silicon, without any translation layers (Rosetta).
+
+-   :material-cog:{ .lg .middle } **Automated patching**
+
+    Pick your games and HLPatcher downloads, builds and installs everything for you.
+
+-   :material-steam:{ .lg .middle } **Your Steam games**
+
+    Patches the copies you already own, and you keep launching them from Steam.
+
+-   :material-map-marker-path:{ .lg .middle } **Guided steps**
+
+    Shows a step-by-step guide when a game needs an older version.
+
+-   :material-github:{ .lg .middle } **Free and open source**
+
+    No cost, no account, and all the code is publicly available on GitHub.
+
+</div>
+
 ## Supported Games
 
 <div class="grid cards" markdown>
