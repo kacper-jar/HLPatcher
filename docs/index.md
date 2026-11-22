@@ -18,9 +18,7 @@ hide:
 
 # ![](imgs/icon.png){ .hero-logo } HLPatcher
 
-HLPatcher makes Half-Life and other Valve games playable on Apple Silicon Macs (M1 and newer) that only support 64-bit applications.
-
-It lets users enjoy the game again without the hassle of manual binary update.
+Free, open-source patcher that makes Half-Life, Half-Life 2, Portal, Counter-Strike and other Valve games run natively on Apple Silicon Macs (M1 and newer).
 
 [Get Started](getting-started.md){ .md-button .md-button--primary }
 
