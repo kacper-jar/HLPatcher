@@ -4,7 +4,8 @@
 
 ## Docs
 
-- [Home](https://hlpatcher.org/): What HLPatcher is, supported games and credits
+- [Home](https://hlpatcher.org/): What HLPatcher is, its features and credits
+- [Supported Games](https://hlpatcher.org/supported-games/): Every game HLPatcher can patch
 - [Getting Started](https://hlpatcher.org/getting-started/): Download HLPatcher and patch your games
 - [Removing Patches](https://hlpatcher.org/removing-patches/): Restore your original game files
 - [Contributing](https://hlpatcher.org/contributing/): Development setup, testing and pull requests

@@ -19,6 +19,30 @@
     text-align: center;
 }
 
+.md-typeset .grid.card-list {
+  grid-template-columns: 1fr;
+}
+
+.md-typeset .grid.card-list > ul > li > p {
+  margin-block: 0.3em;
+}
+
+.md-typeset .hero-text .md-button + .md-button {
+  margin-left: 0.4rem;
+}
+
+.md-typeset .md-button--secondary {
+  background-color: transparent;
+  box-shadow: inset 0 0 0 0.1rem var(--md-default-fg-color--lighter);
+  color: var(--md-default-fg-color);
+}
+
+.md-typeset .md-button--secondary:is(:hover, :focus) {
+  background-color: var(--md-default-fg-color--lightest);
+  box-shadow: inset 0 0 0 0.1rem var(--md-default-fg-color--light);
+  color: var(--md-default-fg-color);
+}
+
 .md-typeset .download-count {
     min-height: 1.6em;
     margin-top: -0.5em;

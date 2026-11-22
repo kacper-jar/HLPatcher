@@ -8,6 +8,7 @@ repo_name = "kacper-jar/HLPatcher"
 copyright = "Copyright &copy; 2025-2026 Kacper Jarosławski"
 nav = [
   { "Home" = "index.md" },
+  { "Supported Games" = "supported-games.md" },
   { "Getting Started" = "getting-started.md" },
   { "Removing Patches" = "removing-patches.md" },
   { "Contributing" = "contributing.md" },
