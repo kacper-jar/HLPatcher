@@ -21,6 +21,7 @@
 
 .md-typeset .grid.card-list {
   grid-template-columns: 1fr;
+  text-align: left;
 }
 
 .md-typeset .grid.card-list > ul > li > p {
@@ -135,4 +136,25 @@
     .md-typeset .hero-subtitle {
         font-size: 0.85rem;
     }
+}
+
+.md-typeset .grid.thanks-list > ul > li {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.4rem 0.8rem;
+}
+
+.md-typeset .grid.thanks-list > ul > li > p {
+    margin: 0;
+}
+
+.md-typeset .grid.thanks-list > ul > li > p:last-child {
+    flex-shrink: 0;
+    margin-left: auto;
+    white-space: nowrap;
+}
+
+.md-typeset .grid.thanks-list > ul > li > p:last-child a {
+    text-decoration: none;
 }

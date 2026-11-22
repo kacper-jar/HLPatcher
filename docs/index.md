@@ -66,31 +66,23 @@ Free, open-source patcher that makes Half-Life, Half-Life 2, Portal, Counter-Str
 
 ## Thanks to
 
-<div class="grid cards" markdown>
+<div class="grid cards card-list thanks-list" markdown>
 
--   **Flying with Gauss**
+-   **Flying with Gauss** for developing [Xash3D FWGS](https://github.com/FWGS/xash3d-fwgs) engine and [HLSDK Portable](https://github.com/FWGS/hlsdk-portable).
 
-    [:octicons-link-24: Website](https://xash.su/) · [:octicons-mark-github-16: GitHub](https://github.com/FWGS)
+    [:fontawesome-solid-globe:](https://xash.su/){ title="Website" aria-label="Website" } [:octicons-mark-github-16:](https://github.com/FWGS){ title="GitHub" aria-label="GitHub" }
 
-    For developing [Xash3D FWGS](https://github.com/FWGS/xash3d-fwgs) engine and [HLSDK Portable](https://github.com/FWGS/hlsdk-portable).
+-   **Velaron** for developing [Counter-Strike 1.6 reverse-engineered client](https://github.com/Velaron/cs16-client).
 
--   **Velaron**
+    [:octicons-mark-github-16:](https://github.com/Velaron){ title="GitHub" aria-label="GitHub" }
 
-    [:octicons-mark-github-16: GitHub](https://github.com/Velaron)
+-   **Nillerusr** for developing modifications in the [Source Engine](https://github.com/nillerusr/source-engine) repository.
 
-    For developing [Counter-Strike 1.6 reverse-engineered client](https://github.com/Velaron/cs16-client).
+    [:octicons-mark-github-16:](https://github.com/nillerusr){ title="GitHub" aria-label="GitHub" }
 
--   **Nillerusr**
+-   **Sethur (Tris)** for [fixing the mouse Y offset issue in fullscreen mode on devices with a camera notch](https://github.com/nillerusr/source-engine/pull/456).
 
-    [:octicons-mark-github-16: GitHub](https://github.com/nillerusr)
-
-    For developing modifications in the [Source Engine](https://github.com/nillerusr/source-engine) repository.
-
--   **Sethur (Tris)**
-
-    [:octicons-mark-github-16: GitHub](https://github.com/Sethur)
-
-    For [fixing the mouse Y offset issue in fullscreen mode on devices with a camera notch](https://github.com/nillerusr/source-engine/pull/456).
+    [:octicons-mark-github-16:](https://github.com/Sethur){ title="GitHub" aria-label="GitHub" }
 
 </div>
 
@@ -130,5 +122,5 @@ If you are a copyright owner and believe that any material provided through this
 
 ### Made with ❤️ by Kacper Jarosławski
 
-[:octicons-link-24: Website](https://kzl21.ovh/) - [:octicons-mark-github-16: GitHub](https://github.com/kacper-jar)
+[:fontawesome-solid-globe: Website](https://kzl21.ovh/) - [:octicons-mark-github-16: GitHub](https://github.com/kacper-jar)
 </center>
