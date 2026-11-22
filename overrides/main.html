@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block htmltitle %}
-  {%- if page and page.is_homepage and page.meta and page.meta.title %}
+  {%- if page and page.url == "" and page.meta and page.meta.title %}
     <title>{{ page.meta.title | e }}</title>
   {%- else %}
     {{ super() }}
@@ -10,7 +10,7 @@
 
 {% block extrahead %}
   {%- if page and page.canonical_url %}
-    {%- if page.is_homepage %}
+    {%- if page.url == "" %}
       {%- set title = page.meta.title or config.site_name %}
     {%- else %}
       {%- set title = (page.meta.title or page.title | striptags) ~ " - " ~ config.site_name %}
@@ -23,5 +23,8 @@
     <meta property="og:url" content="{{ page.canonical_url }}">
     <meta property="og:image" content="{{ config.site_url }}imgs/index.png">
     <meta name="twitter:card" content="summary">
+    {%- if page.url == "" %}
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "{{ config.site_name }}", "url": "{{ page.canonical_url }}"}</script>
+    {%- endif %}
   {%- endif %}
 {% endblock %}
