@@ -1,6 +1,6 @@
 ---
 title: HLPatcher - Half-Life and Valve Games on Apple Silicon Macs
-description: Free, open-source patcher that makes Half-Life, Half-Life 2, Portal, Counter-Strike and other Valve games run natively on Apple Silicon Macs (M1 and newer).
+description: Free, open-source patcher that lets you play Half-Life, Half-Life 2, Portal, Counter-Strike and other Valve games natively on Apple Silicon Macs (M1, M2, M3, M4 and newer).
 hide:
   - navigation
   - toc
@@ -22,7 +22,7 @@ hide:
 <p class="hero-subtitle">14 games, one patcher</p>
 </div>
 
-Free, open-source patcher that makes Half-Life, Half-Life 2, Portal, Counter-Strike and other Valve games run natively on Apple Silicon Macs (M1 and newer).
+Free, open-source patcher that lets you play Half-Life, Half-Life 2, Portal, Counter-Strike and other Valve games natively on Apple Silicon Macs.
 
 [Get Started](getting-started.md){ .md-button .md-button--primary } [Supported Games](supported-games.md){ .md-button .md-button--secondary }
 
@@ -61,6 +61,52 @@ Free, open-source patcher that makes Half-Life, Half-Life 2, Portal, Counter-Str
 -   :material-github:{ .lg .middle } **Free and open source**
 
     No cost, no account, and all the code is publicly available on GitHub.
+
+</div>
+
+## FAQ
+
+<div class="grid cards card-list" markdown>
+
+-   **Why won't Half-Life or Half-Life 2 run on my Mac?**
+
+    Since macOS Catalina, Macs only run 64-bit apps. Valve never updated the Mac versions of these games, so they no longer start. HLPatcher builds 64-bit Apple Silicon versions and installs them into the games in your Steam library.
+
+-   **Do I need Rosetta, Wine or a Windows copy of the game?**
+
+    No. The patched games run natively on Apple Silicon, using the copies you already own on Steam.
+
+-   **Which Macs are supported?**
+
+    Apple Silicon Macs (M1 and newer). Intel Macs may work, but aren't officially supported.
+
+-   **Do I need to install Xcode?**
+
+    No, only the Xcode Command Line Tools, which are a much smaller download. [Getting Started](getting-started.md) shows how to install them.
+
+-   **Why does HLPatcher ask me to switch to an older version of a game?**
+
+    Some Source games only work with the patched engine on an older version of their game files. When a game needs it, HLPatcher shows a step-by-step guide for switching to that version in Steam.
+
+-   **Can I play online?**
+
+    Not on standard PC or VAC-secured servers. See each game's multiplayer limitations on the [Supported Games](supported-games.md) page.
+
+-   **macOS says SDL2.framework can't be opened. What do I do?**
+
+    This can happen the first time you launch a patched game. Open **System Settings**, go to **Privacy & Security** and click **Open Anyway**.
+
+-   **Does a Steam update undo the patch?**
+
+    It can, if the update replaces the game's binaries. If a patched game stops launching, reinstall it through Steam and run HLPatcher again.
+
+-   **How do I undo the patch?**
+
+    Restore your backup if you made one, verify the game files in Steam or reinstall the game. [Removing Patches](removing-patches.md) walks you through each option.
+
+-   **Is HLPatcher free?**
+
+    Yes. HLPatcher is free and [open source](https://github.com/kacper-jar/HLPatcher).
 
 </div>
 
