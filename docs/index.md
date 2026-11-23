@@ -168,5 +168,5 @@ If you are a copyright owner and believe that any material provided through this
 
 ### Made with ❤️ by Kacper Jarosławski
 
-[:fontawesome-solid-globe: Website](https://kzl21.ovh/) - [:octicons-mark-github-16: GitHub](https://github.com/kacper-jar)
+[:fontawesome-solid-globe: Website](https://kzl21.ovh/){ .md-button .md-button--secondary } [:octicons-mark-github-16: GitHub](https://github.com/kacper-jar){ .md-button .md-button--secondary }
 </center>
