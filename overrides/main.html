@@ -24,7 +24,7 @@
     <meta property="og:image" content="{{ config.site_url }}imgs/index.png">
     <meta name="twitter:card" content="summary">
     {%- if page.url == "" %}
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "{{ config.site_name }}", "url": "{{ page.canonical_url }}"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "{{ config.site_name }}", "alternateName": ["Half-Life Patcher", "HL Patcher"], "url": "{{ page.canonical_url }}"}</script>
     {%- endif %}
   {%- endif %}
 {% endblock %}
