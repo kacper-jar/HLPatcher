@@ -28,7 +28,7 @@
   margin-block: 0.3em;
 }
 
-.md-typeset .hero-text .md-button + .md-button {
+.md-typeset .md-button + .md-button {
   margin-left: 0.4rem;
 }
 
