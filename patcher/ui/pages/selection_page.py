@@ -78,7 +78,7 @@ class SelectionPage(BasePage):
         parent_checkbox.pack(fill="x", padx=10, pady=8)
         self._checkboxes[parent_key] = parent_checkbox
 
-        has_unpatchable = True
+        nothing_to_patch = True
         for component in game.components:
             if component.auto_select:
                 continue
@@ -103,14 +103,14 @@ class SelectionPage(BasePage):
                 child_checkbox.configure(state="disabled")
                 child_var.set(False)
             else:
-                has_unpatchable = False
+                nothing_to_patch = False
 
             child_checkbox.pack(fill="x", padx=25, pady=2)
             self._checkboxes[child_key] = child_checkbox
 
         self._parent_children[game.name] = child_keys
 
-        if has_unpatchable:
+        if nothing_to_patch:
             parent_checkbox.configure(state="disabled")
         else:
             parent_var.set(True)
