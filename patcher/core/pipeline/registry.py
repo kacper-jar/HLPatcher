@@ -1,8 +1,9 @@
 from typing import Any
 
 from patcher.core.models import StepConfig
+from patcher.core.pipeline.base import BaseStep
 
-STEP_REGISTRY: dict[str, type[Any]] = {}
+STEP_REGISTRY: dict[str, type[BaseStep]] = {}
 
 
 def step(type_name: str, config: type[StepConfig]):
@@ -15,7 +16,7 @@ def step(type_name: str, config: type[StepConfig]):
             ...
     """
 
-    def decorator(cls):
+    def decorator[S: BaseStep](cls: type[S]) -> type[S]:
         cls.config_class = config
         STEP_REGISTRY[type_name] = cls
         return cls

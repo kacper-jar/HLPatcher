@@ -1,10 +1,14 @@
+from typing import TYPE_CHECKING
 import customtkinter as ctk
 
 from patcher.ui.page_route import PageRoute
 
+if TYPE_CHECKING:
+    from patcher.app import App
+
 
 class BasePage(ctk.CTkFrame):
-    def __init__(self, parent, app, **kwargs):
+    def __init__(self, parent, app: "App", **kwargs):
         super().__init__(parent, fg_color="transparent", **kwargs)
         self._app = app
 
