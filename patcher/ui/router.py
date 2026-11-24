@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from typing import TYPE_CHECKING
 
 from patcher.ui.base_page import BasePage
 from patcher.ui.page_route import PageRoute
@@ -18,6 +19,9 @@ from patcher.ui.pages import (
     WelcomePage,
 )
 
+if TYPE_CHECKING:
+    from patcher.app import App
+
 PAGES: dict[PageRoute, type[BasePage]] = {
     PageRoute.WELCOME: WelcomePage,
     PageRoute.LIBRARY: LibraryPage,
@@ -36,7 +40,7 @@ PAGES: dict[PageRoute, type[BasePage]] = {
 
 
 class Router:
-    def __init__(self, app, content_frame, header, footer):
+    def __init__(self, app: "App", content_frame, header, footer):
         self.app = app
         self.content_frame = content_frame
         self.header = header

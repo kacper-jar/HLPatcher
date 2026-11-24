@@ -1,9 +1,14 @@
 import webbrowser
+from typing import TYPE_CHECKING
+
 import customtkinter as ctk
+
+if TYPE_CHECKING:
+    from patcher.app import App
 
 
 class BaseGuideWindow(ctk.CTkToplevel):
-    def __init__(self, parent, app, title: str = "", width: int = 600, height: int = 620, **kwargs):
+    def __init__(self, parent, app: "App", title: str = "", width: int = 600, height: int = 620, **kwargs):
         super().__init__(parent, **kwargs)
         self._app = app
 

@@ -11,5 +11,5 @@ class BaseStep(ABC):
         self.context = context
 
     @abstractmethod
-    def execute(self, game: Game, comp: Component, step_config):
+    def execute(self, game: Game, comp: Component, step_config: StepConfig):
         pass
