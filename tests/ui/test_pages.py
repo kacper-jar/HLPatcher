@@ -230,6 +230,24 @@ def test_library_refuses_a_folder_that_does_not_exist(library_page, tmp_path):
     assert "library_error_invalid" not in texts(library_page)
 
 
+@pytest.mark.parametrize("typed", ["", "   "], ids=["empty", "blank"])
+def test_library_refuses_an_empty_folder(library_page, typed):
+    type_path(library_page, typed)
+
+    assert library_page.can_go_next() is False
+    assert "library_error_invalid" in texts(library_page)
+
+
+def test_library_accepts_a_home_relative_folder_with_spaces_around_it(library_page, app, monkeypatch, tmp_path):
+    monkeypatch.setenv("HOME", str(tmp_path))
+    (tmp_path / "SteamLibrary").mkdir()
+    type_path(library_page, "  ~/SteamLibrary  ")
+
+    assert library_page.can_go_next() is True
+    library_page.on_leave()
+    assert app.context.steam_library_path == tmp_path / "SteamLibrary"
+
+
 @pytest.mark.parametrize(("typed", "chosen", "start", "result"), [
     ("{tmp}", "{tmp}/SteamLibrary", "{tmp}", "{tmp}/SteamLibrary"),
     ("{tmp}/missing", "{tmp}/SteamLibrary", "{home}", "{tmp}/SteamLibrary"),
