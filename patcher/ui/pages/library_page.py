@@ -61,29 +61,33 @@ class LibraryPage(BasePage):
     def get_title(self) -> str:
         return self._app.i18n.t("library_title")
 
+    def _typed_path(self) -> Path | None:
+        text = self._path_var.get().strip()
+        return Path(text).expanduser() if text else None
+
     def _browse(self):
-        initial = self._path_var.get()
-        if not Path(initial).exists():
-            initial = str(Path.home())
+        initial = self._typed_path()
+        if not initial or not initial.exists():
+            initial = Path.home()
 
         folder = filedialog.askdirectory(
             title=self._app.i18n.t("library_browse_title"),
-            initialdir=initial,
+            initialdir=str(initial),
         )
         if folder:
             self._path_var.set(folder)
             self._error_label.configure(text="")
 
     def can_go_next(self) -> bool:
-        path = Path(self._path_var.get())
-        if not path.is_dir():
+        path = self._typed_path()
+        if not path or not path.is_dir():
             self._error_label.configure(text=self._app.i18n.t("library_error_invalid"))
             return False
         self._error_label.configure(text="")
         return True
 
     def on_leave(self):
-        self._app.context.steam_library_path = Path(self._path_var.get())
+        self._app.context.steam_library_path = self._typed_path() or Path()
 
     def get_next_page_key(self) -> PageRoute:
         return PageRoute.SCAN_AND_ROUTE
