@@ -14,6 +14,7 @@ class DowngradePage(BasePage):
         self._check_job = None
         self._cards = {}
         self._file_hashes = {}
+        self._guides = {}
 
     def on_enter(self):
         for widget in self.winfo_children():
@@ -21,6 +22,7 @@ class DowngradePage(BasePage):
 
         self._cards.clear()
         self._file_hashes.clear()
+        self._guides.clear()
 
         self._scroll_frame = ctk.CTkScrollableFrame(self, fg_color="transparent")
         self._scroll_frame.pack(fill="both", expand=True)
@@ -94,9 +96,16 @@ class DowngradePage(BasePage):
         self._file_hashes.clear()
 
     def _open_downgrade_guide(self, group_key):
+        guide = self._guides.get(group_key)
+        if guide and guide.winfo_exists():
+            guide.lift()
+            guide.focus()
+            return
+
         config = self._app.guide_registry.get_guide(group_key)
         if config:
             guide = BaseGuideWindow(self, self._app, title=self._app.i18n.t(config.title))
+            self._guides[group_key] = guide
             for step in config.steps:
                 guide.add_step(
                     title_key=step.step_title,
