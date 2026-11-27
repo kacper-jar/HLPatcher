@@ -525,6 +525,26 @@ def test_downgrade_guide_button_opens_the_guide_of_its_group(open_downgrade_page
     opened.assert_called_once_with("steam://open/console")
 
 
+def test_downgrade_guide_button_brings_back_the_open_guide(open_downgrade_page, downgrade_files, guides, mocker):
+    guides["hl2"] = GuideConfig("guide_hl2_title", [GuideStepConfig("guide_hl2_step1_title", "guide_hl2_step1_desc")])
+    lifted = mocker.spy(BaseGuideWindow, "lift")
+    page, _ = open_downgrade_page()
+    hl2_button, _ = widgets(page, ctk.CTkButton)
+
+    hl2_button.invoke()
+    [guide] = widgets(page, BaseGuideWindow)
+    hl2_button.invoke()
+
+    assert widgets(page, BaseGuideWindow) == [guide]
+    lifted.assert_called_once_with(guide)
+
+    guide.destroy()
+    hl2_button.invoke()
+
+    [reopened] = widgets(page, BaseGuideWindow)
+    assert reopened is not guide
+
+
 @pytest.fixture
 def failure_report(mocker, tmp_path):
     report = mocker.patch("patcher.ui.pages.progress_page.FailureReport")
