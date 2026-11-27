@@ -12,6 +12,11 @@ if [[ "$(uname)" != "Darwin" ]]; then
     exit 1
 fi
 
+if [[ "$(sysctl -n sysctl.proc_translated 2>/dev/null)" == "1" ]]; then
+    echo "Terminal is running under Rosetta. Restarting HLPatcher natively..."
+    exec arch -arm64 /bin/bash "$SCRIPT_DIR/$(basename "${BASH_SOURCE[0]:-$0}")" "$@"
+fi
+
 if ! xcode-select -p &>/dev/null; then
     echo "Xcode Command Line Tools not found."
     echo "Please install them by running: xcode-select --install"
