@@ -1,6 +1,9 @@
+import errno
 import io
+import shutil
 import tarfile
 import zipfile
+from pathlib import Path
 
 import pytest
 
@@ -286,6 +289,34 @@ def test_source_installer_replaces_the_hl2_launcher(step_context, make_game, sou
 
     assert (game.path / "hl2_osx").read_bytes() == b"new launcher"
     assert (game.path / "hl2_osx").stat().st_mode & 0o777 == 0o755
+
+
+@pytest.mark.parametrize(("failing_copy", "hl2_osx"), [
+    ("hl2_launcher", b"old launcher"),
+    ("steam_launcher", b"new launcher"),
+])
+def test_source_installer_keeps_the_old_launchers_when_a_copy_fails(step_context, make_game, source_dir,
+                                                                    mock_run_command, mocker, failing_copy, hl2_osx):
+    game = make_game("Half-Life 2", "hl2")
+    write_file(source_dir / "output" / "hl2_launcher", b"new launcher")
+    write_file(game.path / "hl2_osx", b"old launcher")
+    write_file(game.path / "hl2.sh", VALVE_SCRIPT)
+    copy2 = shutil.copy2
+
+    def copy_until_the_disk_fills(source, destination, **kwargs):
+        if Path(source).name == failing_copy:
+            Path(destination).write_bytes(b"half a launcher")
+            raise OSError(errno.ENOSPC, "No space left on device")
+        return copy2(source, destination, **kwargs)
+
+    mocker.patch("shutil.copy2", side_effect=copy_until_the_disk_fills)
+
+    with pytest.raises(OSError, match="No space left on device"):
+        install_source(step_context, game)
+
+    assert (game.path / "hl2_osx").read_bytes() == hl2_osx
+    assert (game.path / "hl2.sh").read_bytes() == VALVE_SCRIPT
+    assert not list(game.path.glob("*.hlpatcher-new"))
 
 
 def test_source_installer_relinks_engine_libraries(step_context, make_game, source_dir, mock_run_command):
