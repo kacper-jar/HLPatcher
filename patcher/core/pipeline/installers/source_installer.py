@@ -37,17 +37,13 @@ class SourceInstaller(BaseStep):
             shutil.copy2(dylib, bin_dir / dylib.name)
 
         hl2_launcher = output_dir / "hl2_launcher"
-        hl2_osx = game.path / "hl2_osx"
         if hl2_launcher.exists():
-            if hl2_osx.exists():
-                hl2_osx.unlink()
-            shutil.copy2(hl2_launcher, hl2_osx)
-            hl2_osx.chmod(0o755)
+            self._swap_in_copy(hl2_launcher, game.path / "hl2_osx")
 
         valve_script = game.path / "hl2.sh"
         if valve_script.is_file() and valve_script.read_bytes().startswith(b"#!"):
             self.context.log("Keeping Valve's hl2.sh as hl2_launcher.sh...")
-            valve_script.replace(game.path / "hl2_launcher.sh")
+            shutil.copy2(valve_script, game.path / "hl2_launcher.sh")
         self._install_steam_launcher(steam_launcher, game.path / "hl2.sh")
         if step_config.steam_executable:
             self._install_steam_launcher(steam_launcher, game.path / step_config.steam_executable)
@@ -57,9 +53,18 @@ class SourceInstaller(BaseStep):
 
     def _install_steam_launcher(self, steam_launcher: Path, destination: Path):
         self.context.log(f"Installing Steam launcher as {destination.name}...")
-        destination.unlink(missing_ok=True)
-        shutil.copy2(steam_launcher, destination)
-        destination.chmod(0o755)
+        self._swap_in_copy(steam_launcher, destination)
+
+    @staticmethod
+    def _swap_in_copy(source: Path, destination: Path):
+        staged = destination.with_name(f"{destination.name}.hlpatcher-new")
+        try:
+            shutil.copy2(source, staged)
+        except OSError:
+            staged.unlink(missing_ok=True)
+            raise
+        staged.chmod(0o755)
+        staged.replace(destination)
 
     def _fix_source_links(self, game_path: Path, patch_dir_name: str):
         self.context.log("Fixing Source Engine links...")
